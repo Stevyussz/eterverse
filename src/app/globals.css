@@ -1,1 +1,53 @@
 @import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-eter-abyss: #09090B;
+  --color-eter-surface: rgba(9, 9, 11, 0.75);
+  --color-eter-starlight: #FAFAFA;
+  --color-eter-gold: #EAB308;
+  --color-eter-cyan: #22D3EE;
+  --color-eter-red: #F43F5E;
+  
+  /* Fonts */
+  --font-display: var(--font-outfit), sans-serif;
+  --font-body: var(--font-plus-jakarta), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+
+  /* Custom Transitions */
+  --transition-property-smooth: all;
+  --transition-timing-function-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-duration-smooth: 300ms;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-eter-abyss);
+    color: var(--color-eter-starlight);
+    font-family: var(--font-body);
+    scrollbar-color: var(--color-eter-surface) var(--color-eter-abyss); 
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+/* Background utama (Gambar dari user) */
+.bg-wallpaper {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  object-fit: cover;
+  filter: contrast(105%) brightness(90%);
+}
+
+/* Vignette gelap di sekeliling layar dan bagian bawah */
+.bg-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: 
+    linear-gradient(to top, #09090B 15%, rgba(9,9,11,0.85) 40%, rgba(9,9,11,0.2) 100%),
+    radial-gradient(circle at center, transparent 30%, rgba(9,9,11,0.75) 100%);
+}
