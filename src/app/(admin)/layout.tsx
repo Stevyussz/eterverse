@@ -29,7 +29,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
 
           <nav className="flex flex-col gap-2">
-            <SidebarLink href="/admin" icon={<Database size={20} />} label="Moderation Queue" />
+            <SidebarLink href="/admin" icon={<ShieldCheck size={20} />} label="Moderation Queue" />
+            <SidebarLink href="/admin/database" icon={<Database size={20} />} label="Server Database" />
           </nav>
         </div>
 

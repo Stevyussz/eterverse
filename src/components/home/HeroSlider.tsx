@@ -6,46 +6,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { ServerCard } from "@/components/server/ServerCard";
 import { CaretLeft, CaretRight, Star } from "@phosphor-icons/react";
 
-const SLIDER_DATA = [
-  {
-    name: "Nusantara Lifesteal SMP",
-    slug: "nusantara-lifesteal-smp",
-    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-    isEterShopPartner: true,
-    onlinePlayers: 245,
-    maxPlayers: 500,
-    votes: 1240,
-    rating: 4.8,
-    tags: ["Lifesteal", "Survival"],
-    tagline: "The most intense PvP experience in Indonesia."
-  },
-  {
-    name: "Aetheria Skyblock",
-    slug: "aetheria-skyblock",
-    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-    isEterShopPartner: false,
-    onlinePlayers: 180,
-    maxPlayers: 300,
-    votes: 890,
-    rating: 4.5,
-    tags: ["Skyblock", "Economy"],
-    tagline: "Build your island empire from scratch."
-  },
-  {
-    name: "Titan Factions",
-    slug: "titan-factions",
-    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-    isEterShopPartner: true,
-    onlinePlayers: 420,
-    maxPlayers: 1000,
-    votes: 3500,
-    rating: 4.9,
-    tags: ["Factions", "PvP"],
-    tagline: "Raid, conquer, and dominate."
-  },
-];
-
-export function HeroSlider() {
+export function HeroSlider({ servers }: { servers: any[] }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
 
   const scrollPrev = useCallback(() => {
@@ -62,7 +23,7 @@ export function HeroSlider() {
       {/* Slider Viewport */}
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#050505]/60 backdrop-blur-xl" ref={emblaRef}>
         <div className="flex">
-          {SLIDER_DATA.map((server) => (
+          {servers.map((server) => (
             <div key={server.slug} className="flex-[0_0_100%] min-w-0 flex flex-col md:flex-row items-center relative">
               
               {/* Info Side */}
@@ -76,8 +37,8 @@ export function HeroSlider() {
                   {server.name}
                 </h2>
                 
-                <p className="text-zinc-400 font-body font-light text-lg mb-8 max-w-md">
-                  {server.tagline}
+                <p className="text-zinc-400 font-body font-light text-lg mb-8 max-w-md line-clamp-2">
+                  {server.description}
                 </p>
                 
                 {/* Embedded Mini ServerCard for context */}
