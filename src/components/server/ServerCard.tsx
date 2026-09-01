@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Users, Star, CaretUp, Diamond } from "@phosphor-icons/react";
+import { Users, Star, CaretUp, Trophy } from "@phosphor-icons/react";
 import Link from "next/link";
 
 interface ServerCardProps {
@@ -71,7 +71,7 @@ export function ServerCard({
       <div className="relative z-10 flex justify-between p-4">
         {isEterShopPartner && (
           <div className="flex items-center gap-1.5 bg-[#09090b]/80 backdrop-blur-sm border-l-2 border-l-eter-gold border-y border-r border-white/10 px-2 py-1 shadow-sm h-fit">
-            <Diamond weight="fill" className="text-eter-gold" size={12} />
+            <Trophy weight="fill" className="text-eter-gold" size={12} />
             <span className="text-[9px] font-mono font-bold text-eter-gold tracking-widest uppercase">Partner</span>
           </div>
         )}

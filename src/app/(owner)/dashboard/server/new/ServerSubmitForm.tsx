@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Spinner } from "@phosphor-icons/react";
+import { toast } from "sonner";
 
 export function ServerSubmitForm({ action }: { action: (formData: FormData) => Promise<void> }) {
   const [isPending, setIsPending] = useState(false);
@@ -12,8 +13,10 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
         setIsPending(true);
         try {
           await action(formData);
-        } catch (e) {
+          toast.success("Server submitted successfully for review!");
+        } catch (e: any) {
           console.error(e);
+          toast.error(e.message || "Failed to submit server");
           setIsPending(false);
         }
       }} 
