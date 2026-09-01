@@ -35,27 +35,7 @@ export default async function ServerProfilePage(props: Props) {
   let serverData: any = await Server.findOne({ slug: params.slug }).lean();
 
   if (!serverData) {
-    // If DB is empty or server doesn't exist, we mock it for development presentation
-    // Usually this would be notFound(), but we want to see the UI!
-    serverData = {
-      name: "Nusantara Lifesteal SMP",
-      slug: params.slug,
-      description: "Server Lifesteal paling seru di Indonesia! Bertahan hidup, curi nyawa pemain lain, dan bangun kerajaanmu. Tidak ada ampun di sini.",
-      ipAddress: "play.nusantara.net",
-      isEterShopPartner: true,
-      liveStatus: {
-        isOnline: true,
-        currentPlayers: 245,
-        maxPlayers: 500,
-        lastChecked: new Date()
-      },
-      metrics: {
-        impressions: 0,
-        clicks: 0,
-        rating: 4.8,
-        votes: 1240,
-      }
-    };
+    notFound();
   }
 
   return (

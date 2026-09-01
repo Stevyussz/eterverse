@@ -42,13 +42,7 @@ export default async function WidgetToolsPage() {
                   <div className="absolute top-2 left-2 flex items-center gap-1.5 text-zinc-600">
                     <Eye size={16} /> <span className="text-[10px] font-mono uppercase tracking-widest">Live Preview</span>
                   </div>
-                  <img src={`/api/widget/${server.slug}`} alt="Widget Preview" className="mt-4" onError={(e) => {
-                     // Since we don't have the real API route for the image widget built in this MVP, we use a placeholder styling
-                     e.currentTarget.style.display = 'none';
-                  }} />
-                  <div className="w-64 h-20 border border-dashed border-white/20 bg-white/5 flex items-center justify-center text-xs text-zinc-500 font-mono mt-4">
-                    [Widget Image Renders Here]
-                  </div>
+                  <img src={`/api/widget/${server.slug}`} alt="Widget Preview" className="mt-8 rounded-sm shadow-xl" />
                 </div>
               </div>
             </div>
