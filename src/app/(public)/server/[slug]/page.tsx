@@ -4,7 +4,7 @@ import { Server } from "@/models/Server";
 import { notFound } from "next/navigation";
 import { JsonLdSchema } from "@/components/seo/JsonLdSchema";
 import { EmbedWidget } from "@/components/server/EmbedWidget";
-import { Users, Star, Trophy } from "@phosphor-icons/react/dist/ssr";
+import { Users, Star, Trophy, DiscordLogo, WhatsappLogo, TelegramLogo, Globe } from "@phosphor-icons/react/dist/ssr";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -117,6 +117,39 @@ export default async function ServerProfilePage(props: Props) {
             </div>
             
             <EmbedWidget serverSlug={serverData.slug} />
+            
+            {/* Community Links */}
+            {(serverData.socialLinks?.discord || serverData.socialLinks?.whatsapp || serverData.socialLinks?.telegram || serverData.socialLinks?.website) && (
+              <div className="bg-[#050505]/60 border border-white/10 rounded-xl p-6 flex flex-col gap-4">
+                <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest">Community</h3>
+                <div className="flex flex-col gap-2">
+                  {serverData.socialLinks?.discord && (
+                    <a href={serverData.socialLinks.discord} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 bg-[#5865F2]/10 hover:bg-[#5865F2]/20 border border-[#5865F2]/30 text-[#5865F2] hover:text-white transition-colors duration-smooth px-4 py-2.5 rounded-md">
+                      <DiscordLogo size={20} weight="fill" />
+                      <span className="font-medium text-sm">Join Discord</span>
+                    </a>
+                  )}
+                  {serverData.socialLinks?.whatsapp && (
+                    <a href={serverData.socialLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/30 text-[#25D366] hover:text-white transition-colors duration-smooth px-4 py-2.5 rounded-md">
+                      <WhatsappLogo size={20} weight="fill" />
+                      <span className="font-medium text-sm">WhatsApp Group</span>
+                    </a>
+                  )}
+                  {serverData.socialLinks?.telegram && (
+                    <a href={serverData.socialLinks.telegram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 bg-[#229ED9]/10 hover:bg-[#229ED9]/20 border border-[#229ED9]/30 text-[#229ED9] hover:text-white transition-colors duration-smooth px-4 py-2.5 rounded-md">
+                      <TelegramLogo size={20} weight="fill" />
+                      <span className="font-medium text-sm">Telegram Group</span>
+                    </a>
+                  )}
+                  {serverData.socialLinks?.website && (
+                    <a href={serverData.socialLinks.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 hover:text-white transition-colors duration-smooth px-4 py-2.5 rounded-md">
+                      <Globe size={20} weight="fill" />
+                      <span className="font-medium text-sm">Visit Website</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
 
           </div>
           

@@ -10,6 +10,12 @@ export interface IServer extends Document {
   videoUrl: string;
   tags: string[];
   isEterShopPartner: boolean;
+  socialLinks: {
+    discord?: string;
+    whatsapp?: string;
+    telegram?: string;
+    website?: string;
+  };
   moderationStatus: 'PENDING' | 'APPROVED' | 'BANNED';
   metrics: {
     impressions: number;
@@ -36,6 +42,12 @@ const ServerSchema = new Schema<IServer>({
   videoUrl: { type: String, required: true },
   tags: { type: [String], default: [] },
   isEterShopPartner: { type: Boolean, default: false },
+  socialLinks: {
+    discord: { type: String, default: "" },
+    whatsapp: { type: String, default: "" },
+    telegram: { type: String, default: "" },
+    website: { type: String, default: "" },
+  },
   moderationStatus: {
     type: String,
     enum: ['PENDING', 'APPROVED', 'BANNED'],

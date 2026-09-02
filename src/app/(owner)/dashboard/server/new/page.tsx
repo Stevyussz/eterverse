@@ -20,6 +20,10 @@ export default async function NewServerPage() {
     const description = formData.get("description") as string;
     const tags = (formData.get("tags") as string).split(",").map(t => t.trim());
     const videoUrl = formData.get("videoUrl") as string;
+    const discordUrl = formData.get("discordUrl") as string || "";
+    const whatsappUrl = formData.get("whatsappUrl") as string || "";
+    const telegramUrl = formData.get("telegramUrl") as string || "";
+    const websiteUrl = formData.get("websiteUrl") as string || "";
 
     await connectToDatabase();
     
@@ -30,6 +34,12 @@ export default async function NewServerPage() {
       description,
       tags,
       videoUrl,
+      socialLinks: {
+        discord: discordUrl,
+        whatsapp: whatsappUrl,
+        telegram: telegramUrl,
+        website: websiteUrl,
+      },
       ownerId: ownerIdentifier,
       moderationStatus: 'PENDING',
       metrics: { impressions: 0, clicks: 0, votes: 0, rating: 0 },
