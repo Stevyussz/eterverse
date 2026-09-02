@@ -8,8 +8,9 @@ import { signIn } from "next-auth/react";
 export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boolean }) {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showVerify, setShowVerify] = useState(isVerifyRequest);
 
-  if (isVerifyRequest) {
+  if (showVerify) {
     return (
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
@@ -63,7 +64,12 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
         onSubmit={async (e) => {
           e.preventDefault();
           setIsSubmitting(true);
-          await signIn("resend", { email, callbackUrl: "/dashboard" });
+          const res = await signIn("resend", { email, callbackUrl: "/dashboard", redirect: false });
+          if (res?.ok && !res?.error) {
+            setShowVerify(true);
+          } else {
+            setIsSubmitting(false);
+          }
         }}
         className="flex flex-col gap-4"
       >
