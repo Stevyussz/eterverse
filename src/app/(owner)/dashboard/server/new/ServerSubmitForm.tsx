@@ -80,8 +80,12 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
       </div>
       
       <div className="flex flex-col gap-2">
-        <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Trailer Video URL (MP4)</label>
-        <input name="videoUrl" required type="url" className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" placeholder="https://example.com/trailer.mp4" />
+        <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest flex items-center justify-between">
+          <span>Trailer Video URL</span>
+          <span className="bg-white/5 text-zinc-400 px-2 py-0.5 rounded-sm text-[10px]">YouTube Recommended</span>
+        </label>
+        <input name="videoUrl" required type="url" className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" placeholder="https://youtube.com/watch?v=..." />
+        <p className="text-[10px] text-zinc-500 font-mono">Untuk performa dan keamanan terbaik, kami sangat merekomendasikan menggunakan link YouTube.</p>
       </div>
 
       <div className="flex flex-col gap-4 p-6 border border-white/10 rounded-sm bg-white/[0.01]">

@@ -12,20 +12,13 @@ export async function uploadImageToImgBB(formData: FormData): Promise<{ url?: st
       return { error: "ImgBB API key is missing. Server owner needs to configure IMGBB_API_KEY in .env.local" };
     }
 
-    // Convert file to base64
-    const buffer = await file.arrayBuffer();
-    const base64Data = Buffer.from(buffer).toString('base64');
-
-    const imgbbFormData = new URLSearchParams();
+    const imgbbFormData = new FormData();
     imgbbFormData.append("key", apiKey);
-    imgbbFormData.append("image", base64Data);
+    imgbbFormData.append("image", file);
 
     const response = await fetch("https://api.imgbb.com/1/upload", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: imgbbFormData.toString()
+      body: imgbbFormData
     });
 
     const data = await response.json();
