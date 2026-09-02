@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   const isProtectedPath = pathname.startsWith('/dashboard') || pathname.startsWith('/admin');
 
   if (isProtectedPath && !session) {
-    const loginUrl = new URL('/api/auth/signin', request.url);
+    const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', encodeURI(pathname));
     return NextResponse.redirect(loginUrl);
   }

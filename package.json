@@ -10,17 +10,20 @@
   },
   "dependencies": {
     "@ai-sdk/groq": "^3.0.64",
+    "@auth/mongodb-adapter": "^3.11.3",
     "@phosphor-icons/react": "^2.1.10",
     "@vercel/og": "^1.0.0",
     "ai": "^6.0.273",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "minecraft-server-util": "^5.4.4",
+    "mongodb": "^7.6.0",
     "mongoose": "^9.9.4",
     "next": "16.3.4",
     "next-auth": "^5.0.0-beta.32",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "resend": "^6.25.0",
     "sonner": "^2.0.8"
   },
   "devDependencies": {
