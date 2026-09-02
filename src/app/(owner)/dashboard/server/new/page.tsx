@@ -31,6 +31,7 @@ export default async function NewServerPage() {
     const whatsappUrl = formData.get("whatsappUrl") as string || "";
     const telegramUrl = formData.get("telegramUrl") as string || "";
     const websiteUrl = formData.get("websiteUrl") as string || "";
+    const ownerWhatsApp = formData.get("ownerWhatsApp") as string;
 
     await connectToDatabase();
     
@@ -51,6 +52,7 @@ export default async function NewServerPage() {
         website: websiteUrl,
       },
       ownerId: ownerIdentifier,
+      ownerWhatsApp,
       moderationStatus: 'PENDING',
       metrics: { impressions: 0, clicks: 0, votes: 0, rating: 0 },
       liveStatus: { isOnline: false, currentPlayers: 0, maxPlayers: 0, lastChecked: new Date() }

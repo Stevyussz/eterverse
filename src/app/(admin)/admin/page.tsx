@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
-import { CheckCircle, XCircle, Shield, ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircle, XCircle, Shield, ArrowSquareOut, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
@@ -62,6 +62,11 @@ export default async function AdminModerationPage() {
           <Link href={`/server/${server.slug}`} target="_blank" className="flex items-center gap-2 bg-white/5 text-zinc-400 border border-white/10 hover:bg-white/10 px-3 py-2 rounded-sm text-sm font-medium transition-colors w-full justify-center">
             <ArrowSquareOut size={16} /> View
           </Link>
+        )}
+        {server.ownerWhatsApp && (
+          <a href={`https://wa.me/${server.ownerWhatsApp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 px-3 py-2 rounded-sm text-sm font-medium transition-colors w-full justify-center">
+            <WhatsappLogo size={16} weight="fill" /> Chat
+          </a>
         )}
         {actions}
       </div>

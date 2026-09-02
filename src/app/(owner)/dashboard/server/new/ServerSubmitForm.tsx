@@ -30,7 +30,7 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
         <input name="name" required type="text" className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" placeholder="E.g. Nusantara SMP" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="flex flex-col gap-2">
           <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">IP Address</label>
           <input name="ipAddress" required type="text" className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" placeholder="play.nusantara.net" />
@@ -38,6 +38,13 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
         <div className="flex flex-col gap-2">
           <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Port</label>
           <input name="port" type="number" defaultValue={25565} className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" placeholder="25565" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest flex items-center justify-between">
+            <span>Nomor WA (Owner)</span>
+            <span className="bg-white/5 text-zinc-400 px-2 py-0.5 rounded-sm text-[10px]">Rahasia</span>
+          </label>
+          <input name="ownerWhatsApp" required type="text" pattern="^62[0-9]{8,14}$" title="Awali dengan 62 tanpa spasi/simbol (contoh: 628123456789)" className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" placeholder="628123456..." />
         </div>
       </div>
 

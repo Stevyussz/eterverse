@@ -33,6 +33,7 @@ export interface IServer extends Document {
     lastChecked: Date;
   };
   ownerId?: mongoose.Types.ObjectId;
+  ownerWhatsApp: string;
   createdAt: Date;
 }
 
@@ -72,6 +73,7 @@ const ServerSchema = new Schema<IServer>({
     lastChecked: { type: Date, default: Date.now },
   },
   ownerId: { type: Schema.Types.ObjectId, ref: 'User' },
+  ownerWhatsApp: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 

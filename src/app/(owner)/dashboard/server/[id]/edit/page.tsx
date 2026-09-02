@@ -42,6 +42,11 @@ export default async function EditServerPage({ params }: Props) {
     const videoUrl = formData.get("videoUrl") as string;
     const logoUrl = formData.get("logoUrl") as string || existing.logoUrl || "";
     const bannerUrl = formData.get("bannerUrl") as string || existing.bannerUrl || "";
+    const ownerWhatsApp = formData.get("ownerWhatsApp") as string;
+    const discordUrl = formData.get("discordUrl") as string;
+    const whatsappUrl = formData.get("whatsappUrl") as string;
+    const telegramUrl = formData.get("telegramUrl") as string;
+    const websiteUrl = formData.get("websiteUrl") as string;
 
     const galleryUrlsRaw = formData.get("galleryUrls") as string;
     const galleryUrls = galleryUrlsRaw
@@ -58,11 +63,12 @@ export default async function EditServerPage({ params }: Props) {
       logoUrl,
       bannerUrl,
       galleryUrls,
+      ownerWhatsApp,
       socialLinks: {
-        discord: (formData.get("discordUrl") as string) || "",
-        whatsapp: (formData.get("whatsappUrl") as string) || "",
-        telegram: (formData.get("telegramUrl") as string) || "",
-        website: (formData.get("websiteUrl") as string) || "",
+        discord: discordUrl || "",
+        whatsapp: whatsappUrl || "",
+        telegram: telegramUrl || "",
+        website: websiteUrl || "",
       },
       // Reset to PENDING so admin can re-review significant changes
       moderationStatus: 'PENDING',
