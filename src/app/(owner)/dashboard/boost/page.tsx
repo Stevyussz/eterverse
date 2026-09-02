@@ -39,12 +39,10 @@ export default function EterShopBoostPage() {
           Partnership slots are limited to maintain exclusivity. Contact our team directly to apply for EterShop Partner status.
         </p>
         <a 
-          href="https://discord.gg/eterverse" 
-          target="_blank" 
-          rel="noopener noreferrer"
+          href="mailto:admin@eterverse.com?subject=EterShop%20Partner%20Application"
           className="bg-eter-gold text-black font-semibold px-8 py-4 rounded-sm hover:bg-yellow-400 transition-colors border-l-2 border-l-white border-y border-r border-transparent flex items-center gap-3 text-lg"
         >
-          <Lightning weight="fill" /> Apply via Discord
+          <Lightning weight="fill" /> Apply via Email
         </a>
       </div>
       

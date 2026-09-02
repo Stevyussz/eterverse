@@ -1,11 +1,16 @@
 import { Metadata } from "next";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
+import { Rating } from "@/models/Rating";
+import { auth } from "@/auth";
 import { notFound } from "next/navigation";
 import { JsonLdSchema } from "@/components/seo/JsonLdSchema";
 import { EmbedWidget } from "@/components/server/EmbedWidget";
 import { CopyIPButton } from "@/components/server/CopyIPButton";
-import { Users, Star, Trophy, DiscordLogo, WhatsappLogo, TelegramLogo, Globe, Image as ImageIcon } from "@phosphor-icons/react/dist/ssr";
+import { VoteButton } from "@/components/server/VoteButton";
+import { StarRating } from "@/components/server/StarRating";
+import { ImpressionTracker } from "@/components/server/ImpressionTracker";
+import { Users, Trophy, DiscordLogo, WhatsappLogo, TelegramLogo, Globe, Image as ImageIcon } from "@phosphor-icons/react/dist/ssr";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -34,6 +39,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function ServerProfilePage(props: Props) {
   const params = await props.params;
+  const session = await auth();
+
   await connectToDatabase();
   let serverData: any = await Server.findOne({ slug: params.slug }).lean();
 
@@ -41,12 +48,20 @@ export default async function ServerProfilePage(props: Props) {
     notFound();
   }
 
-  const defaultBanner = "https://images.unsplash.com/photo-1607988795691-3e0147c618d5?q=80&w=2070&auto=format&fit=crop";
-  const defaultLogo = "https://images.unsplash.com/photo-1549643276-fdf2fab574f5?q=80&w=200&auto=format&fit=crop";
+  // Fetch user's existing rating if logged in
+  let userRating = 0;
+  if (session?.user?.id) {
+    const existing = await Rating.findOne({ serverId: serverData._id, userId: session.user.id }).lean();
+    userRating = existing?.stars ?? 0;
+  }
+
+  const defaultBanner = "/dashboard-bg.png";
+  const defaultLogo = "/icon-placeholder.png";
 
   return (
     <>
       <JsonLdSchema server={serverData} />
+      <ImpressionTracker slug={serverData.slug} />
       
       {/* Portfolio Banner */}
       <div className="relative w-full h-[300px] md:h-[400px] bg-[#09090b] mt-20">
@@ -77,7 +92,7 @@ export default async function ServerProfilePage(props: Props) {
               </div>
               
               <div className="flex flex-col gap-2 pb-2">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-4xl md:text-5xl font-display font-semibold text-eter-starlight">
                     {serverData.name}
                   </h1>
@@ -93,6 +108,10 @@ export default async function ServerProfilePage(props: Props) {
                       {tag}
                     </span>
                   ))}
+                </div>
+                {/* Vote Button inline with title */}
+                <div className="mt-2">
+                  <VoteButton slug={serverData.slug} initialVotes={serverData.metrics?.votes || 0} />
                 </div>
               </div>
             </div>
@@ -168,15 +187,15 @@ export default async function ServerProfilePage(props: Props) {
                 </div>
               </div>
               
-              <div className="flex items-center gap-3 mt-2">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white/5 text-eter-gold">
-                  <Star size={20} weight="fill" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xl font-mono font-semibold text-eter-starlight">
-                    {serverData.metrics?.rating?.toFixed(1) || 0} <span className="text-sm text-zinc-500 font-medium">/ 5.0</span>
-                  </span>
-                </div>
+              {/* Interactive Star Rating */}
+              <div className="mt-4 pt-4 border-t border-white/5">
+                <p className="text-xs font-mono text-zinc-500 uppercase tracking-widest mb-3">Rate this Server</p>
+                <StarRating 
+                  slug={serverData.slug}
+                  initialRating={serverData.metrics?.rating || 0}
+                  isLoggedIn={!!session?.user}
+                  userRating={userRating}
+                />
               </div>
             </div>
             

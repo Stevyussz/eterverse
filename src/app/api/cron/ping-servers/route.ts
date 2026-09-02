@@ -4,11 +4,12 @@ import { Server } from '@/models/Server';
 import util from 'minecraft-server-util';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 export async function GET(req: Request) {
-  // Simple Authorization header check for Upstash QStash
-  const authHeader = req.headers.get('Authorization');
-  if (authHeader !== `Bearer ${process.env.QSTASH_TOKEN}` && process.env.NODE_ENV === 'production') {
+  // Vercel Cron attaches Authorization: Bearer <CRON_SECRET>
+  const authHeader = req.headers.get('authorization');
+  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
