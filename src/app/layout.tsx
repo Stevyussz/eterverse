@@ -35,6 +35,9 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
   const isLoggedIn = !!session;
+  
+  const adminEmails = process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS.split(',').map(e => e.trim()) : [];
+  const isAdmin = session?.user?.email ? adminEmails.includes(session.user.email) : false;
 
   return (
     <html lang="id" className="dark">
@@ -46,7 +49,7 @@ export default async function RootLayout({
           <source media="(max-width: 768px)" srcSet="/wallpaper-mobile.png" />
           <img src="/wallpaper.png" className="bg-wallpaper" alt="EterVerse Wallpaper" />
         </picture>
-        <Navbar isLoggedIn={isLoggedIn} />
+        <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
         {children}
         <Toaster theme="dark" position="bottom-right" />
       </body>

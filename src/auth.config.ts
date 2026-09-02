@@ -15,12 +15,27 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isProtectedPath = nextUrl.pathname.startsWith('/dashboard') || nextUrl.pathname.startsWith('/admin');
+      const isAdminPath = nextUrl.pathname.startsWith('/admin');
+      const isDashboardPath = nextUrl.pathname.startsWith('/dashboard');
       
-      if (isProtectedPath) {
+      if (isAdminPath) {
+        if (!isLoggedIn) return false; // Redirect to login
+        
+        // Admin security check
+        const adminEmails = process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS.split(',').map(e => e.trim()) : [];
+        const isUserAdmin = auth?.user?.email && adminEmails.includes(auth.user.email);
+        
+        if (!isUserAdmin) {
+          return Response.redirect(new URL('/dashboard', nextUrl));
+        }
+        return true;
+      }
+
+      if (isDashboardPath) {
         if (isLoggedIn) return true;
         return false; // Redirects to login
       }
+      
       return true;
     }
   }

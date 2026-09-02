@@ -5,7 +5,7 @@ import { Cube, DiscordLogo } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 
-export function Navbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
+export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: boolean, isAdmin?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -59,8 +59,13 @@ export function Navbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
           
           {isLoggedIn ? (
             <div className="flex items-center gap-2">
+              {isAdmin && (
+                <Link href="/admin" className="hidden lg:flex items-center gap-2 bg-eter-gold/10 hover:bg-eter-gold/20 border border-eter-gold/30 text-eter-gold text-sm font-medium px-4 py-2 rounded-md transition-all duration-smooth">
+                  Admin Panel
+                </Link>
+              )}
               <Link href="/dashboard" className="flex items-center gap-2 bg-eter-cyan/10 hover:bg-eter-cyan/20 border border-eter-cyan/30 text-eter-cyan text-sm font-medium px-4 py-2 rounded-md transition-all duration-smooth">
-                Go to Dashboard
+                Dashboard
               </Link>
               <button onClick={() => signOut()} className="flex items-center gap-2 bg-white/5 hover:bg-eter-red/20 border border-white/10 hover:border-eter-red/30 text-zinc-400 hover:text-eter-red text-sm font-medium px-4 py-2 rounded-md transition-all duration-smooth">
                 Log Out

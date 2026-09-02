@@ -8,7 +8,7 @@ export default async function WidgetToolsPage() {
   const session = await auth();
   
   await connectToDatabase();
-  const ownerIdentifier = session?.user?.email || session?.user?.id;
+  const ownerIdentifier = session?.user?.id;
   const myServers = await Server.find({ ownerId: ownerIdentifier, moderationStatus: 'APPROVED' }).lean();
 
   return (
