@@ -11,7 +11,8 @@ export default async function NewServerPage() {
     "use server";
     
     const session = await auth();
-    const ownerIdentifier = session?.user?.email || session?.user?.id;
+    // Strictly use session.user.id (ObjectId from MongoDBAdapter) to prevent CastError
+    const ownerIdentifier = session?.user?.id;
     if (!ownerIdentifier) throw new Error("Unauthorized");
 
     const name = formData.get("name") as string;

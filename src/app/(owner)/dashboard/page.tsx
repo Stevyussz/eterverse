@@ -8,8 +8,9 @@ export default async function DashboardOverview() {
   const session = await auth();
   
   await connectToDatabase();
-  // We use email as the ownerId identifier for now
-  const ownerIdentifier = session?.user?.email || session?.user?.id;
+  // We strictly use the ObjectId (session.user.id) to query the DB because Mongoose expects an ObjectId.
+  // Using an email string will cause a CastError on ownerId.
+  const ownerIdentifier = session?.user?.id;
   const myServers = await Server.find({ ownerId: ownerIdentifier }).lean();
 
   const hasServers = myServers.length > 0;

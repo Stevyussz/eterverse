@@ -5,6 +5,7 @@ import type { NextAuthConfig } from "next-auth";
 export const authConfig = {
   pages: {
     signIn: "/login",
+    verifyRequest: "/login?verifyRequest=true",
   },
   providers: [
     // Providers will be merged in auth.ts, but we define an empty array here
