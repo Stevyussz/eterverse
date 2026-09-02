@@ -4,6 +4,7 @@ import { Server } from "@/models/Server";
 import { notFound } from "next/navigation";
 import { JsonLdSchema } from "@/components/seo/JsonLdSchema";
 import { EmbedWidget } from "@/components/server/EmbedWidget";
+import { CopyIPButton } from "@/components/server/CopyIPButton";
 import { Users, Star, Trophy, DiscordLogo, WhatsappLogo, TelegramLogo, Globe, Image as ImageIcon } from "@phosphor-icons/react/dist/ssr";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -101,10 +102,11 @@ export default async function ServerProfilePage(props: Props) {
               <div className="flex flex-col">
                 <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest mb-1">Server IP Address</span>
                 <span className="text-2xl font-mono font-semibold text-eter-cyan">{serverData.ipAddress}</span>
+                {serverData.port && serverData.port !== 25565 && (
+                  <span className="text-xs font-mono text-zinc-500 mt-0.5">Port: {serverData.port}</span>
+                )}
               </div>
-              <button className="w-full sm:w-auto bg-eter-cyan text-[#09090B] font-semibold px-8 py-4 rounded-md hover:bg-cyan-300 transition-colors duration-smooth shadow-[0_0_20px_rgba(34,211,238,0.3)]">
-                Copy IP to Play
-              </button>
+              <CopyIPButton ipAddress={serverData.ipAddress} />
             </div>
             
             {/* Markdown Description */}

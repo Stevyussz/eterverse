@@ -56,7 +56,7 @@ const ServerSchema = new Schema<IServer>({
   },
   moderationStatus: {
     type: String,
-    enum: ['PENDING', 'APPROVED', 'BANNED'],
+    enum: ['PENDING', 'APPROVED', 'REJECTED', 'BANNED'],
     default: 'PENDING',
   },
   metrics: {

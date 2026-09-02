@@ -70,7 +70,7 @@ export default async function Home() {
             <h2 className="text-2xl font-display font-semibold text-eter-starlight flex items-center gap-2">
               Trending This Week
             </h2>
-            <a href="#" className="text-sm font-mono text-eter-cyan hover:text-cyan-300 transition-colors duration-smooth border-b border-eter-cyan/30 hover:border-cyan-300 pb-0.5">View Directory</a>
+            <a href="/discover" className="text-sm font-mono text-eter-cyan hover:text-cyan-300 transition-colors duration-smooth border-b border-eter-cyan/30 hover:border-cyan-300 pb-0.5">View Directory →</a>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
