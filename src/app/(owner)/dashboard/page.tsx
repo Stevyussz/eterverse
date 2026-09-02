@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import Link from "next/link";
-import { ChartLineUp, Users, CursorClick, Clock, CheckCircle, Eye, PencilSimple } from "@phosphor-icons/react/dist/ssr";
+import { ChartLineUp, Users, CursorClick, Clock, CheckCircle, Eye, PencilSimple, WarningCircle } from "@phosphor-icons/react/dist/ssr";
 
 export default async function DashboardOverview() {
   const session = await auth();
@@ -60,41 +60,52 @@ export default async function DashboardOverview() {
           <section className="flex flex-col gap-4">
             <h2 className="text-lg font-display font-semibold text-eter-starlight border-b border-white/5 pb-3">Your Servers</h2>
             {myServers.map((server: any) => (
-              <div key={server._id.toString()} className="bg-[#09090b]/80 border border-white/10 rounded-sm p-4 flex items-center justify-between gap-4 flex-wrap">
-                <div className="flex flex-col gap-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-display font-semibold text-eter-starlight truncate">{server.name}</span>
-                    <span className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border ${
-                      server.moderationStatus === 'APPROVED' ? 'text-green-400 border-green-500/30 bg-green-500/10' :
-                      server.moderationStatus === 'REJECTED' ? 'text-red-400 border-red-500/30 bg-red-500/10' :
-                      server.moderationStatus === 'BANNED' ? 'text-orange-400 border-orange-500/30 bg-orange-500/10' :
-                      'text-yellow-400 border-yellow-500/30 bg-yellow-500/10'
-                    }`}>{server.moderationStatus}</span>
+              <div key={server._id.toString()} className="flex flex-col gap-2">
+                <div className="bg-[#09090b]/80 border border-white/10 rounded-sm p-4 flex items-center justify-between gap-4 flex-wrap">
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-display font-semibold text-eter-starlight truncate">{server.name}</span>
+                      <span className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border ${
+                        server.moderationStatus === 'APPROVED' ? 'text-green-400 border-green-500/30 bg-green-500/10' :
+                        server.moderationStatus === 'REJECTED' ? 'text-red-400 border-red-500/30 bg-red-500/10' :
+                        server.moderationStatus === 'BANNED' ? 'text-orange-400 border-orange-500/30 bg-orange-500/10' :
+                        'text-yellow-400 border-yellow-500/30 bg-yellow-500/10'
+                      }`}>{server.moderationStatus}</span>
+                    </div>
+                    <span className="text-xs font-mono text-zinc-500">{server.ipAddress}</span>
                   </div>
-                  <span className="text-xs font-mono text-zinc-500">{server.ipAddress}</span>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="hidden sm:flex items-center gap-4 text-xs font-mono text-zinc-400">
-                    <span><Eye size={12} className="inline mr-1" />{server.metrics?.impressions || 0}</span>
-                    <span><CursorClick size={12} className="inline mr-1" />{server.metrics?.clicks || 0}</span>
-                    <span><Users size={12} className="inline mr-1" />{server.liveStatus?.currentPlayers || 0}</span>
-                  </div>
-                  <Link 
-                    href={`/dashboard/server/${server._id.toString()}/edit`}
-                    className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-eter-cyan border border-white/10 hover:border-eter-cyan/30 px-3 py-1.5 rounded-sm transition-colors"
-                  >
-                    <PencilSimple size={14} /> Edit
-                  </Link>
-                  {server.moderationStatus === 'APPROVED' && (
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="hidden sm:flex items-center gap-4 text-xs font-mono text-zinc-400">
+                      <span><Eye size={12} className="inline mr-1" />{server.metrics?.impressions || 0}</span>
+                      <span><CursorClick size={12} className="inline mr-1" />{server.metrics?.clicks || 0}</span>
+                      <span><Users size={12} className="inline mr-1" />{server.liveStatus?.currentPlayers || 0}</span>
+                    </div>
                     <Link 
-                      href={`/server/${server.slug}`}
-                      target="_blank"
-                      className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-eter-starlight border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-sm transition-colors"
+                      href={`/dashboard/server/${server._id.toString()}/edit`}
+                      className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-eter-cyan border border-white/10 hover:border-eter-cyan/30 px-3 py-1.5 rounded-sm transition-colors"
                     >
-                      <Eye size={14} /> View
+                      <PencilSimple size={14} /> Edit
                     </Link>
-                  )}
+                    {server.moderationStatus === 'APPROVED' && (
+                      <Link 
+                        href={`/server/${server.slug}`}
+                        target="_blank"
+                        className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-eter-starlight border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-sm transition-colors"
+                      >
+                        <Eye size={14} /> View
+                      </Link>
+                    )}
+                  </div>
                 </div>
+                {server.moderationStatus === 'REJECTED' && server.rejectionReason && (
+                  <div className="bg-red-500/5 border border-red-500/20 px-4 py-3 rounded-sm flex items-start gap-3">
+                    <WarningCircle className="text-red-400 mt-0.5 shrink-0" size={16} weight="fill" />
+                    <div>
+                      <p className="text-xs font-semibold text-red-400 mb-0.5">Penolakan Admin</p>
+                      <p className="text-xs text-red-300/80 leading-relaxed">{server.rejectionReason}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </section>

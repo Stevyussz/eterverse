@@ -19,7 +19,8 @@ export interface IServer extends Document {
     telegram?: string;
     website?: string;
   };
-  moderationStatus: 'PENDING' | 'APPROVED' | 'BANNED';
+  moderationStatus: 'PENDING' | 'APPROVED' | 'BANNED' | 'REJECTED';
+  rejectionReason?: string;
   metrics: {
     impressions: number;
     clicks: number;
@@ -60,6 +61,7 @@ const ServerSchema = new Schema<IServer>({
     enum: ['PENDING', 'APPROVED', 'REJECTED', 'BANNED'],
     default: 'PENDING',
   },
+  rejectionReason: { type: String, default: "" },
   metrics: {
     impressions: { type: Number, default: 0 },
     clicks: { type: Number, default: 0 },

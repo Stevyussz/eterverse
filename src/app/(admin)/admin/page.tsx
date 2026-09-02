@@ -23,8 +23,9 @@ export default async function AdminModerationPage() {
   async function rejectServer(formData: FormData) {
     "use server";
     const serverId = formData.get("serverId") as string;
+    const rejectionReason = formData.get("rejectionReason") as string || "Tidak memenuhi standar kualifikasi EterVerse.";
     await connectToDatabase();
-    await Server.findByIdAndUpdate(serverId, { moderationStatus: 'REJECTED' });
+    await Server.findByIdAndUpdate(serverId, { moderationStatus: 'REJECTED', rejectionReason });
     revalidatePath("/admin");
   }
 
@@ -111,8 +112,9 @@ export default async function AdminModerationPage() {
                     <CheckCircle size={18} /> Approve
                   </button>
                 </form>
-                <form action={rejectServer}>
+                <form action={rejectServer} className="flex flex-col gap-2 w-full mt-2">
                   <input type="hidden" name="serverId" value={server._id.toString()} />
+                  <input type="text" name="rejectionReason" placeholder="Alasan penolakan (opsional)..." className="bg-black/50 border border-white/10 rounded-sm px-3 py-1.5 text-xs text-eter-starlight focus:border-eter-red focus:outline-none transition-colors w-full" />
                   <button type="submit" className="flex items-center gap-2 bg-eter-red/10 text-eter-red border border-eter-red/20 hover:bg-eter-red/20 px-3 py-2 rounded-sm text-sm font-semibold transition-colors w-full justify-center">
                     <XCircle size={18} /> Reject
                   </button>
