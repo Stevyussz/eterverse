@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Users, Star, CaretUp, Trophy } from "@phosphor-icons/react";
 import Link from "next/link";
 
@@ -28,18 +28,55 @@ export function ServerCard({
   tags
 }: ServerCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLAnchorElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
+  useEffect(() => {
+    // Use IntersectionObserver specifically for mobile/touch devices
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+    if (!isTouchDevice) return;
+
+    const currentCard = cardRef.current;
+    if (!currentCard) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsHovered(true);
+            videoRef.current?.play().catch(() => {});
+          } else {
+            setIsHovered(false);
+            if (videoRef.current) {
+              videoRef.current.pause();
+              videoRef.current.currentTime = 0;
+            }
+          }
+        });
+      },
+      { threshold: 0.6 } // Play when 60% of the card is visible on screen
+    );
+
+    observer.observe(currentCard);
+
+    return () => {
+      if (currentCard) observer.unobserve(currentCard);
+    };
+  }, []);
+
   const handleMouseEnter = () => {
+    // Only trigger hover events on desktop to prevent conflicts with observer
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    
     setIsHovered(true);
     if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Autoplay might be blocked by browser policy
-      });
+      videoRef.current.play().catch(() => {});
     }
   };
 
   const handleMouseLeave = () => {
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    
     setIsHovered(false);
     if (videoRef.current) {
       videoRef.current.pause();
@@ -50,6 +87,7 @@ export function ServerCard({
   return (
     <Link 
       href={`/server/${slug}`}
+      ref={cardRef}
       className="group relative flex flex-col aspect-[9/16] rounded-lg overflow-hidden border border-white/10 bg-eter-abyss hover:border-white/30 transition-colors duration-smooth"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
