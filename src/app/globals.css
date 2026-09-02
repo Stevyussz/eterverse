@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@plugin "@tailwindcss/typography";
 @theme {
   /* Colors */
   --color-eter-abyss: #09090B;

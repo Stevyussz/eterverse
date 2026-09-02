@@ -6,6 +6,8 @@ import { toast } from "sonner";
 
 export function ServerSubmitForm({ action }: { action: (formData: FormData) => Promise<void> }) {
   const [isPending, setIsPending] = useState(false);
+  const [logoPreview, setLogoPreview] = useState("");
+  const [bannerPreview, setBannerPreview] = useState("");
 
   return (
     <form 
@@ -39,9 +41,53 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
         </div>
       </div>
 
+      {/* Visual Identity Section */}
+      <div className="flex flex-col gap-4 p-6 border border-white/10 rounded-sm bg-white/[0.01]">
+        <h3 className="text-sm font-display font-medium text-eter-starlight flex items-center gap-2">
+          Visual Identity
+        </h3>
+        <p className="text-xs text-zinc-500 font-body mb-2">Provide direct image links (Imgur, Discord CDN, etc.) to make your server stand out.</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">Logo URL</label>
+            <input 
+              name="logoUrl" 
+              type="url" 
+              onChange={(e) => setLogoPreview(e.target.value)}
+              className="bg-black/50 border border-white/10 rounded-sm px-4 py-2 text-sm text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" 
+              placeholder="https://i.imgur.com/...png" 
+            />
+            {logoPreview && (
+              <div className="mt-2 w-16 h-16 rounded-sm bg-black/80 border border-white/10 overflow-hidden flex items-center justify-center">
+                <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">Banner URL</label>
+            <input 
+              name="bannerUrl" 
+              type="url" 
+              onChange={(e) => setBannerPreview(e.target.value)}
+              className="bg-black/50 border border-white/10 rounded-sm px-4 py-2 text-sm text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" 
+              placeholder="https://i.imgur.com/...png" 
+            />
+            {bannerPreview && (
+              <div className="mt-2 w-full h-20 rounded-sm bg-black/80 border border-white/10 overflow-hidden flex items-center justify-center">
+                <img src={bannerPreview} alt="Banner Preview" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col gap-2">
-        <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Description</label>
-        <textarea name="description" required rows={4} className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors resize-none" placeholder="Describe what makes your server unique..." />
+        <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest flex items-center justify-between">
+          <span>Description</span>
+          <span className="bg-eter-cyan/10 text-eter-cyan px-2 py-0.5 rounded-full text-[9px]">Markdown Supported</span>
+        </label>
+        <textarea name="description" required rows={6} className="bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-sm text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors font-mono" placeholder="Use Markdown to style your description...&#10;&#10;## Features&#10;- Custom Enchants&#10;- Economy&#10;**Join now!**" />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -52,6 +98,11 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
       <div className="flex flex-col gap-2">
         <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Trailer Video URL (MP4)</label>
         <input name="videoUrl" required type="url" className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" placeholder="https://example.com/trailer.mp4" />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Gallery Preview URLs (Comma separated)</label>
+        <input name="galleryUrls" type="text" className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" placeholder="https://i.imgur.com/1.png, https://i.imgur.com/2.png" />
       </div>
 
       {/* Community / Social Links */}

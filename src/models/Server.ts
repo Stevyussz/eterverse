@@ -8,6 +8,9 @@ export interface IServer extends Document {
   ipAddress: string;
   port: number;
   videoUrl: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  galleryUrls?: string[];
   tags: string[];
   isEterShopPartner: boolean;
   socialLinks: {
@@ -40,6 +43,9 @@ const ServerSchema = new Schema<IServer>({
   ipAddress: { type: String, required: true },
   port: { type: Number, default: 25565 },
   videoUrl: { type: String, required: true },
+  logoUrl: { type: String, default: "" },
+  bannerUrl: { type: String, default: "" },
+  galleryUrls: { type: [String], default: [] },
   tags: { type: [String], default: [] },
   isEterShopPartner: { type: Boolean, default: false },
   socialLinks: {
