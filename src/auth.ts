@@ -3,6 +3,7 @@ import Discord from "next-auth/providers/discord";
 import Resend from "next-auth/providers/resend";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/auth-adapter";
+import { sendVerificationRequest } from "@/lib/email-template";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: MongoDBAdapter(clientPromise),
@@ -17,6 +18,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
     Resend({
       from: "EterVerse <onboarding@resend.dev>",
+      sendVerificationRequest,
     })
   ],
   callbacks: {
