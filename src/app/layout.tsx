@@ -3,6 +3,7 @@ import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Toaster } from "sonner";
+import { auth } from "@/auth";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -27,11 +28,14 @@ export const metadata: Metadata = {
   description: "Temukan server Minecraft terbaik di EterVerse.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+  const isLoggedIn = !!session;
+
   return (
     <html lang="id" className="dark">
       <body
@@ -42,7 +46,7 @@ export default function RootLayout({
           <source media="(max-width: 768px)" srcSet="/wallpaper-mobile.png" />
           <img src="/wallpaper.png" className="bg-wallpaper" alt="EterVerse Wallpaper" />
         </picture>
-        <Navbar />
+        <Navbar isLoggedIn={isLoggedIn} />
         {children}
         <Toaster theme="dark" position="bottom-right" />
       </body>

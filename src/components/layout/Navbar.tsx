@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Cube, DiscordLogo } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 
-export function Navbar() {
+export function Navbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -52,13 +52,19 @@ export function Navbar() {
 
         {/* Auth / CTA */}
         <div className="flex items-center gap-4">
-          <button className="hidden sm:block text-sm font-medium text-eter-starlight hover:text-eter-cyan transition-colors duration-smooth">
+          <Link href="/dashboard/server/new" className="hidden sm:block text-sm font-medium text-eter-starlight hover:text-eter-cyan transition-colors duration-smooth">
             Submit Server
-          </button>
-          <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-eter-starlight text-sm font-medium px-4 py-2 rounded-md transition-all duration-smooth">
-            <DiscordLogo weight="fill" size={18} className="text-[#5865F2]" />
-            Sign In
-          </button>
+          </Link>
+          
+          {isLoggedIn ? (
+            <Link href="/dashboard" className="flex items-center gap-2 bg-eter-cyan/10 hover:bg-eter-cyan/20 border border-eter-cyan/30 text-eter-cyan text-sm font-medium px-4 py-2 rounded-md transition-all duration-smooth">
+              Go to Dashboard
+            </Link>
+          ) : (
+            <Link href="/login" className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-eter-starlight text-sm font-medium px-4 py-2 rounded-md transition-all duration-smooth">
+              Sign In
+            </Link>
+          )}
         </div>
         
       </div>

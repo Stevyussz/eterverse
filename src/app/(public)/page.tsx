@@ -10,24 +10,33 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   await connectToDatabase();
   
-  // Fetch real trending servers (e.g., sorted by votes or just approved)
-  const servers = await Server.find({ moderationStatus: 'APPROVED' }).sort({ "metrics.votes": -1 }).limit(12).lean();
+  // 1. Fetch Trending Servers (Sorted by Votes)
+  const trendingServers = await Server.find({ moderationStatus: 'APPROVED' }).sort({ "metrics.votes": -1 }).limit(4).lean();
 
-  // Convert ObjectIds to string to pass to Client Components without serialization errors
-  const serializedServers = servers.map(s => ({
+  // 2. Fetch Top Rated Servers (Sorted by Rating)
+  const topRatedServers = await Server.find({ moderationStatus: 'APPROVED' }).sort({ "metrics.rating": -1 }).limit(4).lean();
+
+  // 3. Fetch Newest Servers (Sorted by CreatedAt)
+  const newestServers = await Server.find({ moderationStatus: 'APPROVED' }).sort({ createdAt: -1 }).limit(4).lean();
+
+  // Helper to serialize servers
+  const serialize = (servers: any[]) => servers.map(s => ({
     ...s,
     _id: s._id.toString(),
     ownerId: s.ownerId?.toString(),
-    // Map DB fields to the props expected by ServerCard
     onlinePlayers: s.liveStatus?.currentPlayers || 0,
     maxPlayers: s.liveStatus?.maxPlayers || 0,
     votes: s.metrics?.votes || 0,
     rating: s.metrics?.rating || 0,
   }));
 
-  // Hero Slider should only get EterShop Partners (or top servers if no partners)
-  let partnerServers = serializedServers.filter(s => s.isEterShopPartner);
-  if (partnerServers.length === 0) partnerServers = serializedServers.slice(0, 3); // Fallback
+  const serializedTrending = serialize(trendingServers);
+  const serializedTopRated = serialize(topRatedServers);
+  const serializedNewest = serialize(newestServers);
+
+  // Hero Slider should only get EterShop Partners (or top trending servers if no partners)
+  let partnerServers = serializedTrending.filter(s => s.isEterShopPartner);
+  if (partnerServers.length === 0) partnerServers = serializedTrending.slice(0, 3); // Fallback
 
   return (
     <main className="relative min-h-screen flex flex-col items-center pt-32 pb-24 px-6 lg:px-24 overflow-x-hidden">
@@ -58,26 +67,73 @@ export default async function Home() {
       {/* Divider */}
       <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent my-20" />
 
-      {/* Trending Servers Grid */}
-      <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 relative z-10">
-        <div className="flex items-end justify-between border-b border-white/5 pb-4">
-          <h2 className="text-2xl font-display font-semibold text-eter-starlight flex items-center gap-2">
-            Trending This Week
-          </h2>
-          <a href="#" className="text-sm font-mono text-eter-cyan hover:text-cyan-300 transition-colors duration-smooth border-b border-eter-cyan/30 hover:border-cyan-300 pb-0.5">View Directory</a>
-        </div>
+      {/* --- Grids Container --- */}
+      <div className="w-full max-w-7xl mx-auto flex flex-col gap-24 relative z-10">
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-          {serializedServers.length > 0 ? (
-             serializedServers.map((server) => (
-               <ServerCard key={server.slug} {...server as any} />
-             ))
-          ) : (
-            <div className="col-span-full py-20 text-center text-zinc-500 font-mono">
-              No servers available in the database yet.
-            </div>
-          )}
+        {/* 1. Trending Servers Grid */}
+        <div className="flex flex-col gap-8 w-full">
+          <div className="flex items-end justify-between border-b border-white/5 pb-4">
+            <h2 className="text-2xl font-display font-semibold text-eter-starlight flex items-center gap-2">
+              Trending This Week
+            </h2>
+            <a href="#" className="text-sm font-mono text-eter-cyan hover:text-cyan-300 transition-colors duration-smooth border-b border-eter-cyan/30 hover:border-cyan-300 pb-0.5">View Directory</a>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            {serializedTrending.length > 0 ? (
+               serializedTrending.map((server) => (
+                 <ServerCard key={server.slug} {...server as any} />
+               ))
+            ) : (
+              <div className="col-span-full py-20 text-center text-zinc-500 font-mono">
+                No servers available in the database yet.
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* 2. Top Rated Grid */}
+        <div className="flex flex-col gap-8 w-full">
+          <div className="flex items-end justify-between border-b border-white/5 pb-4">
+            <h2 className="text-2xl font-display font-semibold text-eter-starlight flex items-center gap-2">
+              Top Rated Servers
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            {serializedTopRated.length > 0 ? (
+               serializedTopRated.map((server) => (
+                 <ServerCard key={server.slug} {...server as any} />
+               ))
+            ) : (
+              <div className="col-span-full py-20 text-center text-zinc-500 font-mono">
+                No servers available in the database yet.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 3. Newest Servers Grid */}
+        <div className="flex flex-col gap-8 w-full">
+          <div className="flex items-end justify-between border-b border-white/5 pb-4">
+            <h2 className="text-2xl font-display font-semibold text-eter-starlight flex items-center gap-2">
+              Recently Discovered
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            {serializedNewest.length > 0 ? (
+               serializedNewest.map((server) => (
+                 <ServerCard key={server.slug} {...server as any} />
+               ))
+            ) : (
+              <div className="col-span-full py-20 text-center text-zinc-500 font-mono">
+                No servers available in the database yet.
+              </div>
+            )}
+          </div>
+        </div>
+
       </div>
 
     </main>
