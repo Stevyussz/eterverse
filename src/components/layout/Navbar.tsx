@@ -1,12 +1,13 @@
 "use client";
 
-import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Cube, DiscordLogo } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 
 export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: boolean, isAdmin?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +16,8 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const isDashboardOrAdmin = pathname?.startsWith("/dashboard") || pathname?.startsWith("/admin");
 
   return (
     <nav
@@ -39,23 +42,27 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
         </Link>
 
         {/* Links */}
-        <div className="hidden md:flex items-center gap-8">
-          <Link href="/" className="text-sm font-medium text-zinc-400 hover:text-eter-starlight transition-colors duration-smooth">
-            Home
-          </Link>
-          <Link href="/discover" className="text-sm font-medium text-zinc-400 hover:text-eter-starlight transition-colors duration-smooth">
-            Discover
-          </Link>
-          <Link href="/etershop" className="text-sm font-medium flex items-center gap-1.5 text-zinc-400 hover:text-eter-gold transition-colors duration-smooth">
-            EterShop
-          </Link>
-        </div>
+        {!isDashboardOrAdmin && (
+          <div className="hidden md:flex items-center gap-8">
+            <Link href="/" className="text-sm font-medium text-zinc-400 hover:text-eter-starlight transition-colors duration-smooth">
+              Home
+            </Link>
+            <Link href="/discover" className="text-sm font-medium text-zinc-400 hover:text-eter-starlight transition-colors duration-smooth">
+              Discover
+            </Link>
+            <Link href="/etershop" className="text-sm font-medium flex items-center gap-1.5 text-zinc-400 hover:text-eter-gold transition-colors duration-smooth">
+              EterShop
+            </Link>
+          </div>
+        )}
 
         {/* Auth / CTA */}
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/server/new" className="hidden sm:block text-sm font-medium text-eter-starlight hover:text-eter-cyan transition-colors duration-smooth">
-            Submit Server
-          </Link>
+          {!isDashboardOrAdmin && (
+            <Link href="/dashboard/server/new" className="hidden sm:block text-sm font-medium text-eter-starlight hover:text-eter-cyan transition-colors duration-smooth">
+              Submit Server
+            </Link>
+          )}
           
           {isLoggedIn ? (
             <div className="flex items-center gap-2">

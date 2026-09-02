@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Spinner } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { ImageUploader } from "@/components/ui/ImageUploader";
+import { MarkdownTextarea } from "@/components/ui/MarkdownTextarea";
 
 export function ServerSubmitForm({ action }: { action: (formData: FormData) => Promise<void> }) {
   const [isPending, setIsPending] = useState(false);
@@ -64,9 +65,13 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
       <div className="flex flex-col gap-2">
         <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest flex items-center justify-between">
           <span>Description</span>
-          <span className="bg-eter-cyan/10 text-eter-cyan px-2 py-0.5 rounded-full text-[9px]">Markdown Supported</span>
+          <span className="bg-eter-cyan/10 text-eter-cyan px-2 py-0.5 rounded-sm text-[10px] font-semibold">Markdown Supported</span>
         </label>
-        <textarea name="description" required rows={6} className="bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-sm text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors font-mono" placeholder="Use Markdown to style your description...&#10;&#10;## Features&#10;- Custom Enchants&#10;- Economy&#10;**Join now!**" />
+        <MarkdownTextarea 
+          name="description" 
+          required 
+          placeholder="Use Markdown to style your description...&#10;&#10;## Features&#10;- Custom Enchants&#10;- Economy&#10;&#10;**Join now!**"
+        />
       </div>
 
       <div className="flex flex-col gap-2">

@@ -28,6 +28,8 @@ export const metadata: Metadata = {
   description: "Temukan server Minecraft terbaik di EterVerse.",
 };
 
+import { BackgroundController } from "@/components/layout/BackgroundController";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -44,11 +46,7 @@ export default async function RootLayout({
       <body
         className={`${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <div className="bg-vignette"></div>
-        <picture>
-          <source media="(max-width: 768px)" srcSet="/wallpaper-mobile.png" />
-          <img src="/wallpaper.png" className="bg-wallpaper" alt="EterVerse Wallpaper" />
-        </picture>
+        <BackgroundController />
         <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
         {children}
         <Toaster theme="dark" position="bottom-right" />
