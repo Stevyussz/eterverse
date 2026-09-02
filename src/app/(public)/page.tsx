@@ -44,12 +44,6 @@ export default async function Home() {
       {/* Search Header Area */}
       <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto space-y-4 w-full mb-10">
         
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 border-l-2 border-l-eter-cyan border-y border-r border-y-white/10 border-r-white/10 bg-[#050505]/80 backdrop-blur-md text-[11px] font-mono font-medium text-eter-starlight uppercase tracking-widest">
-          <Lightning weight="fill" size={14} className="text-eter-cyan" />
-          FULL PRODUCTION: LIVE DATABASE
-        </div>
-        
         {/* Typographical Contrast (Display vs Mono) */}
         <h1 className="text-3xl md:text-4xl font-display font-medium tracking-tight text-eter-starlight">
           Find Your Perfect Server.

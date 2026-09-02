@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { TextBolder, TextItalic, TextStrikethrough, ListBullets, ListNumbers, Link as LinkIcon, Quotes } from "@phosphor-icons/react";
+import { TextB, TextItalic, TextStrikethrough, ListBullets, ListNumbers, Link as LinkIcon, Quotes } from "@phosphor-icons/react";
 
 interface MarkdownTextareaProps {
   name: string;
@@ -43,7 +43,7 @@ export function MarkdownTextarea({ name, placeholder, defaultValue, required }: 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-1 p-2 border-b border-white/5 bg-white/[0.02]">
         <ToolbarButton 
-          icon={<TextBolder size={18} />} 
+          icon={<TextB size={18} />} 
           onClick={(e) => handleToolbarClick(e, "**", "**")} 
           title="Bold" 
         />
