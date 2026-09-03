@@ -18,7 +18,8 @@ interface VideoUploaderProps {
 
 type UploadState = "idle" | "uploading" | "success" | "error";
 
-const MAX_FILE_SIZE_MB = 15;
+const MAX_FILE_SIZE_MB = 100;
+const MAX_DURATION_SECONDS = 60;
 const ALLOWED_TYPES = ["video/mp4", "video/webm"];
 const ALLOWED_EXT_LABEL = ".mp4 / .webm";
 
@@ -46,6 +47,25 @@ export function VideoUploader({ name, defaultValue }: VideoUploaderProps) {
     }
     if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
       toast.error(`Ukuran file terlalu besar! Maksimal ${MAX_FILE_SIZE_MB}MB.`);
+      return;
+    }
+
+    // Validate duration via HTML5 video metadata (no upload needed)
+    const duration = await new Promise<number>((resolve) => {
+      const vid = document.createElement("video");
+      vid.preload = "metadata";
+      vid.onloadedmetadata = () => {
+        URL.revokeObjectURL(vid.src);
+        resolve(vid.duration);
+      };
+      vid.onerror = () => resolve(0);
+      vid.src = URL.createObjectURL(file);
+    });
+
+    if (duration > MAX_DURATION_SECONDS) {
+      toast.error(
+        `Durasi video terlalu panjang! Maksimal ${MAX_DURATION_SECONDS} detik (${(duration).toFixed(0)} detik terdeteksi).`
+      );
       return;
     }
 
@@ -303,7 +323,7 @@ export function VideoUploader({ name, defaultValue }: VideoUploaderProps) {
                     )}
                   </p>
                   <p className="text-[10px] text-zinc-500 font-mono mt-1 uppercase tracking-widest">
-                    {ALLOWED_EXT_LABEL} · Maks {MAX_FILE_SIZE_MB}MB
+                    {ALLOWED_EXT_LABEL} · Maks {MAX_FILE_SIZE_MB}MB · Maks {MAX_DURATION_SECONDS}dtk
                   </p>
                 </div>
               </div>
