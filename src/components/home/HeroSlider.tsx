@@ -5,6 +5,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ServerCard } from "@/components/server/ServerCard";
 import { CaretLeft, CaretRight, Star } from "@phosphor-icons/react";
+import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
 
 export function HeroSlider({ servers }: { servers: any[] }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
@@ -51,12 +52,9 @@ export function HeroSlider({ servers }: { servers: any[] }) {
               <div className="absolute right-0 top-0 w-full md:w-2/3 h-full z-10 pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/95 via-[#050505]/50 to-transparent z-10" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-10 opacity-60" />
-                <video
-                  src={server.videoUrl}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
+                <BackgroundVideo
+                  videoUrl={server.videoUrl}
+                  autoPlay={true}
                   className="absolute inset-0 w-full h-full object-cover opacity-70"
                 />
               </div>

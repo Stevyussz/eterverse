@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Users, Star, CaretUp, Trophy } from "@phosphor-icons/react";
 import Link from "next/link";
+import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
 
 interface ServerCardProps {
   name: string;
@@ -69,19 +70,12 @@ export function ServerCard({
     if (window.matchMedia("(pointer: coarse)").matches) return;
     
     setIsHovered(true);
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {});
-    }
   };
 
   const handleMouseLeave = () => {
     if (window.matchMedia("(pointer: coarse)").matches) return;
     
     setIsHovered(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
   };
 
   return (
@@ -93,13 +87,10 @@ export function ServerCard({
       onMouseLeave={handleMouseLeave}
     >
       {/* Video Background */}
-      <video
-        ref={videoRef}
-        src={videoUrl}
-        muted
-        loop
-        playsInline
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-smooth ${isHovered ? 'opacity-100' : 'opacity-40'}`}
+      <BackgroundVideo 
+        videoUrl={videoUrl} 
+        isHovered={isHovered} 
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-smooth ${isHovered ? 'opacity-100' : 'opacity-40'}`} 
       />
       
       {/* Gradient Overlay for Readability */}
