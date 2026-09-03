@@ -2,7 +2,8 @@ import { auth } from "@/auth";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import Link from "next/link";
-import { ChartLineUp, Users, CursorClick, Clock, CheckCircle, Eye, PencilSimple, WarningCircle } from "@phosphor-icons/react/dist/ssr";
+import { ChartLineUp, Users, CursorClick, Clock, CheckCircle, Eye, PencilSimple, WarningCircle, Trash } from "@phosphor-icons/react/dist/ssr";
+import { revalidatePath } from "next/cache";
 
 export default async function DashboardOverview() {
   const session = await auth();
@@ -18,6 +19,18 @@ export default async function DashboardOverview() {
   const totalClicks = myServers.reduce((acc, s) => acc + (s.metrics?.clicks || 0), 0);
   const approvedCount = myServers.filter(s => s.moderationStatus === 'APPROVED').length;
   const pendingCount = myServers.filter(s => s.moderationStatus === 'PENDING').length;
+
+  async function deleteMyServer(formData: FormData) {
+    "use server";
+    const serverId = formData.get("serverId") as string;
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Unauthorized");
+
+    await connectToDatabase();
+    // Only delete if the user owns it
+    await Server.findOneAndDelete({ _id: serverId, ownerId: session.user.id });
+    revalidatePath("/dashboard");
+  }
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
@@ -86,6 +99,18 @@ export default async function DashboardOverview() {
                     >
                       <PencilSimple size={14} /> Edit
                     </Link>
+                    <form action={deleteMyServer}>
+                      <input type="hidden" name="serverId" value={server._id.toString()} />
+                      <button 
+                        type="submit"
+                        onClick={(e) => {
+                          if (!confirm("Are you sure you want to delete this server? This action cannot be undone.")) e.preventDefault();
+                        }}
+                        className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 px-3 py-1.5 rounded-sm transition-colors"
+                      >
+                        <Trash size={14} /> Delete
+                      </button>
+                    </form>
                     {server.moderationStatus === 'APPROVED' && (
                       <Link 
                         href={`/server/${server.slug}`}

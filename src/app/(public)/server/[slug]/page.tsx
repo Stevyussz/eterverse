@@ -10,7 +10,7 @@ import { CopyIPButton } from "@/components/server/CopyIPButton";
 import { VoteButton } from "@/components/server/VoteButton";
 import { StarRating } from "@/components/server/StarRating";
 import { ImpressionTracker } from "@/components/server/ImpressionTracker";
-import { Users, Trophy, DiscordLogo, WhatsappLogo, TelegramLogo, Globe, Image as ImageIcon } from "@phosphor-icons/react/dist/ssr";
+import { Users, Trophy, DiscordLogo, WhatsappLogo, TelegramLogo, Globe, Image as ImageIcon, VideoCamera } from "@phosphor-icons/react/dist/ssr";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -57,6 +57,14 @@ export default async function ServerProfilePage(props: Props) {
 
   const defaultBanner = "/dashboard-bg.png";
   const defaultLogo = "/icon-placeholder.png";
+
+  const getYoutubeId = (url: string) => {
+    if (!url) return null;
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+    return match ? match[1] : null;
+  };
+
+  const ytId = getYoutubeId(serverData.videoUrl);
 
   return (
     <>
@@ -127,6 +135,32 @@ export default async function ServerProfilePage(props: Props) {
               </div>
               <CopyIPButton ipAddress={serverData.ipAddress} />
             </div>
+
+            {/* Video Trailer */}
+            {serverData.videoUrl && (
+              <div className="mt-4 bg-black/40 border border-white/5 rounded-xl overflow-hidden shadow-lg aspect-video relative group">
+                <div className="absolute top-4 left-4 z-10 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 text-xs font-mono font-medium text-eter-starlight flex items-center gap-2 pointer-events-none">
+                   <VideoCamera size={16} className="text-eter-cyan" /> Official Trailer
+                </div>
+                {ytId ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${ytId}?autoplay=0&rel=0`}
+                    className="w-full h-full object-cover"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    style={{ border: 0 }}
+                  />
+                ) : (
+                  <video 
+                    src={serverData.videoUrl} 
+                    controls 
+                    preload="metadata"
+                    className="w-full h-full object-contain bg-black"
+                    poster={serverData.bannerUrl || defaultBanner}
+                  />
+                )}
+              </div>
+            )}
             
             {/* Markdown Description */}
             <div className="bg-black/40 border border-white/5 rounded-xl p-5 sm:p-8 mt-2 shadow-lg">
