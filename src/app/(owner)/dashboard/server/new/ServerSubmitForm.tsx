@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Spinner } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { ImageUploader } from "@/components/ui/ImageUploader";
+import { VideoUploader } from "@/components/ui/VideoUploader";
 import { MarkdownTextarea } from "@/components/ui/MarkdownTextarea";
 
 export function ServerSubmitForm({ action }: { action: (formData: FormData) => Promise<void> }) {
@@ -72,12 +73,12 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
       <div className="flex flex-col gap-2">
         <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest flex items-center justify-between">
           <span>Description</span>
-          <span className="bg-eter-cyan/10 text-eter-cyan px-2 py-0.5 rounded-sm text-[10px] font-semibold">Markdown Supported</span>
+          <span className="bg-eter-cyan/10 text-eter-cyan px-2 py-0.5 rounded-sm text-[10px] font-semibold">Rich Text</span>
         </label>
         <MarkdownTextarea 
           name="description" 
           required 
-          placeholder="Use Markdown to style your description...&#10;&#10;## Features&#10;- Custom Enchants&#10;- Economy&#10;&#10;**Join now!**"
+          placeholder="Tulis deskripsi server Anda dengan memukau..."
         />
       </div>
 
@@ -86,13 +87,12 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
         <input name="tags" required type="text" className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" placeholder="Survival, Lifesteal, Economy" />
       </div>
       
-      <div className="flex flex-col gap-2">
-        <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest flex items-center justify-between">
-          <span>Trailer Video URL</span>
-          <span className="bg-white/5 text-zinc-400 px-2 py-0.5 rounded-sm text-[10px]">YouTube Recommended</span>
-        </label>
-        <input name="videoUrl" required type="url" className="bg-black/50 border border-white/10 rounded-sm px-4 py-2.5 text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors" placeholder="https://youtube.com/watch?v=..." />
-        <p className="text-[10px] text-zinc-500 font-mono">Untuk performa dan keamanan terbaik, kami sangat merekomendasikan menggunakan link YouTube.</p>
+      <div className="flex flex-col gap-4 p-6 border border-white/10 rounded-sm bg-white/[0.01]">
+        <h3 className="text-sm font-display font-medium text-eter-starlight flex items-center gap-2">
+          Trailer Video
+        </h3>
+        <p className="text-xs text-zinc-500 font-body mb-2">Upload trailer server Anda (.mp4, max 50MB) untuk tampil memukau.</p>
+        <VideoUploader name="videoUrl" />
       </div>
 
       <div className="flex flex-col gap-4 p-6 border border-white/10 rounded-sm bg-white/[0.01]">
