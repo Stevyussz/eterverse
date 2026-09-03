@@ -39,13 +39,13 @@ export default async function Home() {
   if (partnerServers.length === 0) partnerServers = serializedTrending.slice(0, 3); // Fallback
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center pt-32 pb-24 px-6 lg:px-24 overflow-x-hidden">
+    <main className="relative min-h-screen flex flex-col items-center pt-28 md:pt-36 pb-24 px-4 sm:px-6 lg:px-24 overflow-x-hidden">
       
       {/* Search Header Area */}
       <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto space-y-4 w-full mb-10">
         
         {/* Typographical Contrast (Display vs Mono) */}
-        <h1 className="text-3xl md:text-4xl font-display font-medium tracking-tight text-eter-starlight">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold tracking-tight text-eter-starlight">
           Find Your Perfect Server.
         </h1>
 
@@ -73,7 +73,7 @@ export default async function Home() {
             <a href="/discover" className="text-sm font-mono text-eter-cyan hover:text-cyan-300 transition-colors duration-smooth border-b border-eter-cyan/30 hover:border-cyan-300 pb-0.5">View Directory →</a>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full">
             {serializedTrending.length > 0 ? (
                serializedTrending.map((server) => (
                  <ServerCard key={server.slug} {...server as any} />
@@ -94,7 +94,7 @@ export default async function Home() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full">
             {serializedTopRated.length > 0 ? (
                serializedTopRated.map((server) => (
                  <ServerCard key={server.slug} {...server as any} />
@@ -115,7 +115,7 @@ export default async function Home() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full">
             {serializedNewest.length > 0 ? (
                serializedNewest.map((server) => (
                  <ServerCard key={server.slug} {...server as any} />

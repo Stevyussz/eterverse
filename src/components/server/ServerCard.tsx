@@ -88,7 +88,7 @@ export function ServerCard({
     <Link 
       href={`/server/${slug}`}
       ref={cardRef}
-      className="group relative flex flex-col aspect-[9/16] rounded-lg overflow-hidden border border-white/10 bg-eter-abyss hover:border-white/30 transition-colors duration-smooth"
+      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-lg overflow-hidden border border-white/10 bg-eter-abyss hover:border-white/30 transition-colors duration-smooth"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -115,7 +115,7 @@ export function ServerCard({
         )}
         <div className="ml-auto flex flex-col gap-1.5 items-end">
            {tags.slice(0,2).map(tag => (
-             <span key={tag} className="bg-black/80 backdrop-blur-sm border-l-2 border-l-eter-cyan border-y border-r border-white/10 text-[9px] font-mono font-medium text-zinc-300 px-2 py-0.5 uppercase tracking-wider">
+             <span key={tag} className="bg-black/80 backdrop-blur-sm border-l-2 border-l-eter-cyan border-y border-r border-white/10 text-[8px] sm:text-[9px] font-mono font-medium text-zinc-300 px-1.5 sm:px-2 py-0.5 uppercase tracking-wider">
                {tag}
              </span>
            ))}
@@ -123,24 +123,24 @@ export function ServerCard({
       </div>
 
       {/* Bottom Content */}
-      <div className="relative z-10 mt-auto p-4 flex flex-col gap-3">
-        <h3 className="font-display text-xl font-semibold text-eter-starlight leading-tight group-hover:text-eter-cyan transition-colors duration-smooth">
+      <div className="relative z-10 mt-auto p-3 sm:p-4 flex flex-col gap-2 sm:gap-3">
+        <h3 className="font-display text-lg sm:text-xl font-semibold text-eter-starlight leading-tight group-hover:text-eter-cyan transition-colors duration-smooth line-clamp-2">
           {name}
         </h3>
         
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 font-mono text-xs text-zinc-300">
-            <Users weight="fill" className="text-eter-cyan" size={16} />
+        <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+          <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300">
+            <Users weight="fill" className="text-eter-cyan" size={14} />
             <span>{onlinePlayers.toLocaleString()} / {maxPlayers.toLocaleString()}</span>
           </div>
           
-          <div className="flex items-center gap-1.5 font-mono text-xs text-zinc-300">
-            <CaretUp weight="bold" className="text-eter-starlight" size={16} />
+          <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300">
+            <CaretUp weight="bold" className="text-eter-starlight" size={14} />
             <span>{votes.toLocaleString()}</span>
           </div>
           
-          <div className="flex items-center gap-1.5 font-mono text-xs text-zinc-300 ml-auto">
-            <Star weight="fill" className="text-eter-gold" size={16} />
+          <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300 ml-auto">
+            <Star weight="fill" className="text-eter-gold" size={14} />
             <span>{rating.toFixed(1)}</span>
           </div>
         </div>

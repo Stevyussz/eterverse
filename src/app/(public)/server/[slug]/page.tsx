@@ -73,17 +73,17 @@ export default async function ServerProfilePage(props: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/40 to-transparent"></div>
       </div>
 
-      <main className="relative min-h-screen px-6 lg:px-24 pb-24 -mt-24">
+      <main className="relative min-h-screen px-4 sm:px-6 lg:px-24 pb-24 -mt-24">
         
         {/* Profile Content */}
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-10">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-10">
           
           {/* Main Info */}
           <div className="flex-1 flex flex-col gap-6">
             
             {/* Header: Logo & Title */}
             <div className="flex flex-col md:flex-row md:items-end gap-6 relative z-10">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl bg-black border-4 border-[#09090b] shadow-2xl overflow-hidden shrink-0">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-2xl bg-black border-4 border-[#09090b] shadow-2xl overflow-hidden shrink-0">
                 <img 
                   src={serverData.logoUrl || defaultLogo} 
                   alt={`${serverData.name} Logo`} 
@@ -93,7 +93,7 @@ export default async function ServerProfilePage(props: Props) {
               
               <div className="flex flex-col gap-2 pb-2">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-4xl md:text-5xl font-display font-semibold text-eter-starlight">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold text-eter-starlight">
                     {serverData.name}
                   </h1>
                   {serverData.isEterShopPartner && (
@@ -120,7 +120,7 @@ export default async function ServerProfilePage(props: Props) {
             <div className="bg-[#050505]/80 border border-white/10 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 shadow-xl">
               <div className="flex flex-col">
                 <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest mb-1">Server IP Address</span>
-                <span className="text-2xl font-mono font-semibold text-eter-cyan">{serverData.ipAddress}</span>
+                <span className="text-lg sm:text-2xl font-mono font-semibold text-eter-cyan break-all">{serverData.ipAddress}</span>
                 {serverData.port && serverData.port !== 25565 && (
                   <span className="text-xs font-mono text-zinc-500 mt-0.5">Port: {serverData.port}</span>
                 )}
@@ -129,7 +129,7 @@ export default async function ServerProfilePage(props: Props) {
             </div>
             
             {/* Markdown Description */}
-            <div className="bg-black/40 border border-white/5 rounded-xl p-8 mt-2 shadow-lg">
+            <div className="bg-black/40 border border-white/5 rounded-xl p-5 sm:p-8 mt-2 shadow-lg">
               <h2 className="text-xl font-display font-medium text-eter-starlight mb-6 border-b border-white/5 pb-4">About this Server</h2>
               <div className="prose prose-invert prose-cyan max-w-none font-body">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
