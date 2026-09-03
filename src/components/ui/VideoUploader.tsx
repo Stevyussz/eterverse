@@ -1,7 +1,14 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { UploadSimple, X, CheckCircle, VideoCamera, Spinner } from "@phosphor-icons/react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import {
+  UploadSimple,
+  X,
+  CheckCircle,
+  VideoCamera,
+  FilmSlate,
+  Warning,
+} from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 interface VideoUploaderProps {
@@ -9,167 +16,335 @@ interface VideoUploaderProps {
   defaultValue?: string;
 }
 
+type UploadState = "idle" | "uploading" | "success" | "error";
+
+const MAX_FILE_SIZE_MB = 15;
+const ALLOWED_TYPES = ["video/mp4", "video/webm"];
+const ALLOWED_EXT_LABEL = ".mp4 / .webm";
+
 export function VideoUploader({ name, defaultValue }: VideoUploaderProps) {
   const [videoUrl, setVideoUrl] = useState<string>(defaultValue || "");
-  const [isUploading, setIsUploading] = useState(false);
+  const [uploadState, setUploadState] = useState<UploadState>("idle");
   const [progress, setProgress] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [fileName, setFileName] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const xhrRef = useRef<XMLHttpRequest | null>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Clean up XHR on unmount
+  useEffect(() => {
+    return () => {
+      xhrRef.current?.abort();
+    };
+  }, []);
 
-    if (file.type !== "video/mp4") {
-      toast.error("Hanya file berformat .mp4 yang diizinkan.");
+  const uploadFile = useCallback(async (file: File) => {
+    // ── Strict Frontend Validation ───────────────────────────────────────────
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error(`Format tidak didukung. Gunakan ${ALLOWED_EXT_LABEL}.`);
       return;
     }
-    
-    // Max 50MB
-    if (file.size > 50 * 1024 * 1024) {
-      toast.error("Ukuran file video terlalu besar! Maksimal 50MB.");
-      return;
-    }
-
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-    if (!cloudName || !uploadPreset) {
-      toast.error("Konfigurasi Cloudinary belum diatur di .env.local!");
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      toast.error(`Ukuran file terlalu besar! Maksimal ${MAX_FILE_SIZE_MB}MB.`);
       return;
     }
 
-    setIsUploading(true);
+    setFileName(file.name);
+    setUploadState("uploading");
     setProgress(0);
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", uploadPreset);
-
     try {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`, true);
+      // ── Step 1: Fetch signed parameters from our secure API route ─────────
+      const sigRes = await fetch("/api/cloudinary/signature", {
+        method: "POST",
+      });
+      if (!sigRes.ok) {
+        throw new Error("Gagal mendapatkan izin upload. Coba login ulang.");
+      }
+      const sigData = await sigRes.json();
 
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percentComplete = Math.round((event.loaded / event.total) * 100);
-          setProgress(percentComplete);
-        }
-      };
+      // ── Step 2: Build FormData with signed params ─────────────────────────
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("api_key", sigData.api_key);
+      formData.append("timestamp", String(sigData.timestamp));
+      formData.append("signature", sigData.signature);
+      formData.append("folder", sigData.folder);
+      formData.append("eager", sigData.eager);
+      formData.append("eager_async", sigData.eager_async);
 
-      xhr.onload = () => {
-        setIsUploading(false);
-        if (xhr.status === 200) {
-          const response = JSON.parse(xhr.responseText);
-          setVideoUrl(response.secure_url);
-          toast.success("Video berhasil diupload!");
-        } else {
-          toast.error("Gagal mengupload video.");
-        }
-      };
+      // ── Step 3: Upload directly from browser to Cloudinary ────────────────
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhrRef.current = xhr;
 
-      xhr.onerror = () => {
-        setIsUploading(false);
-        toast.error("Terjadi kesalahan jaringan saat upload.");
-      };
+        xhr.open(
+          "POST",
+          `https://api.cloudinary.com/v1_1/${sigData.cloud_name}/video/upload`,
+          true
+        );
 
-      xhr.send(formData);
-    } catch (error) {
-      console.error(error);
-      setIsUploading(false);
-      toast.error("Gagal mengupload video.");
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            setProgress(Math.round((event.loaded / event.total) * 100));
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            // ── Cloudinary Optimization: use eager URL (f_auto, q_auto, w_720)
+            // If eager not ready yet, fall back to secure_url with manual params
+            const optimizedUrl =
+              response.eager?.[0]?.secure_url ||
+              response.secure_url.replace(
+                "/upload/",
+                "/upload/c_limit,w_720,f_auto,q_auto/"
+              );
+            setVideoUrl(optimizedUrl);
+            setUploadState("success");
+            toast.success("Trailer berhasil diupload! 🎬");
+            resolve();
+          } else {
+            reject(new Error("Upload ke Cloudinary gagal."));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Terjadi kesalahan jaringan."));
+        xhr.onabort = () => reject(new Error("Upload dibatalkan."));
+        xhr.send(formData);
+      });
+    } catch (err: any) {
+      console.error(err);
+      setUploadState("error");
+      setProgress(0);
+      toast.error(err.message || "Upload gagal. Silakan coba lagi.");
     }
+  }, []);
+
+  // ── Drag & Drop Handlers ────────────────────────────────────────────────────
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only trigger if leaving the drop zone itself (not a child)
+    if (e.currentTarget === e.target) setIsDragging(false);
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      const file = e.dataTransfer.files?.[0];
+      if (file) uploadFile(file);
+    },
+    [uploadFile]
+  );
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) uploadFile(file);
   };
 
-  const removeVideo = () => {
+  const handleReset = () => {
+    xhrRef.current?.abort();
     setVideoUrl("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    setUploadState("idle");
+    setProgress(0);
+    setFileName("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // ── URL state applies to both uploaded video and YouTube fallback ───────────
+  const handleYouTubeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVideoUrl(e.target.value);
+    if (e.target.value) setUploadState("success");
+    else setUploadState("idle");
   };
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Hidden input to pass URL to form action */}
+      {/* Hidden input carries the final URL to the parent FormData */}
       <input type="hidden" name={name} value={videoUrl} />
 
-      {!videoUrl ? (
-        <div 
-          onClick={() => !isUploading && fileInputRef.current?.click()}
-          className={`border-2 border-dashed ${isUploading ? 'border-eter-cyan/50 bg-eter-cyan/5' : 'border-white/10 hover:border-white/30 hover:bg-white/5'} rounded-sm flex flex-col items-center justify-center p-8 cursor-pointer transition-all min-h-[160px] relative overflow-hidden`}
-        >
-          {isUploading ? (
-            <div className="flex flex-col items-center gap-4 z-10 w-full max-w-[200px]">
-              <Spinner size={32} className="text-eter-cyan animate-spin" />
-              <div className="w-full bg-black/50 rounded-full h-1.5 overflow-hidden">
-                <div 
-                  className="bg-eter-cyan h-full transition-all duration-300 ease-out" 
-                  style={{ width: `${progress}%` }} 
-                />
-              </div>
-              <p className="text-xs font-mono text-eter-cyan">Mengunggah... {progress}%</p>
+      {/* ── PREVIEW STATE ──────────────────────────────────────────────────── */}
+      {uploadState === "success" && videoUrl ? (
+        <div className="flex flex-col gap-3">
+          <div className="relative rounded-sm border border-white/10 bg-black overflow-hidden aspect-video group">
+            <video
+              src={videoUrl}
+              controls
+              preload="metadata"
+              className="w-full h-full object-contain"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            <div className="absolute top-2 right-2 flex items-center gap-2">
+              <span className="bg-green-500/90 text-black px-2 py-1 rounded-sm text-[10px] font-bold flex items-center gap-1 backdrop-blur-sm shadow-lg">
+                <CheckCircle size={11} weight="fill" /> Tersimpan
+              </span>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="bg-black/70 text-white p-1.5 rounded-sm hover:bg-red-500/80 transition-colors backdrop-blur-sm border border-white/10"
+                title="Hapus video"
+              >
+                <X size={13} weight="bold" />
+              </button>
             </div>
-          ) : (
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-2">
-                <UploadSimple size={24} className="text-zinc-400" />
-              </div>
-              <p className="text-sm font-medium text-eter-starlight">Pilih Video Trailer (.mp4)</p>
-              <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Max 50MB</p>
-            </div>
-          )}
-          
-          <input 
-            type="file" 
-            accept="video/mp4" 
-            className="hidden" 
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            disabled={isUploading}
-          />
+          </div>
+          <p className="text-[10px] font-mono text-zinc-500 text-center">
+            {fileName || "Video dari URL"} · Telah dioptimasi otomatis (720p, kompresi cerdas)
+          </p>
         </div>
       ) : (
-        <div className="relative rounded-sm border border-white/10 overflow-hidden bg-black aspect-video group">
-          <video 
-            src={videoUrl} 
-            controls 
-            className="w-full h-full object-contain"
-          />
-          <div className="absolute top-2 right-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="bg-green-500/90 text-black px-2 py-1 rounded-sm text-[10px] font-bold flex items-center gap-1 backdrop-blur-sm">
-              <CheckCircle size={12} weight="bold" /> Tersimpan
-            </span>
-            <button 
-              type="button"
-              onClick={removeVideo}
-              className="bg-red-500/90 text-white p-1 rounded-sm hover:bg-red-500 transition-colors backdrop-blur-sm"
-            >
-              <X size={14} weight="bold" />
-            </button>
-          </div>
-        </div>
-      )}
-      
-      {/* OR Fallback */}
-      {!videoUrl && !isUploading && (
-        <div className="flex flex-col gap-2 mt-2">
-          <div className="flex items-center gap-2">
-            <div className="h-px bg-white/10 flex-1"></div>
-            <span className="text-[10px] font-mono text-zinc-500 uppercase">ATAU GUNAKAN LINK YOUTUBE</span>
-            <div className="h-px bg-white/10 flex-1"></div>
-          </div>
-          <div className="flex relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">
-              <VideoCamera size={18} />
-            </div>
-            <input 
-              type="url" 
-              placeholder="https://youtube.com/watch?v=..."
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-              className="w-full bg-black/50 border border-white/10 rounded-sm pl-10 pr-4 py-2.5 text-sm text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors"
+        <>
+          {/* ── DROP ZONE ─────────────────────────────────────────────────── */}
+          <div
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onClick={() =>
+              uploadState !== "uploading" && fileInputRef.current?.click()
+            }
+            className={[
+              "border-2 border-dashed rounded-sm flex flex-col items-center justify-center p-8 min-h-[180px] relative overflow-hidden transition-all duration-200 select-none",
+              uploadState === "uploading"
+                ? "border-eter-cyan/60 bg-eter-cyan/5 cursor-wait"
+                : isDragging
+                ? "border-eter-cyan bg-eter-cyan/10 cursor-copy scale-[1.01] shadow-[0_0_30px_rgba(34,211,238,0.12)]"
+                : uploadState === "error"
+                ? "border-red-500/40 bg-red-500/5 cursor-pointer hover:border-red-400/60"
+                : "border-white/10 bg-white/[0.01] cursor-pointer hover:border-white/25 hover:bg-white/[0.03]",
+            ].join(" ")}
+          >
+            {uploadState === "uploading" ? (
+              // ── UPLOADING STATE ────────────────────────────────────────────
+              <div className="flex flex-col items-center gap-4 w-full max-w-[220px] pointer-events-none">
+                <div className="relative">
+                  <FilmSlate
+                    size={36}
+                    className="text-eter-cyan animate-pulse"
+                  />
+                </div>
+                <div className="w-full flex flex-col gap-1.5">
+                  <div className="w-full bg-black/60 rounded-full h-1.5 overflow-hidden border border-white/5">
+                    <div
+                      className="bg-gradient-to-r from-eter-cyan to-cyan-300 h-full rounded-full transition-all duration-300 ease-out relative"
+                      style={{ width: `${progress}%` }}
+                    >
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-[shimmer_1.5s_infinite]" />
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-[10px] font-mono text-zinc-400 truncate max-w-[160px]">
+                      {fileName}
+                    </p>
+                    <p className="text-[10px] font-mono text-eter-cyan font-bold">
+                      {progress}%
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs text-zinc-400">
+                  Mengupload langsung ke cloud...
+                </p>
+              </div>
+            ) : uploadState === "error" ? (
+              // ── ERROR STATE ────────────────────────────────────────────────
+              <div className="flex flex-col items-center gap-2 pointer-events-none">
+                <Warning size={32} className="text-red-400" weight="fill" />
+                <p className="text-sm font-medium text-red-400">
+                  Upload Gagal
+                </p>
+                <p className="text-xs text-zinc-500">
+                  Klik untuk coba lagi
+                </p>
+              </div>
+            ) : (
+              // ── IDLE / DRAG STATE ──────────────────────────────────────────
+              <div className="flex flex-col items-center gap-3 pointer-events-none">
+                <div
+                  className={[
+                    "w-14 h-14 rounded-sm flex items-center justify-center transition-all duration-200",
+                    isDragging
+                      ? "bg-eter-cyan/20 border border-eter-cyan/40"
+                      : "bg-white/5 border border-white/10",
+                  ].join(" ")}
+                >
+                  <UploadSimple
+                    size={26}
+                    className={isDragging ? "text-eter-cyan" : "text-zinc-400"}
+                    weight={isDragging ? "bold" : "regular"}
+                  />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-medium text-eter-starlight">
+                    {isDragging ? (
+                      <span className="text-eter-cyan">Lepaskan di sini!</span>
+                    ) : (
+                      <>
+                        Seret & Lepas video, atau{" "}
+                        <span className="text-eter-cyan underline underline-offset-2">
+                          pilih file
+                        </span>
+                      </>
+                    )}
+                  </p>
+                  <p className="text-[10px] text-zinc-500 font-mono mt-1 uppercase tracking-widest">
+                    {ALLOWED_EXT_LABEL} · Maks {MAX_FILE_SIZE_MB}MB
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <input
+              type="file"
+              accept={ALLOWED_TYPES.join(",")}
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleFileInputChange}
+              disabled={uploadState === "uploading"}
             />
           </div>
-        </div>
+
+          {/* ── YOUTUBE FALLBACK ──────────────────────────────────────────── */}
+          {uploadState !== "uploading" && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3">
+                <div className="h-px bg-white/8 flex-1" />
+                <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest whitespace-nowrap">
+                  atau tempel link YouTube
+                </span>
+                <div className="h-px bg-white/8 flex-1" />
+              </div>
+              <div className="relative flex items-center">
+                <VideoCamera
+                  size={16}
+                  className="absolute left-3 text-zinc-600 pointer-events-none"
+                />
+                <input
+                  type="url"
+                  placeholder="https://youtube.com/watch?v=..."
+                  value={videoUrl.startsWith("http") && !videoUrl.includes("cloudinary") ? videoUrl : ""}
+                  onChange={handleYouTubeInput}
+                  className="w-full bg-black/30 border border-white/8 rounded-sm pl-9 pr-4 py-2 text-xs text-eter-starlight placeholder:text-zinc-600 focus:border-eter-cyan/50 focus:outline-none transition-colors"
+                />
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
