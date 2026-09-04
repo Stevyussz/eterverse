@@ -27,22 +27,22 @@ export function CopyIPButton({ ipAddress }: { ipAddress: string }) {
   return (
     <button
       onClick={handleCopy}
-      className={`w-full sm:w-auto font-semibold px-8 py-4 rounded-md transition-all duration-300 shadow-[0_0_20px_rgba(34,211,238,0.3)] flex items-center justify-center gap-2
+      className={`w-full sm:w-auto font-medium text-sm px-6 py-3.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm active:scale-[0.98]
         ${copied
-          ? "bg-green-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.3)]"
-          : "bg-eter-cyan text-[#09090B] hover:bg-cyan-300"
+          ? "bg-emerald-600 text-white"
+          : "bg-white text-zinc-950 hover:bg-zinc-200"
         }
       `}
     >
       {copied ? (
         <>
-          <Check size={20} weight="bold" />
-          Copied!
+          <Check size={18} weight="bold" />
+          <span>Tersalin!</span>
         </>
       ) : (
         <>
-          <Copy size={20} weight="bold" />
-          Copy IP to Play
+          <Copy size={18} />
+          <span>Salin IP Server</span>
         </>
       )}
     </button>

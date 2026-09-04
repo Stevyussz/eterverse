@@ -91,7 +91,7 @@ export function MobileStickyActionBar({
             {serverName}
           </span>
           <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-400">
-            <Users size={11} className="text-eter-cyan shrink-0" weight="fill" />
+            <Users size={11} className="text-zinc-400 shrink-0" weight="fill" />
             <span>{currentPlayers.toLocaleString()} Online</span>
           </div>
         </div>
@@ -106,8 +106,8 @@ export function MobileStickyActionBar({
           aria-label="Vote Server"
           className={`h-9 px-2.5 rounded-lg border text-xs font-mono font-semibold flex items-center gap-1 transition-all ${
             voted
-              ? "bg-eter-cyan/15 border-eter-cyan/40 text-eter-cyan"
-              : "bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10 active:scale-95"
+              ? "bg-white/10 border-white/20 text-white"
+              : "bg-zinc-900/60 border-zinc-800 text-zinc-300 hover:bg-zinc-800 active:scale-95"
           }`}
           title="Vote Server"
         >
@@ -118,10 +118,10 @@ export function MobileStickyActionBar({
         {/* Copy IP CTA */}
         <button
           onClick={handleCopy}
-          className={`h-9 px-3.5 rounded-lg font-mono font-semibold text-xs transition-all duration-300 flex items-center gap-1.5 shadow-md active:scale-95 ${
+          className={`h-9 px-3.5 rounded-lg font-mono font-medium text-xs transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95 ${
             copied
-              ? "bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.4)]"
-              : "bg-eter-cyan text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.3)]"
+              ? "bg-emerald-600 text-white"
+              : "bg-white text-zinc-950 hover:bg-zinc-200"
           }`}
         >
           {copied ? (
@@ -131,7 +131,7 @@ export function MobileStickyActionBar({
             </>
           ) : (
             <>
-              <Copy size={14} weight="bold" />
+              <Copy size={14} />
               <span>Copy IP</span>
             </>
           )}

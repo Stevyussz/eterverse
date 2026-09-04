@@ -39,12 +39,12 @@ export function VoteButton({ slug, initialVotes }: VoteButtonProps) {
     <button
       onClick={handleVote}
       disabled={isDisabled}
-      className={`group flex flex-col items-center gap-1 px-5 py-3 rounded-xl border transition-all duration-300 min-w-[80px]
+      className={`group flex flex-col items-center gap-1 px-5 py-2.5 rounded-lg border transition-all duration-200 min-w-[76px]
         ${state === "voted"
-          ? "bg-eter-cyan/20 border-eter-cyan text-eter-cyan"
+          ? "bg-white/10 border-white/30 text-white"
           : state === "already"
-          ? "bg-white/5 border-white/10 text-zinc-500 cursor-not-allowed"
-          : "bg-white/5 border-white/10 text-zinc-300 hover:bg-eter-cyan/10 hover:border-eter-cyan/40 hover:text-eter-cyan"
+          ? "bg-zinc-900/40 border-zinc-800 text-zinc-500 cursor-not-allowed"
+          : "bg-zinc-900/40 border-zinc-800 text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700 hover:text-white"
         }
       `}
     >
