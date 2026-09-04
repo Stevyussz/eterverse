@@ -24,7 +24,7 @@ export async function POST() {
     folder: "eterverse/trailers",
     // Transformation: f_auto + q_auto + limit width to 720px for card UX
     // eager transformations bake the optimized version at upload time
-    eager: "c_limit,w_720,f_auto,q_auto",
+    eager: "c_limit,w_750,f_auto,q_auto",
     eager_async: "true",
   };
 
