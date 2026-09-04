@@ -44,43 +44,43 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
         
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group z-50">
-          <div className="w-9 h-9 rounded-lg bg-eter-cyan/10 border border-eter-cyan/30 flex items-center justify-center group-hover:border-eter-cyan group-hover:shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-all duration-300">
+          <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-white/25 group-hover:bg-white/10 transition-all duration-300">
             <Cube 
               weight="duotone" 
-              size={22} 
-              className="text-eter-cyan group-hover:rotate-12 transition-transform duration-300" 
+              size={20} 
+              className="text-zinc-200 group-hover:rotate-12 transition-transform duration-300" 
             />
           </div>
-          <span className="font-display font-bold text-xl tracking-tight text-eter-starlight">
-            Eter<span className="text-eter-cyan">Verse</span>
+          <span className="font-display font-bold text-xl tracking-tight text-white">
+            Eter<span className="text-zinc-400">Verse</span>
           </span>
         </Link>
 
         {/* Desktop Links */}
         {!isDashboardOrAdmin && (
-          <div className="hidden md:flex items-center gap-1 bg-black/40 border border-white/10 rounded-full px-4 py-1.5 backdrop-blur-md">
+          <div className="hidden md:flex items-center gap-1 bg-zinc-900/60 border border-zinc-800 rounded-full px-3 py-1 backdrop-blur-md">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative text-xs font-mono px-3.5 py-1 rounded-full transition-all duration-300 flex items-center gap-1.5 ${
+                  className={`relative text-xs font-mono px-3.5 py-1 rounded-full transition-all duration-200 flex items-center gap-1.5 ${
                     isActive
                       ? link.isGold
-                        ? "text-eter-gold bg-eter-gold/15 font-semibold shadow-[0_0_12px_rgba(234,179,8,0.3)]"
-                        : "text-eter-cyan bg-eter-cyan/15 font-semibold shadow-[0_0_12px_rgba(34,211,238,0.3)]"
+                        ? "text-amber-300 bg-amber-500/10 font-semibold"
+                        : "text-white bg-white/10 font-semibold"
                       : link.isGold
-                      ? "text-zinc-400 hover:text-eter-gold"
+                      ? "text-zinc-400 hover:text-amber-300"
                       : "text-zinc-400 hover:text-white"
                   }`}
                 >
-                  {link.isGold && <Sparkle size={12} weight="fill" className="text-eter-gold" />}
+                  {link.isGold && <Sparkle size={12} weight="fill" className="text-amber-400" />}
                   {link.label}
                   {isActive && (
                     <span
                       className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-0.5 rounded-full ${
-                        link.isGold ? "bg-eter-gold" : "bg-eter-cyan"
+                        link.isGold ? "bg-amber-400" : "bg-white"
                       }`}
                     />
                   )}
@@ -95,7 +95,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
           {!isDashboardOrAdmin && (
             <Link
               href="/dashboard/server/new"
-              className="hidden lg:inline-flex items-center gap-1.5 text-xs font-mono font-medium text-eter-starlight hover:text-eter-cyan transition-colors px-3 py-1.5 rounded-md hover:bg-white/5 border border-transparent hover:border-white/10"
+              className="hidden lg:inline-flex items-center gap-1.5 text-xs font-mono font-medium text-zinc-300 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-zinc-800"
             >
               <PlusCircle size={15} />
               Submit Server
@@ -107,20 +107,20 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
               {isAdmin && (
                 <Link
                   href="/admin"
-                  className="flex items-center gap-1.5 bg-eter-gold/10 hover:bg-eter-gold/20 border border-eter-gold/30 text-eter-gold text-xs font-mono font-semibold px-3 py-2 rounded-md transition-all shadow-[0_0_12px_rgba(234,179,8,0.15)]"
+                  className="flex items-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 text-amber-300 text-xs font-mono font-semibold px-3 py-2 rounded-lg transition-all"
                 >
                   Admin
                 </Link>
               )}
               <Link
                 href="/dashboard"
-                className="flex items-center gap-1.5 bg-eter-cyan/10 hover:bg-eter-cyan/20 border border-eter-cyan/30 text-eter-cyan text-xs font-mono font-semibold px-3.5 py-2 rounded-md transition-all shadow-[0_0_12px_rgba(34,211,238,0.15)]"
+                className="flex items-center gap-1.5 bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-mono font-semibold px-3.5 py-2 rounded-lg transition-all shadow-sm"
               >
                 Dashboard
               </Link>
               <button
                 onClick={() => signOut()}
-                className="flex items-center gap-1 bg-white/5 hover:bg-eter-red/20 border border-white/10 hover:border-eter-red/30 text-zinc-400 hover:text-eter-red text-xs font-mono px-3 py-2 rounded-md transition-all"
+                className="flex items-center gap-1 bg-zinc-900/60 hover:bg-red-500/10 border border-zinc-800 hover:border-red-500/30 text-zinc-400 hover:text-red-400 text-xs font-mono px-3 py-2 rounded-lg transition-all"
                 title="Log Out"
               >
                 <SignOut size={15} />
@@ -129,7 +129,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
           ) : (
             <Link
               href="/login"
-              className="hidden sm:flex items-center gap-2 bg-white/5 hover:bg-[#5865F2]/20 border border-white/10 hover:border-[#5865F2]/40 text-eter-starlight text-xs font-mono px-4 py-2 rounded-md transition-all duration-300"
+              className="hidden sm:flex items-center gap-2 bg-white/5 hover:bg-[#5865F2]/15 border border-white/10 hover:border-[#5865F2]/30 text-white text-xs font-mono px-4 py-2 rounded-lg transition-all"
             >
               <DiscordLogo weight="fill" size={16} className="text-[#5865F2]" />
               Sign In
@@ -149,7 +149,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
 
       {/* Mobile Drawer Menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-[#09090b]/95 backdrop-blur-2xl border-b border-white/10 px-6 py-6 flex flex-col gap-4 animate-fade-in shadow-2xl">
+        <div className="md:hidden bg-[#09090b]/95 backdrop-blur-2xl border-b border-zinc-800 px-6 py-6 flex flex-col gap-4 animate-fade-in shadow-2xl">
           <div className="flex flex-col gap-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
@@ -160,16 +160,16 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
                   className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     isActive
                       ? link.isGold
-                        ? "bg-eter-gold/15 text-eter-gold border border-eter-gold/30 font-semibold"
-                        : "bg-eter-cyan/15 text-eter-cyan border border-eter-cyan/30 font-semibold"
+                        ? "bg-amber-500/10 text-amber-300 border border-amber-500/25 font-semibold"
+                        : "bg-white/10 text-white border border-white/15 font-semibold"
                       : "text-zinc-300 hover:bg-white/5 hover:text-white"
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    {link.isGold && <Sparkle size={16} weight="fill" className="text-eter-gold" />}
+                    {link.isGold && <Sparkle size={16} weight="fill" className="text-amber-400" />}
                     {link.label}
                   </span>
-                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-eter-cyan" />}
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
                 </Link>
               );
             })}
@@ -177,31 +177,31 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
               href="/dashboard/server/new"
               className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-zinc-300 hover:bg-white/5 hover:text-white transition-colors"
             >
-              <PlusCircle size={18} className="text-eter-cyan" />
+              <PlusCircle size={18} className="text-zinc-400" />
               Submit Server
             </Link>
           </div>
 
-          <div className="pt-4 border-t border-white/10 flex flex-col gap-2">
+          <div className="pt-4 border-t border-zinc-800 flex flex-col gap-2">
             {isLoggedIn ? (
               <>
                 {isAdmin && (
                   <Link
                     href="/admin"
-                    className="flex items-center justify-center gap-2 bg-eter-gold/10 border border-eter-gold/30 text-eter-gold font-mono text-sm py-2.5 rounded-lg font-semibold"
+                    className="flex items-center justify-center gap-2 bg-amber-500/10 border border-amber-500/25 text-amber-300 font-mono text-sm py-2.5 rounded-lg font-medium"
                   >
                     Admin Panel
                   </Link>
                 )}
                 <Link
                   href="/dashboard"
-                  className="flex items-center justify-center gap-2 bg-eter-cyan/15 border border-eter-cyan/30 text-eter-cyan font-mono text-sm py-2.5 rounded-lg font-semibold"
+                  className="flex items-center justify-center gap-2 bg-white text-zinc-950 font-mono text-sm py-2.5 rounded-lg font-semibold"
                 >
                   Dashboard
                 </Link>
                 <button
                   onClick={() => signOut()}
-                  className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-zinc-400 hover:text-eter-red font-mono text-sm py-2.5 rounded-lg"
+                  className="flex items-center justify-center gap-2 bg-zinc-900/60 border border-zinc-800 text-zinc-400 hover:text-red-400 font-mono text-sm py-2.5 rounded-lg"
                 >
                   <SignOut size={16} /> Sign Out
                 </button>
@@ -209,7 +209,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
             ) : (
               <Link
                 href="/login"
-                className="flex items-center justify-center gap-2 bg-[#5865F2]/20 border border-[#5865F2]/40 text-white font-mono text-sm py-2.5 rounded-lg font-semibold"
+                className="flex items-center justify-center gap-2 bg-[#5865F2]/15 border border-[#5865F2]/30 text-white font-mono text-sm py-2.5 rounded-lg font-semibold"
               >
                 <DiscordLogo weight="fill" size={18} className="text-[#5865F2]" />
                 Sign In with Discord

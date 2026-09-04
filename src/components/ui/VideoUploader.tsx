@@ -252,14 +252,14 @@ export function VideoUploader({ name, defaultValue }: VideoUploaderProps) {
               uploadState !== "uploading" && fileInputRef.current?.click()
             }
             className={[
-              "border-2 border-dashed rounded-sm flex flex-col items-center justify-center p-8 min-h-[180px] relative overflow-hidden transition-all duration-200 select-none",
+              "border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-8 min-h-[180px] relative overflow-hidden transition-all duration-200 select-none",
               uploadState === "uploading"
-                ? "border-eter-cyan/60 bg-eter-cyan/5 cursor-wait"
+                ? "border-zinc-500 bg-zinc-900/40 cursor-wait"
                 : isDragging
-                ? "border-eter-cyan bg-eter-cyan/10 cursor-copy scale-[1.01] shadow-[0_0_30px_rgba(34,211,238,0.12)]"
+                ? "border-white/40 bg-white/5 cursor-copy scale-[1.01]"
                 : uploadState === "error"
                 ? "border-red-500/40 bg-red-500/5 cursor-pointer hover:border-red-400/60"
-                : "border-white/10 bg-white/[0.01] cursor-pointer hover:border-white/25 hover:bg-white/[0.03]",
+                : "border-zinc-800 bg-zinc-950/40 cursor-pointer hover:border-zinc-700 hover:bg-zinc-900/40",
             ].join(" ")}
           >
             {uploadState === "uploading" ? (

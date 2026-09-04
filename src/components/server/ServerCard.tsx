@@ -77,7 +77,7 @@ export function ServerCard({
     <Link 
       href={`/server/${slug}`}
       ref={cardRef}
-      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-xl overflow-hidden border border-white/10 bg-eter-abyss hover:border-eter-cyan/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_0_30px_rgba(34,211,238,0.18)]"
+      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-xl overflow-hidden border border-zinc-800/90 bg-zinc-950 hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/60"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -95,15 +95,15 @@ export function ServerCard({
       {/* Top Badges */}
       <div className="relative z-10 flex justify-between p-3.5 sm:p-4">
         {isEterShopPartner ? (
-          <div className="flex items-center gap-1.5 bg-[#09090b]/85 backdrop-blur-md border-l-2 border-l-eter-gold border-y border-r border-white/15 px-2.5 py-1 shadow-[0_0_12px_rgba(234,179,8,0.2)] rounded-full h-fit">
-            <Trophy weight="fill" className="text-eter-gold" size={12} />
-            <span className="text-[9px] font-mono font-bold text-eter-gold tracking-widest uppercase">Partner</span>
+          <div className="flex items-center gap-1.5 bg-amber-500/15 backdrop-blur-md border border-amber-500/30 px-2.5 py-1 rounded-full h-fit">
+            <Trophy weight="fill" className="text-amber-400" size={12} />
+            <span className="text-[9px] font-mono font-semibold text-amber-300 tracking-wider uppercase">Partner</span>
           </div>
         ) : <div />}
 
         <div className="ml-auto flex flex-col gap-1.5 items-end">
            {safeTags.slice(0, 2).map((tag) => (
-             <span key={tag} className="bg-black/80 backdrop-blur-md border-l-2 border-l-eter-cyan border-y border-r border-white/15 text-[8px] sm:text-[9px] font-mono font-medium text-zinc-300 px-2 py-0.5 uppercase tracking-wider rounded-sm">
+             <span key={tag} className="bg-black/70 backdrop-blur-md border border-white/10 text-[8px] sm:text-[9px] font-mono font-medium text-zinc-300 px-2 py-0.5 uppercase tracking-wider rounded-md">
                {tag}
              </span>
            ))}
@@ -112,23 +112,23 @@ export function ServerCard({
 
       {/* Bottom Content */}
       <div className="relative z-10 mt-auto p-4 sm:p-5 flex flex-col gap-2.5">
-        <h3 className="font-display text-lg sm:text-xl font-semibold text-eter-starlight leading-tight group-hover:text-eter-cyan transition-colors duration-300 line-clamp-2">
+        <h3 className="font-display text-lg sm:text-xl font-semibold text-white leading-tight transition-colors duration-200 line-clamp-2">
           {name}
         </h3>
         
-        <div className="flex items-center gap-2 sm:gap-4 flex-wrap pt-1 border-t border-white/10">
+        <div className="flex items-center gap-2 sm:gap-4 flex-wrap pt-2 border-t border-zinc-800/80">
           <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300">
-            <Users weight="fill" className="text-eter-cyan" size={14} />
+            <Users weight="fill" className="text-zinc-400" size={14} />
             <span>{(onlinePlayers || 0).toLocaleString()} / {(maxPlayers || 0).toLocaleString()}</span>
           </div>
           
           <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300">
-            <CaretUp weight="bold" className="text-eter-starlight" size={14} />
+            <CaretUp weight="bold" className="text-zinc-400" size={14} />
             <span>{(votes || 0).toLocaleString()}</span>
           </div>
           
           <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300 ml-auto">
-            <Star weight="fill" className="text-eter-gold" size={14} />
+            <Star weight="fill" className="text-amber-400" size={14} />
             <span>{(rating || 0).toFixed(1)}</span>
           </div>
         </div>

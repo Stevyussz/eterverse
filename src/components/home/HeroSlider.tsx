@@ -54,12 +54,12 @@ export function HeroSlider({ servers }: { servers: any[] }) {
               
               {/* Info Side */}
               <div className="w-full md:w-1/2 p-7 sm:p-10 md:p-14 flex flex-col justify-center min-h-[420px] md:min-h-[480px] relative z-20">
-                <div className="inline-flex items-center gap-2 px-3 py-1 mb-5 w-max border-l-2 border-l-eter-gold border-y border-r border-y-white/10 border-r-white/10 bg-[#09090b]/85 backdrop-blur-sm text-[11px] font-mono font-medium text-eter-starlight tracking-widest uppercase shadow-[0_0_15px_rgba(234,179,8,0.15)] rounded-sm">
-                  <Star weight="fill" size={14} className="text-eter-gold" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 mb-5 w-max bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] font-mono font-semibold tracking-wider uppercase rounded-full">
+                  <Star weight="fill" size={14} className="text-amber-400" />
                   RECOMMENDED PARTNER
                 </div>
                 
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-eter-starlight leading-[1.1] mb-4 tracking-tight">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-[1.1] mb-4 tracking-tight">
                   {server.name}
                 </h2>
                 
@@ -71,7 +71,7 @@ export function HeroSlider({ servers }: { servers: any[] }) {
                 <div className="flex items-center gap-4 mb-4">
                   <Link
                     href={`/server/${server.slug}`}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-eter-cyan text-black font-semibold rounded-md text-sm hover:bg-cyan-300 transition-all duration-300 shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:scale-105"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-zinc-950 font-medium rounded-lg text-sm hover:bg-zinc-200 transition-all duration-200 active:scale-[0.98] shadow-sm"
                   >
                     Explore Server <ArrowRight size={16} weight="bold" />
                   </Link>
@@ -107,9 +107,9 @@ export function HeroSlider({ servers }: { servers: any[] }) {
               key={idx}
               onClick={() => scrollTo(idx)}
               aria-label={`Go to slide ${idx + 1}`}
-              className={`h-2 rounded-full transition-all duration-300 ${
+              className={`h-2 rounded-full transition-all duration-200 ${
                 idx === selectedIndex
-                  ? "w-8 bg-eter-cyan shadow-[0_0_12px_rgba(34,211,238,0.6)]"
+                  ? "w-7 bg-white"
                   : "w-2 bg-white/20 hover:bg-white/40"
               }`}
             />
@@ -121,7 +121,7 @@ export function HeroSlider({ servers }: { servers: any[] }) {
       <button 
         onClick={scrollPrev}
         aria-label="Previous Slide"
-        className="absolute left-2 md:-left-6 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full bg-black/60 border border-white/10 text-eter-starlight backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-smooth hover:bg-black/90 hover:text-eter-cyan hover:scale-110 z-30 shadow-xl"
+        className="absolute left-2 md:-left-6 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full bg-black/60 border border-white/10 text-zinc-300 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-smooth hover:bg-zinc-900 hover:text-white hover:scale-105 z-30 shadow-xl"
       >
         <CaretLeft size={22} weight="bold" />
       </button>
@@ -129,7 +129,7 @@ export function HeroSlider({ servers }: { servers: any[] }) {
       <button 
         onClick={scrollNext}
         aria-label="Next Slide"
-        className="absolute right-2 md:-right-6 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full bg-black/60 border border-white/10 text-eter-starlight backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-smooth hover:bg-black/90 hover:text-eter-cyan hover:scale-110 z-30 shadow-xl"
+        className="absolute right-2 md:-right-6 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full bg-black/60 border border-white/10 text-zinc-300 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-smooth hover:bg-zinc-900 hover:text-white hover:scale-105 z-30 shadow-xl"
       >
         <CaretRight size={22} weight="bold" />
       </button>

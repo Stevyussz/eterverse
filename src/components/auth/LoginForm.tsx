@@ -22,13 +22,13 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
-          className="w-20 h-20 bg-eter-cyan/10 rounded-full flex items-center justify-center border border-eter-cyan/20 shadow-[0_0_30px_rgba(34,211,238,0.2)]"
+          className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center border border-zinc-800 shadow-xl"
         >
-          <PaperPlaneRight size={36} weight="duotone" className="text-eter-cyan" />
+          <PaperPlaneRight size={32} weight="duotone" className="text-white" />
         </motion.div>
         
         <div className="space-y-2">
-          <h2 className="text-2xl font-display font-semibold text-eter-starlight">Check your email</h2>
+          <h2 className="text-2xl font-display font-semibold text-white">Check your email</h2>
           <p className="text-zinc-400 font-body text-sm max-w-[280px]">
             A magic sign-in link has been sent to your inbox. Click the link to log in to EterVerse.
           </p>
@@ -48,16 +48,16 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
       <button
         type="button"
         onClick={() => signIn("discord", { callbackUrl: "/dashboard" })}
-        className="w-full flex items-center justify-center gap-3 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium py-3.5 px-4 rounded-md transition-colors duration-smooth shadow-lg shadow-[#5865F2]/20"
+        className="w-full flex items-center justify-center gap-3 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium py-3.5 px-4 rounded-lg transition-colors duration-200"
       >
         <DiscordLogo size={22} weight="fill" />
         Continue with Discord
       </button>
 
       <div className="flex items-center gap-4 my-2">
-        <div className="flex-1 h-[1px] bg-white/10"></div>
-        <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">Or use email</span>
-        <div className="flex-1 h-[1px] bg-white/10"></div>
+        <div className="flex-1 h-[1px] bg-zinc-800"></div>
+        <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Or use email</span>
+        <div className="flex-1 h-[1px] bg-zinc-800"></div>
       </div>
 
       <form
@@ -83,13 +83,13 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="you@example.com"
-            className="w-full bg-black/50 border border-white/10 rounded-md py-3 pl-10 pr-4 text-sm text-eter-starlight placeholder:text-zinc-600 focus:outline-none focus:border-eter-cyan/50 focus:ring-1 focus:ring-eter-cyan/50 transition-all duration-smooth"
+            className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-3 pl-10 pr-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all duration-200"
           />
         </div>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 text-eter-starlight font-medium py-3 px-4 rounded-md transition-colors duration-smooth disabled:opacity-50"
+          className="w-full flex items-center justify-center bg-white text-zinc-950 hover:bg-zinc-200 font-medium py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50"
         >
           {isSubmitting ? "Sending..." : "Send Magic Link"}
         </button>

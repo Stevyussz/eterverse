@@ -66,40 +66,40 @@ export default async function DiscoverPage({ searchParams }: Props) {
         {/* Search & Filters */}
         <form method="GET" className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+            <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
             <input
               name="q"
               type="text"
               defaultValue={q}
-              placeholder="Search by name, IP, or description..."
-              className="w-full bg-[#09090b]/80 border border-white/10 rounded-sm pl-10 pr-4 py-2.5 text-sm text-eter-starlight focus:border-eter-cyan focus:outline-none transition-colors"
+              placeholder="Cari berdasarkan nama, IP, atau deskripsi..."
+              className="w-full bg-zinc-950/80 border border-zinc-800 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:border-zinc-500 focus:outline-none transition-colors placeholder:text-zinc-600"
             />
           </div>
           <select
             name="sort"
             defaultValue={sort}
-            className="bg-[#09090b]/80 border border-white/10 rounded-sm px-4 py-2.5 text-sm text-zinc-300 focus:border-eter-cyan focus:outline-none transition-colors"
+            className="bg-zinc-950/80 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-300 focus:border-zinc-500 focus:outline-none transition-colors"
           >
-            <option value="votes">Most Voted</option>
-            <option value="rating">Top Rated</option>
-            <option value="newest">Newest</option>
-            <option value="players">Most Players</option>
+            <option value="votes">Vote Terbanyak</option>
+            <option value="rating">Rating Tertinggi</option>
+            <option value="newest">Terbaru</option>
+            <option value="players">Pemain Terbanyak</option>
           </select>
-          <button type="submit" className="bg-eter-cyan text-black font-semibold px-6 py-2.5 rounded-sm hover:bg-cyan-300 transition-colors text-sm">
-            Search
+          <button type="submit" className="bg-white text-zinc-950 font-medium px-6 py-2.5 rounded-lg hover:bg-zinc-200 transition-all text-sm shadow-sm active:scale-[0.98]">
+            Cari Server
           </button>
         </form>
 
         {/* Tag Pills */}
         <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest flex items-center gap-1">
-            <FunnelSimple size={14} /> Filter:
+          <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+            <FunnelSimple size={14} /> Kategori:
           </span>
-          <a href="/discover" className={`text-xs font-mono px-3 py-1 rounded-full border transition-colors ${!tag ? 'bg-eter-cyan/20 border-eter-cyan/40 text-eter-cyan' : 'border-white/10 text-zinc-400 hover:border-white/30 hover:text-zinc-200'}`}>
-            All
+          <a href="/discover" className={`text-xs font-mono px-3 py-1 rounded-full border transition-colors ${!tag ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}>
+            Semua
           </a>
           {ALL_TAGS.map(t => (
-            <a key={t} href={`/discover?${new URLSearchParams({ ...(q && { q }), tag: t, sort }).toString()}`} className={`text-xs font-mono px-3 py-1 rounded-full border transition-colors ${tag?.toLowerCase() === t.toLowerCase() ? 'bg-eter-cyan/20 border-eter-cyan/40 text-eter-cyan' : 'border-white/10 text-zinc-400 hover:border-white/30 hover:text-zinc-200'}`}>
+            <a key={t} href={`/discover?${new URLSearchParams({ ...(q && { q }), tag: t, sort }).toString()}`} className={`text-xs font-mono px-3 py-1 rounded-full border transition-colors ${tag?.toLowerCase() === t.toLowerCase() ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}>
               {t}
             </a>
           ))}
@@ -107,8 +107,8 @@ export default async function DiscoverPage({ searchParams }: Props) {
 
         {/* Results */}
         {serialized.length === 0 ? (
-          <div className="py-24 text-center text-zinc-500 font-mono border border-white/5 rounded-sm">
-            No servers found{q ? ` for "${q}"` : ''}. Try a different search.
+          <div className="py-24 text-center text-zinc-500 font-mono border border-zinc-800/80 rounded-xl bg-zinc-950/40">
+            Tidak ada server yang ditemukan{q ? ` untuk "${q}"` : ''}. Coba kata kunci lain.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
