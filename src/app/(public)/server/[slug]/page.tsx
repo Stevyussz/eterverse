@@ -22,7 +22,7 @@ import {
   VideoCamera,
   Star,
   CaretUp,
-  SignalHigh,
+  CellSignalHigh,
   Sparkle
 } from "@phosphor-icons/react/dist/ssr";
 import ReactMarkdown from 'react-markdown';
@@ -154,7 +154,7 @@ export default async function ServerProfilePage(props: Props) {
               {/* Online Status */}
               <div className="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] border border-white/5">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                  <SignalHigh size={16} className={isOnline ? "text-green-400" : "text-eter-red"} />
+                  <CellSignalHigh size={16} className={isOnline ? "text-green-400" : "text-eter-red"} />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-[9px] font-mono uppercase text-zinc-500 tracking-wider">Status</span>
