@@ -1,29 +1,40 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import { getYoutubeId } from "@/utils/youtube";
 
 interface BackgroundVideoProps {
-  videoUrl: string;
+  videoUrl?: string;
+  fallbackImage?: string;
   isHovered?: boolean;
   className?: string;
   autoPlay?: boolean;
 }
 
-export function BackgroundVideo({ videoUrl, isHovered = true, className = "", autoPlay = false }: BackgroundVideoProps) {
+export function BackgroundVideo({
+  videoUrl = "",
+  fallbackImage,
+  isHovered = true,
+  className = "",
+  autoPlay = false,
+}: BackgroundVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Helper to extract YouTube ID
-  const getYoutubeId = (url: string) => {
-    if (!url) return null;
-    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
-    return match ? match[1] : null;
-  };
-
   const ytId = getYoutubeId(videoUrl);
+  const [thumbSrc, setThumbSrc] = useState<string>(
+    ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : fallbackImage || ""
+  );
+
+  useEffect(() => {
+    if (ytId) {
+      setThumbSrc(`https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`);
+    } else if (fallbackImage) {
+      setThumbSrc(fallbackImage);
+    }
+  }, [ytId, fallbackImage]);
 
   // Play/pause logic for native video elements (non-YouTube)
   useEffect(() => {
-    if (ytId) return; // YouTube handles autoplay internally
+    if (ytId || !videoUrl) return;
 
     if (autoPlay || isHovered) {
       videoRef.current?.play().catch(() => {});
@@ -33,22 +44,46 @@ export function BackgroundVideo({ videoUrl, isHovered = true, className = "", au
         videoRef.current.currentTime = 0;
       }
     }
-  }, [isHovered, autoPlay, ytId]);
+  }, [isHovered, autoPlay, ytId, videoUrl]);
+
+  // If no videoUrl or invalid
+  if (!videoUrl) {
+    if (fallbackImage) {
+      return (
+        <img
+          src={fallbackImage}
+          alt="Background Preview"
+          className={`object-cover pointer-events-none ${className}`}
+        />
+      );
+    }
+    return (
+      <div
+        className={`bg-gradient-to-br from-zinc-900 via-black to-zinc-950 pointer-events-none ${className}`}
+      />
+    );
+  }
 
   if (ytId) {
     return (
       <div className={`overflow-hidden pointer-events-none ${className}`}>
-        {/* We use a scale trick to mimic object-cover behavior for YouTube iframes */}
         {isHovered || autoPlay ? (
           <iframe
             src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${ytId}&playsinline=1&modestbranding=1&rel=0`}
-            className="absolute top-1/2 left-1/2 w-[300%] h-[300%] sm:w-[200%] sm:h-[200%] md:w-[150%] md:h-[150%] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            className="absolute top-1/2 left-1/2 w-[350%] h-[350%] sm:w-[220%] sm:h-[220%] md:w-[180%] md:h-[180%] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
             allow="autoplay; encrypted-media"
             style={{ border: 0 }}
+            title="Background Video"
+            loading="lazy"
           />
         ) : (
-          <img 
-            src={`https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`}
+          <img
+            src={thumbSrc}
+            onError={() => {
+              if (ytId) {
+                setThumbSrc(`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`);
+              }
+            }}
             className="absolute inset-0 w-full h-full object-cover pointer-events-none"
             alt="YouTube Thumbnail Fallback"
           />
@@ -57,7 +92,7 @@ export function BackgroundVideo({ videoUrl, isHovered = true, className = "", au
     );
   }
 
-  // Native MP4/WebM handling (Cloudinary)
+  // Native MP4/WebM handling (Cloudinary or direct URL)
   return (
     <video
       ref={videoRef}
@@ -65,7 +100,9 @@ export function BackgroundVideo({ videoUrl, isHovered = true, className = "", au
       muted
       loop
       playsInline
-      className={`pointer-events-none ${className}`}
+      poster={fallbackImage}
+      className={`pointer-events-none object-cover ${className}`}
     />
   );
 }
+

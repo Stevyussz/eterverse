@@ -8,27 +8,28 @@ import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
 interface ServerCardProps {
   name: string;
   slug: string;
-  videoUrl: string;
+  videoUrl?: string;
+  bannerUrl?: string;
   isEterShopPartner?: boolean;
-  onlinePlayers: number;
-  maxPlayers: number;
-  votes: number;
-  rating: number;
-  tags: string[];
+  onlinePlayers?: number;
+  maxPlayers?: number;
+  votes?: number;
+  rating?: number;
+  tags?: string[];
 }
 
 export function ServerCard({
   name,
   slug,
-  videoUrl,
+  videoUrl = "",
+  bannerUrl,
   isEterShopPartner = false,
-  onlinePlayers,
-  maxPlayers,
-  votes,
-  rating,
-  tags
+  onlinePlayers = 0,
+  maxPlayers = 0,
+  votes = 0,
+  rating = 0,
+  tags = [],
 }: ServerCardProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLAnchorElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -45,13 +46,8 @@ export function ServerCard({
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsHovered(true);
-            videoRef.current?.play().catch(() => {});
           } else {
             setIsHovered(false);
-            if (videoRef.current) {
-              videoRef.current.pause();
-              videoRef.current.currentTime = 0;
-            }
           }
         });
       },
@@ -66,47 +62,48 @@ export function ServerCard({
   }, []);
 
   const handleMouseEnter = () => {
-    // Only trigger hover events on desktop to prevent conflicts with observer
     if (window.matchMedia("(pointer: coarse)").matches) return;
-    
     setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
     if (window.matchMedia("(pointer: coarse)").matches) return;
-    
     setIsHovered(false);
   };
+
+  const safeTags = Array.isArray(tags) ? tags : [];
 
   return (
     <Link 
       href={`/server/${slug}`}
       ref={cardRef}
-      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-lg overflow-hidden border border-white/10 bg-eter-abyss hover:border-white/30 transition-colors duration-smooth"
+      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-xl overflow-hidden border border-white/10 bg-eter-abyss hover:border-eter-cyan/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_0_30px_rgba(34,211,238,0.18)]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Video Background */}
+      {/* Video / Banner Background */}
       <BackgroundVideo 
         videoUrl={videoUrl} 
+        fallbackImage={bannerUrl}
         isHovered={isHovered} 
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-smooth ${isHovered ? 'opacity-100' : 'opacity-40'}`} 
+        className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${isHovered ? 'opacity-100 scale-105' : 'opacity-40'}`} 
       />
       
       {/* Gradient Overlay for Readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/40 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/50 to-transparent pointer-events-none" />
 
       {/* Top Badges */}
-      <div className="relative z-10 flex justify-between p-4">
-        {isEterShopPartner && (
-          <div className="flex items-center gap-1.5 bg-[#09090b]/80 backdrop-blur-sm border-l-2 border-l-eter-gold border-y border-r border-white/10 px-2 py-1 shadow-sm h-fit">
+      <div className="relative z-10 flex justify-between p-3.5 sm:p-4">
+        {isEterShopPartner ? (
+          <div className="flex items-center gap-1.5 bg-[#09090b]/85 backdrop-blur-md border-l-2 border-l-eter-gold border-y border-r border-white/15 px-2.5 py-1 shadow-[0_0_12px_rgba(234,179,8,0.2)] rounded-full h-fit">
             <Trophy weight="fill" className="text-eter-gold" size={12} />
             <span className="text-[9px] font-mono font-bold text-eter-gold tracking-widest uppercase">Partner</span>
           </div>
-        )}
+        ) : <div />}
+
         <div className="ml-auto flex flex-col gap-1.5 items-end">
-           {tags.slice(0,2).map(tag => (
-             <span key={tag} className="bg-black/80 backdrop-blur-sm border-l-2 border-l-eter-cyan border-y border-r border-white/10 text-[8px] sm:text-[9px] font-mono font-medium text-zinc-300 px-1.5 sm:px-2 py-0.5 uppercase tracking-wider">
+           {safeTags.slice(0, 2).map((tag) => (
+             <span key={tag} className="bg-black/80 backdrop-blur-md border-l-2 border-l-eter-cyan border-y border-r border-white/15 text-[8px] sm:text-[9px] font-mono font-medium text-zinc-300 px-2 py-0.5 uppercase tracking-wider rounded-sm">
                {tag}
              </span>
            ))}
@@ -114,28 +111,29 @@ export function ServerCard({
       </div>
 
       {/* Bottom Content */}
-      <div className="relative z-10 mt-auto p-3 sm:p-4 flex flex-col gap-2 sm:gap-3">
-        <h3 className="font-display text-lg sm:text-xl font-semibold text-eter-starlight leading-tight group-hover:text-eter-cyan transition-colors duration-smooth line-clamp-2">
+      <div className="relative z-10 mt-auto p-4 sm:p-5 flex flex-col gap-2.5">
+        <h3 className="font-display text-lg sm:text-xl font-semibold text-eter-starlight leading-tight group-hover:text-eter-cyan transition-colors duration-300 line-clamp-2">
           {name}
         </h3>
         
-        <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-4 flex-wrap pt-1 border-t border-white/10">
           <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300">
             <Users weight="fill" className="text-eter-cyan" size={14} />
-            <span>{onlinePlayers.toLocaleString()} / {maxPlayers.toLocaleString()}</span>
+            <span>{(onlinePlayers || 0).toLocaleString()} / {(maxPlayers || 0).toLocaleString()}</span>
           </div>
           
           <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300">
             <CaretUp weight="bold" className="text-eter-starlight" size={14} />
-            <span>{votes.toLocaleString()}</span>
+            <span>{(votes || 0).toLocaleString()}</span>
           </div>
           
           <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300 ml-auto">
             <Star weight="fill" className="text-eter-gold" size={14} />
-            <span>{rating.toFixed(1)}</span>
+            <span>{(rating || 0).toFixed(1)}</span>
           </div>
         </div>
       </div>
     </Link>
   );
 }
+

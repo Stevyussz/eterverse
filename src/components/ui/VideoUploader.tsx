@@ -10,6 +10,7 @@ import {
   Warning,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
+import { getYoutubeId } from "@/utils/youtube";
 
 interface VideoUploaderProps {
   name: string;
@@ -25,7 +26,7 @@ const ALLOWED_EXT_LABEL = ".mp4 / .webm";
 
 export function VideoUploader({ name, defaultValue }: VideoUploaderProps) {
   const [videoUrl, setVideoUrl] = useState<string>(defaultValue || "");
-  const [uploadState, setUploadState] = useState<UploadState>("idle");
+  const [uploadState, setUploadState] = useState<UploadState>(defaultValue ? "success" : "idle");
   const [progress, setProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState<string>("");
@@ -202,29 +203,41 @@ export function VideoUploader({ name, defaultValue }: VideoUploaderProps) {
       {uploadState === "success" && videoUrl ? (
         <div className="flex flex-col gap-3">
           <div className="relative rounded-sm border border-white/10 bg-black overflow-hidden aspect-video group">
-            <video
-              src={videoUrl}
-              controls
-              preload="metadata"
-              className="w-full h-full object-contain"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-            <div className="absolute top-2 right-2 flex items-center gap-2">
+            {getYoutubeId(videoUrl) ? (
+              <iframe
+                src={`https://www.youtube.com/embed/${getYoutubeId(videoUrl)}?autoplay=0&rel=0`}
+                className="w-full h-full object-cover"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ border: 0 }}
+                title="Preview Video"
+              />
+            ) : (
+              <video
+                src={videoUrl}
+                controls
+                preload="metadata"
+                className="w-full h-full object-contain"
+              />
+            )}
+            <div className="absolute top-2 right-2 flex items-center gap-2 z-20">
               <span className="bg-green-500/90 text-black px-2 py-1 rounded-sm text-[10px] font-bold flex items-center gap-1 backdrop-blur-sm shadow-lg">
                 <CheckCircle size={11} weight="fill" /> Tersimpan
               </span>
               <button
                 type="button"
                 onClick={handleReset}
-                className="bg-black/70 text-white p-1.5 rounded-sm hover:bg-red-500/80 transition-colors backdrop-blur-sm border border-white/10"
-                title="Hapus video"
+                className="bg-black/80 text-white p-1.5 rounded-sm hover:bg-red-500/80 transition-colors backdrop-blur-sm border border-white/10"
+                title="Hapus / Ganti video"
               >
                 <X size={13} weight="bold" />
               </button>
             </div>
           </div>
           <p className="text-[10px] font-mono text-zinc-500 text-center">
-            {fileName || "Video dari URL"} · Telah dioptimasi otomatis (720p, kompresi cerdas)
+            {getYoutubeId(videoUrl)
+              ? "YouTube Trailer Terhubung"
+              : fileName || "Video Cloudinary (720p dioptimasi)"} · Siap ditampilkan di profil server
           </p>
         </div>
       ) : (

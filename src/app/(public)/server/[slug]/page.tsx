@@ -13,6 +13,7 @@ import { ImpressionTracker } from "@/components/server/ImpressionTracker";
 import { Users, Trophy, DiscordLogo, WhatsappLogo, TelegramLogo, Globe, Image as ImageIcon, VideoCamera } from "@phosphor-icons/react/dist/ssr";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { getYoutubeId } from "@/utils/youtube";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -57,12 +58,6 @@ export default async function ServerProfilePage(props: Props) {
 
   const defaultBanner = "/dashboard-bg.png";
   const defaultLogo = "/icon-placeholder.png";
-
-  const getYoutubeId = (url: string) => {
-    if (!url) return null;
-    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
-    return match ? match[1] : null;
-  };
 
   const ytId = getYoutubeId(serverData.videoUrl);
 

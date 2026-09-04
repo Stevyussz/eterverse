@@ -72,8 +72,8 @@ export function ServerEditForm({ action, server }: { action: (formData: FormData
         <h3 className="text-sm font-display font-medium text-eter-starlight">Visual Identity</h3>
         <p className="text-xs text-zinc-500 mb-2">Upload new images or leave blank to keep existing ones.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <ImageUploader name="logoUrl" label="Server Logo (Square)" aspectRatio="square" />
-          <ImageUploader name="bannerUrl" label="Hero Banner (Wide)" aspectRatio="video" />
+          <ImageUploader name="logoUrl" label="Server Logo (Square)" aspectRatio="square" defaultValue={server.logoUrl} />
+          <ImageUploader name="bannerUrl" label="Hero Banner (Wide)" aspectRatio="video" defaultValue={server.bannerUrl} />
         </div>
       </div>
 
@@ -99,7 +99,7 @@ export function ServerEditForm({ action, server }: { action: (formData: FormData
       </div>
 
       <div className="flex flex-col gap-4 p-6 border border-white/10 rounded-sm bg-white/[0.01]">
-        <ImageUploader name="galleryUrls" label="Gallery Screenshots (Multiple)" isGallery={true} />
+        <ImageUploader name="galleryUrls" label="Gallery Screenshots (Multiple)" isGallery={true} defaultValue={server.galleryUrls?.join(",")} />
       </div>
 
       {/* Community Links */}

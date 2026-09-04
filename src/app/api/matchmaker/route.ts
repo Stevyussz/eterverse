@@ -45,8 +45,22 @@ export async function POST(req: Request) {
     // Fetch full data for the matched slugs
     const matchedServers = await Server.find({ slug: { $in: matchedSlugs } }).lean();
     
-    // Sort matchedServers to match the AI's output order
-    const sortedResults = matchedSlugs.map((slug: string) => matchedServers.find((s: any) => s.slug === slug)).filter(Boolean);
+    // Sort matchedServers to match the AI's output order and serialize fields for ServerCard
+    const sortedResults = matchedSlugs
+      .map((slug: string) => {
+        const s: any = matchedServers.find((server: any) => server.slug === slug);
+        if (!s) return null;
+        return {
+          ...s,
+          _id: s._id.toString(),
+          ownerId: s.ownerId?.toString(),
+          onlinePlayers: s.liveStatus?.currentPlayers || 0,
+          maxPlayers: s.liveStatus?.maxPlayers || 0,
+          votes: s.metrics?.votes || 0,
+          rating: s.metrics?.rating || 0,
+        };
+      })
+      .filter(Boolean);
 
     return NextResponse.json({ results: sortedResults });
   } catch (error) {

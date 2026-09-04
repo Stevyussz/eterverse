@@ -98,7 +98,7 @@ export function DashboardSidebar({ user }: SidebarProps) {
 }
 
 function SidebarLink({ href, icon, label, isGold = false, pathname, onClick }: { href: string, icon: React.ReactNode, label: string, isGold?: boolean, pathname: string, onClick: () => void }) {
-  const isActive = pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = href === "/dashboard" ? pathname === "/dashboard" : pathname === href || pathname.startsWith(`${href}/`);
   
   return (
     <Link 

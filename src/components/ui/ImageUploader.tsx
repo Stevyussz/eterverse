@@ -51,8 +51,8 @@ export function ImageUploader({ name, label, aspectRatio = "square", onUploadSuc
       setError("Please select an image file (PNG, JPG, WEBP).");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setError("File is too large. Maximum size is 5MB.");
+    if (file.size > 4 * 1024 * 1024) {
+      setError("File is too large. Maximum size is 4MB.");
       return;
     }
 
