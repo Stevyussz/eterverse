@@ -44,15 +44,6 @@ export function Footer() {
             <p className="text-xs sm:text-sm text-zinc-400 font-body leading-relaxed max-w-sm">
               Platform discovery dan kurasi server Minecraft Indonesia generasi modern. Temukan server impianmu, vote favoritmu, dan bangun komunitas gaming tanpa batas.
             </p>
-
-            {/* Live System Operational Status Badge */}
-            <div className="flex items-center gap-2 mt-2 w-fit px-3 py-1.5 rounded-full bg-zinc-900/60 border border-zinc-800 text-xs font-mono text-zinc-300">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              <span>All Systems Operational</span>
-            </div>
           </div>
 
           {/* Column 2: Jelajahi Server */}

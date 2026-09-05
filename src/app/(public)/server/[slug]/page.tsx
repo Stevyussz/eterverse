@@ -140,9 +140,6 @@ export default async function ServerProfilePage(props: Props) {
                   />
                   {/* Live Online Dot Overlay */}
                   <div className="absolute bottom-2 right-2 flex items-center justify-center">
-                    {isOnline && (
-                      <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-emerald-400 opacity-60" />
-                    )}
                     <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ring-2 ring-zinc-950 ${isOnline ? 'bg-emerald-500' : 'bg-red-500'}`} />
                   </div>
                 </div>

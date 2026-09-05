@@ -268,7 +268,7 @@ export function VideoUploader({ name, defaultValue }: VideoUploaderProps) {
                 <div className="relative">
                   <FilmSlate
                     size={36}
-                    className="text-eter-cyan animate-pulse"
+                    className="text-zinc-300"
                   />
                 </div>
                 <div className="w-full flex flex-col gap-1.5">
