@@ -7,53 +7,48 @@ import {
   CheckCircle, 
   WarningCircle, 
   ArrowRight,
-  Code,
   Clock,
   Cpu,
-  Broadcast
+  Broadcast,
+  Crown
 } from "@phosphor-icons/react/dist/ssr";
 
 export const metadata: Metadata = {
-  title: "In-Game Vote Reward (NuVotifier) - Segera Hadir | EterVerse",
-  description: "Pelajari integrasi NuVotifier untuk memberikan hadiah otomatis di dalam game Minecraft saat pemain vote di EterVerse.",
+  title: "EterReward™ In-Game Sync - Segera Hadir | EterVerse",
+  description: "Pelajari integrasi protokol EterReward™ untuk memberikan hadiah otomatis di dalam game Minecraft saat pemain vote di EterVerse.",
 };
 
-export default function VotifierComingSoonPage() {
+export default function EterRewardComingSoonPage() {
   const requirements = [
     {
-      title: "1. Server Berbasis Plugin (Bukan Realms)",
+      title: "1. Server Berbasis Plugin / Software Dedicated",
       badge: "Wajib",
-      desc: "Server harus menggunakan Paper, Purpur, Spigot, Velocity, BungeeCord, atau Fabric. Server Crossplay dengan GeyserMC didukung penuh.",
-      note: "Minecraft Realms tidak dapat menggunakan fitur ini karena Mojang tidak mengizinkan pemasangan plugin eksternal.",
-      status: "ready",
+      desc: "Server menggunakan Paper, Purpur, Spigot, Velocity, BungeeCord, atau Fabric. Server Crossplay dengan GeyserMC didukung penuh.",
+      note: "Untuk Minecraft Realms yang tidak memiliki folder plugin, tersedia solusi EterRealm Webhook (baca penjelasan di bawah).",
     },
     {
-      title: "2. Plugin NuVotifier Terpasang",
+      title: "2. Modul Bridge EterReward / Socket Listener Terpasang",
       badge: "Wajib",
-      desc: "Server harus memasang plugin resmi NuVotifier di folder /plugins/ server Anda.",
-      note: "Bisa diunduh gratis di SpigotMC atau Modrinth (mendukung versi Minecraft terbaru hingga 1.21+).",
-      status: "ready",
+      desc: "Server memasang modul bridge socket EterReward di folder /plugins/ server Anda (mendukung modul socket standar industri Minecraft).",
+      note: "Modul ini sangat ringan, tanpa lag, dan kompatibel dari Minecraft 1.12 hingga versi terbaru 1.21+.",
     },
     {
-      title: "3. Port Votifier Terbuka (Open Port)",
+      title: "3. Port Koneksi Socket Terbuka (Open Port)",
       badge: "Wajib",
-      desc: "Port khusus untuk protokol Votifier (default 8192 atau port tambahan yang disediakan oleh hosting Anda) harus terbuka dan dapat diakses dari internet.",
-      note: "Jika Anda menggunakan hosting Pterodactyl / PebbleHost / Bisect / Nodecraft, mintalah port alokasi tambahan ke penyedia hosting.",
-      status: "ready",
+      desc: "Port khusus untuk protokol komunikasi EterReward (port alokasi jaringan hosting/VPS Anda, misal port default 8192 atau port custom) terbuka untuk menerima sinyal terenkripsi dari EterVerse.",
+      note: "Jika Anda menggunakan hosting Pterodactyl, Bisect, PebbleHost, atau VPS, Anda cukup menambahkan satu port alokasi tambahan di control panel.",
     },
     {
-      title: "4. Plugin Reward Listener",
+      title: "4. Plugin Eksekutor Hadiah (Reward Listener)",
       badge: "Wajib",
-      desc: "Plugin di server yang bertugas membagikan hadiah kepada pemain saat sinyal vote diterima.",
-      note: "Rekomendasi plugin populer: VotingPlugin, GAListener, SuperVoter, atau PlayerPoints.",
-      status: "ready",
+      desc: "Plugin di server Anda yang bertugas mengeksekusi perintah hadiah ke pemain saat sinyal EterReward diterima.",
+      note: "Kompatibel dengan semua plugin reward populer seperti VotingPlugin, GAListener, SuperVoter, atau PlayerPoints.",
     },
     {
-      title: "5. Kunci Enkripsi (RSA Public Key)",
+      title: "5. Kunci Enkripsi Kriptografi (EterBridge RSA Key)",
       badge: "Keamanan",
-      desc: "Saat fitur ini rilis, Anda cukup menyalin isi file plugins/NuVotifier/rsa/public.key ke dashboard EterVerse.",
-      note: "Kunci ini memastikan hanya EterVerse yang dapat memicu hadiah di server Anda, mencegah manipulasi dari pihak lain.",
-      status: "ready",
+      desc: "Saat fitur ini rilis, Anda cukup memasukkan Public Key dari konfigurasi server Anda ke form pengaturan EterVerse.",
+      note: "Enkripsi RSA 2048-bit memastikan hanya website resmi EterVerse yang dapat memicu pembagian hadiah di server Anda, 100% aman dari spam atau injeksi hacker.",
     },
   ];
 
@@ -67,7 +62,7 @@ export default function VotifierComingSoonPage() {
           <span>/</span>
           <span className="text-zinc-300">Alat Server</span>
           <span>/</span>
-          <span className="text-cyan-400">NuVotifier</span>
+          <span className="text-cyan-400">EterReward™</span>
         </div>
 
         <div className="flex items-center gap-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 px-3 py-1 rounded-full text-cyan-300 font-mono text-xs font-semibold shadow-[0_0_15px_rgba(6,182,212,0.15)]">
@@ -88,47 +83,47 @@ export default function VotifierComingSoonPage() {
               <Sparkle size={24} weight="fill" />
             </span>
             <span className="text-xs font-mono font-semibold uppercase tracking-widest text-cyan-400">
-              Ekosistem Hadiah Pemain
+              Teknologi Eksklusif EterVerse
             </span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white tracking-tight leading-tight">
-            In-Game Vote Reward <br />
+            EterReward™ <br />
             <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-300 bg-clip-text text-transparent">
-              Integrasi Protokol NuVotifier
+              In-Game Real-Time Sync Engine
             </span>
           </h1>
 
           <p className="text-zinc-300 font-body text-base sm:text-lg leading-relaxed">
-            Berikan hadiah instan di dalam game (seperti <strong className="text-white">Vote Crate Key</strong>, <strong className="text-white">Diamond</strong>, atau <strong className="text-white">Koin Server</strong>) setiap kali pemain melakukan vote untuk servermu di EterVerse.
+            Berikan hadiah instan di dalam game (seperti <strong className="text-white">Vote Crate Key</strong>, <strong className="text-white">Diamond</strong>, atau <strong className="text-white">Koin Server</strong>) secara otomatis setiap kali pemain mem-vote servermu di EterVerse.
           </p>
 
           <div className="flex items-center gap-3 pt-2 flex-wrap">
             <div className="flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 px-3.5 py-1.5 rounded-xl text-xs font-mono text-zinc-300">
               <Lightning size={14} weight="fill" className="text-amber-400" />
-              <span>Tembak Paket &lt; 1 Detik</span>
+              <span>Sinkronisasi Cepat (&lt; 1 Detik)</span>
             </div>
             <div className="flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 px-3.5 py-1.5 rounded-xl text-xs font-mono text-zinc-300">
               <ShieldCheck size={14} weight="fill" className="text-emerald-400" />
-              <span>Enkripsi RSA 2048-bit</span>
+              <span>Enkripsi RSA 2048-bit Militer</span>
             </div>
             <div className="flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 px-3.5 py-1.5 rounded-xl text-xs font-mono text-zinc-300">
               <Cpu size={14} weight="fill" className="text-cyan-400" />
-              <span>Mendukung Java & Bedrock (Geyser)</span>
+              <span>Mendukung Java &amp; Bedrock (Geyser)</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Why it Matters (3 Pillars) */}
+      {/* 3 Pillars */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div className="p-6 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 flex flex-col gap-3">
           <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
             <Lightning size={22} weight="fill" />
           </div>
-          <h3 className="text-base font-display font-semibold text-white">Trafik Otomatis & Viral</h3>
+          <h3 className="text-base font-display font-semibold text-white">Trafik Otomatis &amp; Viral</h3>
           <p className="text-xs sm:text-sm text-zinc-400 font-body leading-relaxed">
-            Cukup atur perintah <code className="text-amber-300 bg-zinc-900 px-1.5 py-0.5 rounded font-mono">/vote</code> di servermu mengarah ke EterVerse. Ratusan pemainmu akan membuka web setiap hari tanpa perlu kamu promosi manual!
+            Cukup atur perintah <code className="text-amber-300 bg-zinc-900 px-1.5 py-0.5 rounded font-mono">/vote</code> di servermu mengarah ke EterVerse. Ratusan pemainmu akan membuka web setiap hari tanpa perlu promosi manual!
           </p>
         </div>
 
@@ -157,7 +152,7 @@ export default function VotifierComingSoonPage() {
       <div className="flex flex-col gap-6 p-6 sm:p-8 bg-zinc-950/70 border border-zinc-800/90 rounded-2xl">
         <div>
           <span className="text-xs font-mono uppercase tracking-widest text-cyan-400">Mekanisme Kerja</span>
-          <h2 className="text-xl sm:text-2xl font-display font-bold text-white mt-1">Bagaimana Alur Votifier Bekerja?</h2>
+          <h2 className="text-xl sm:text-2xl font-display font-bold text-white mt-1">Bagaimana Protokol EterReward™ Bekerja?</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -179,7 +174,7 @@ export default function VotifierComingSoonPage() {
             </div>
             <span className="text-sm font-semibold text-white mt-1">Input Username (IGN)</span>
             <span className="text-xs text-zinc-400 font-body leading-relaxed">
-              Pemain membuka EterVerse, mengklik tombol Vote, dan memasukkan IGN (contoh: <code className="text-zinc-300">Stevyuss</code>).
+              Pemain membuka EterVerse, mengklik tombol Vote, dan memasukkan IGN karakter Minecraft mereka.
             </span>
           </div>
 
@@ -190,7 +185,7 @@ export default function VotifierComingSoonPage() {
             </div>
             <span className="text-sm font-semibold text-white mt-1">Pengiriman Terenkripsi</span>
             <span className="text-xs text-zinc-400 font-body leading-relaxed">
-              EterVerse mengenkripsi paket dengan RSA Public Key dan menembakkannya via TCP Socket ke Port Votifier servermu.
+              EterVerse mengenkripsi payload dengan kunci RSA dan menembakkannya via TCP Socket ke Port Server kamu dalam sekejap.
             </span>
           </div>
 
@@ -201,21 +196,53 @@ export default function VotifierComingSoonPage() {
             </div>
             <span className="text-sm font-semibold text-white mt-1">Hadiah Masuk ke Tas!</span>
             <span className="text-xs text-zinc-400 font-body leading-relaxed">
-              Plugin NuVotifier memvalidasi paket, lalu broadcast pesan dan mengirim reward langsung ke pemain secara instan.
+              Server memvalidasi sinyal EterReward, lalu broadcast pesan dan mengirim reward langsung ke pemain secara instan.
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* Special Section: How About Realms? */}
+      <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-purple-950/30 via-zinc-950 to-zinc-950 border border-purple-500/30 flex flex-col gap-4">
+        <div className="flex items-center gap-2 text-purple-300">
+          <Crown size={22} weight="fill" className="text-purple-400" />
+          <h3 className="text-lg font-display font-semibold text-white">Bagaimana dengan Minecraft Realms?</h3>
+        </div>
+        
+        <p className="text-xs sm:text-sm text-zinc-300 font-body leading-relaxed">
+          Banyak yang bertanya: <em className="text-purple-300">"Apakah Minecraft Realms bisa menggunakan sinkronisasi socket otomatis ini?"</em>
+        </p>
+        
+        <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/80 flex flex-col gap-2 text-xs text-zinc-400">
+          <div className="flex items-center gap-2 text-zinc-200 font-semibold">
+            <WarningCircle size={16} className="text-amber-400 shrink-0" />
+            <span>Batasan Resmi dari Mojang / Microsoft untuk Realms:</span>
+          </div>
+          <p className="leading-relaxed pl-6">
+            Layanan Minecraft Realms dihosting langsung di cloud tertutup Mojang. Mojang <strong>sama sekali tidak memberikan akses folder plugin</strong> dan <strong>menutup semua port jaringan eksternal</strong> demi alasan keamanan sandbox mereka. Sehingga, tidak ada server list di dunia yang bisa memasang socket listener langsung ke dalam Realm.
+          </p>
+        </div>
+
+        <div className="p-4 rounded-xl bg-purple-950/30 border border-purple-500/30 flex flex-col gap-2 text-xs text-zinc-300">
+          <div className="flex items-center gap-2 text-purple-200 font-semibold">
+            <Sparkle size={16} weight="fill" className="text-purple-400 shrink-0" />
+            <span>Solusi Kreatif EterVerse untuk Komunitas Realms (EterRealm Discord Webhook):</span>
+          </div>
+          <p className="leading-relaxed pl-6">
+            EterVerse sedang menyiapkan <strong>EterRealm Bot Webhook</strong>. Setiap kali pemain vote Realm Anda di EterVerse, bot akan otomatis mengirim log username pemilih ke channel Discord Realm Anda. Anda atau admin Realm bisa memberikan hadiah berupa <strong>Whitelist Prioritas</strong>, <strong>Role Eksklusif Discord</strong>, atau membagikan reward in-game secara manual saat online!
+          </p>
         </div>
       </div>
 
       {/* Requirements Section */}
       <div className="flex flex-col gap-6 p-6 sm:p-8 bg-zinc-950/70 border border-zinc-800/90 rounded-2xl">
         <div>
-          <span className="text-xs font-mono uppercase tracking-widest text-emerald-400">Persyaratan & Checklist</span>
+          <span className="text-xs font-mono uppercase tracking-widest text-emerald-400">Persyaratan &amp; Checklist</span>
           <h2 className="text-xl sm:text-2xl font-display font-bold text-white mt-1">
             Apa Saja yang Perlu Disiapkan di Server Kamu?
           </h2>
           <p className="text-zinc-400 font-body text-xs sm:text-sm mt-1">
-            Sebelum fitur ini resmi aktif, pastikan server Minecraft kamu telah memenuhi 5 syarat berikut:
+            Sebelum fitur ini resmi diluncurkan, pastikan server Minecraft kamu telah memenuhi checklist berikut:
           </p>
         </div>
 
@@ -247,7 +274,7 @@ export default function VotifierComingSoonPage() {
         </div>
       </div>
 
-      {/* Roadmap & Notification Banner */}
+      {/* Roadmap Banner */}
       <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-blue-950/30 via-cyan-950/20 to-zinc-950 border border-cyan-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="flex flex-col gap-2 max-w-xl">
           <span className="text-xs font-mono text-cyan-300 uppercase tracking-widest font-semibold flex items-center gap-1.5">
@@ -258,7 +285,7 @@ export default function VotifierComingSoonPage() {
             Ingin servermu jadi yang pertama mencoba saat rilis?
           </h3>
           <p className="text-xs sm:text-sm text-zinc-400 font-body">
-            Tim developer EterVerse sedang mematangkan integrasi backend socket server. Notifikasi dan opsi konfigurasi Votifier akan muncul otomatis di halaman Edit Server begitu fitur siap.
+            Tim developer EterVerse sedang mematangkan integrasi backend socket server. Notifikasi dan opsi konfigurasi EterReward akan muncul otomatis di halaman Edit Server begitu fitur siap.
           </p>
         </div>
 

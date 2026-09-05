@@ -210,12 +210,12 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
             </div>
           )}
 
-          {/* Votifier Teaser Notice */}
+          {/* EterReward Teaser Notice */}
           <div className="p-3.5 rounded-xl bg-cyan-950/20 border border-cyan-500/20 flex items-start justify-between gap-3 text-xs">
             <div className="flex items-center gap-2 text-cyan-300">
               <Sparkle size={16} weight="fill" className="shrink-0 text-cyan-400" />
               <span className="font-body">
-                <strong>In-Game Vote Reward (NuVotifier)</strong> segera hadir! Pemainmu nanti bisa klaim reward in-game saat vote.
+                <strong>EterReward™ (In-Game Sync)</strong> segera hadir! Pemainmu nanti bisa klaim reward in-game otomatis saat vote.
               </span>
             </div>
             <a 

@@ -123,7 +123,7 @@ export default async function AdminModerationPage() {
         ))}
       </div>
 
-      {/* NuVotifier Feature Roadmap for Admin */}
+      {/* EterReward Feature Roadmap for Admin */}
       <div className="bg-gradient-to-r from-cyan-950/30 via-[#09090b] to-[#09090b] border border-cyan-500/30 p-5 rounded-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-md bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
@@ -132,14 +132,14 @@ export default async function AdminModerationPage() {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
-                Fitur Integrasi • Segera Hadir
+                Fitur Eksklusif • Segera Hadir
               </span>
               <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-semibold uppercase">
-                NuVotifier
+                EterReward™
               </span>
             </div>
-            <p className="text-sm font-semibold text-white mt-0.5">In-Game Vote Reward &amp; Syarat Kualifikasi Server</p>
-            <p className="text-xs text-zinc-400 font-body">Protokol TCP socket &amp; RSA encryption untuk reward pemain in-game.</p>
+            <p className="text-sm font-semibold text-white mt-0.5">EterReward™: In-Game Real-Time Sync Engine</p>
+            <p className="text-xs text-zinc-400 font-body">Protokol TCP socket &amp; RSA 2048-bit encryption untuk reward pemain in-game.</p>
           </div>
         </div>
         <Link 

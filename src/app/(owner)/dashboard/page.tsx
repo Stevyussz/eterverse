@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import Link from "next/link";
-import { ChartLineUp, Users, CursorClick, Clock, CheckCircle, Eye, PencilSimple, WarningCircle, Sparkle, ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { ChartLineUp, Users, CursorClick, Clock, CheckCircle, Eye, PencilSimple, WarningCircle, Sparkle, ArrowRight, CalendarDots, Info } from "@phosphor-icons/react/dist/ssr";
 import { revalidatePath } from "next/cache";
 import { DeleteServerButton } from "@/components/dashboard/DeleteServerButton";
 
@@ -47,7 +47,7 @@ export default async function DashboardOverview() {
         </Link>
       </header>
 
-      {/* Coming Soon: NuVotifier Teaser Banner */}
+      {/* Coming Soon: EterReward Teaser Banner */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-950/40 via-zinc-950 to-zinc-950 border border-cyan-500/30 p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-lg">
         <div className="flex items-start gap-4">
           <div className="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0 mt-0.5">
@@ -56,14 +56,14 @@ export default async function DashboardOverview() {
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
-                Fitur Baru Segera Hadir
+                Fitur Eksklusif Segera Hadir
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-semibold">
-                NuVotifier
+                EterReward™
               </span>
             </div>
             <h3 className="text-base sm:text-lg font-display font-semibold text-white">
-              In-Game Vote Reward untuk Pemain Servermu
+              EterReward™: In-Game Vote Reward Otomatis
             </h3>
             <p className="text-xs sm:text-sm text-zinc-400 font-body max-w-2xl">
               Beri hadiah otomatis (Crate Key, Diamond, Koin) langsung di dalam game setiap kali pemain melakukan vote di EterVerse. Pelajari syarat dan cara menyiapkan servermu lebih awal.
@@ -77,6 +77,48 @@ export default async function DashboardOverview() {
         >
           <span>Pelajari &amp; Cek Syarat</span>
           <ArrowRight size={14} weight="bold" />
+        </Link>
+      </div>
+
+      {/* Quick Access Highlights (Event Hub & Information Center) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Link
+          href="/dashboard/tools/events"
+          className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-amber-500/40 transition-all flex items-center justify-between gap-3 group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+              <CalendarDots size={18} weight="fill" />
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-semibold text-white group-hover:text-amber-300 transition-colors">
+                  Kalender Acara &amp; Reset Season
+                </span>
+                <span className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">SOON</span>
+              </div>
+              <span className="text-[11px] text-zinc-400 font-body">Promosikan turnamen PvP, giveaway, &amp; season baru dengan countdown.</span>
+            </div>
+          </div>
+          <ArrowRight size={14} className="text-zinc-500 group-hover:text-amber-300 transition-colors shrink-0" />
+        </Link>
+
+        <Link
+          href="/dashboard/info"
+          className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-indigo-500/40 transition-all flex items-center justify-between gap-3 group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+              <Info size={18} weight="fill" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-white group-hover:text-indigo-300 transition-colors">
+                Pusat Informasi &amp; Panduan Server
+              </span>
+              <span className="text-[11px] text-zinc-400 font-body">Standar moderasi, konfigurasi port, panduan Realms, &amp; FAQ lengkap.</span>
+            </div>
+          </div>
+          <ArrowRight size={14} className="text-zinc-500 group-hover:text-indigo-300 transition-colors shrink-0" />
         </Link>
       </div>
 

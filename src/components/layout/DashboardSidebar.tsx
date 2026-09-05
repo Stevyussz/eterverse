@@ -9,6 +9,8 @@ import {
   Code, 
   Lightning,
   Sparkle,
+  CalendarDots,
+  Info,
   SignOut,
   List,
   X
@@ -83,8 +85,23 @@ export function DashboardSidebar({ user }: SidebarProps) {
             <SidebarLink 
               href="/dashboard/tools/votifier" 
               icon={<Sparkle size={20} weight="fill" className="text-cyan-400" />} 
-              label="Reward Votifier" 
+              label="EterReward™" 
               badge="SOON"
+              pathname={pathname} 
+              onClick={closeSidebar} 
+            />
+            <SidebarLink 
+              href="/dashboard/tools/events" 
+              icon={<CalendarDots size={20} weight="fill" className="text-amber-400" />} 
+              label="Jadwal Event" 
+              badge="SOON"
+              pathname={pathname} 
+              onClick={closeSidebar} 
+            />
+            <SidebarLink 
+              href="/dashboard/info" 
+              icon={<Info size={20} weight="fill" className="text-indigo-400" />} 
+              label="Pusat Informasi" 
               pathname={pathname} 
               onClick={closeSidebar} 
             />
