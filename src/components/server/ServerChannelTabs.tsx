@@ -78,7 +78,7 @@ export function ServerChannelTabs({
     <div className="flex flex-col gap-6 w-full">
       
       {/* ── YouTube-Style Sticky Tabs Bar (Refined & Minimalist) ────────────────── */}
-      <div className="border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md sticky top-[68px] sm:top-[74px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0">
+      <div className="border-b border-zinc-800/80 bg-[#09090b] sm:bg-[#09090b]/90 sm:backdrop-blur-md sticky top-[68px] sm:top-[74px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none py-1">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.key;

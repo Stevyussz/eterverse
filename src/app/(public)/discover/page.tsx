@@ -196,7 +196,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
             Tidak ada server yang ditemukan{q ? ` untuk "${q}"` : ''}. Coba kata kunci lain.
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 content-auto">
             {serialized.map((server) => (
               <ServerCard key={server.slug} {...server as any} />
             ))}

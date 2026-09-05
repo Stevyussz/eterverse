@@ -26,6 +26,12 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  @media (pointer: coarse) {
+    html {
+      scroll-behavior: auto; /* Restores instant, lag-free native touch momentum on mobile */
+    }
+  }
+
   body {
     background-color: var(--color-eter-abyss);
     color: var(--color-eter-starlight);
@@ -33,6 +39,7 @@
     scrollbar-color: rgba(255, 255, 255, 0.15) var(--color-eter-abyss); 
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -91,6 +98,8 @@
   z-index: -2;
   object-fit: cover;
   pointer-events: none;
+  contain: strict;
+  will-change: transform;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   backface-visibility: hidden;
@@ -105,6 +114,8 @@
   height: 100vh;
   z-index: -1;
   pointer-events: none;
+  contain: strict;
+  will-change: transform;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   backface-visibility: hidden;

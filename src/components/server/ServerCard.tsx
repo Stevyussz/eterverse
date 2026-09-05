@@ -50,18 +50,36 @@ export function ServerCard({
       };
     }
 
+    // On touch devices: do NOT load/play heavy media while user is actively scrolling/swiping!
+    let isScrolling = false;
+    let scrollDebounceTimer: NodeJS.Timeout | null = null;
+
+    const handleScroll = () => {
+      isScrolling = true;
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+      setIsHovered(false);
+      if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
+      scrollDebounceTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 250);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
     // Focal-Zone IntersectionObserver:
-    // rootMargin restricts triggering to the center reading area of the screen (-25% top, -25% bottom)
-    // Only ONE card in the user's primary view will auto-play, matching TikTok / Reels behavior!
+    // Only triggers when the user has settled on a specific card for at least 650ms after stopping scroll
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-            // Settle debounce (100ms): only start playing when user slows down/settles on this card
             hoverTimeoutRef.current = setTimeout(() => {
-              setIsHovered(true);
-            }, 100);
+              if (!isScrolling) {
+                setIsHovered(true);
+              }
+            }, 650);
           } else {
             if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
             setIsHovered(false);
@@ -69,8 +87,8 @@ export function ServerCard({
         });
       },
       {
-        rootMargin: "-25% 0px -25% 0px",
-        threshold: 0.35,
+        rootMargin: "-20% 0px -20% 0px",
+        threshold: 0.5,
       }
     );
 
@@ -78,7 +96,9 @@ export function ServerCard({
 
     return () => {
       observer.unobserve(currentCard);
+      window.removeEventListener("scroll", handleScroll);
       if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
     };
   }, []);
 
@@ -102,7 +122,7 @@ export function ServerCard({
     <Link 
       href={`/server/${slug}`}
       ref={cardRef}
-      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-xl overflow-hidden border border-zinc-800/90 bg-zinc-950 hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/60 [contain:paint]"
+      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-xl overflow-hidden border border-zinc-800/90 bg-zinc-950 hover:border-zinc-600 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/60 [contain:paint] transform-gpu"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -111,7 +131,7 @@ export function ServerCard({
         videoUrl={videoUrl} 
         fallbackImage={bannerUrl}
         isHovered={isHovered} 
-        className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${isHovered ? 'opacity-100 scale-105' : 'opacity-40'}`} 
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-40'}`} 
       />
       
       {/* Gradient Overlay for Readability */}
@@ -121,26 +141,26 @@ export function ServerCard({
       <div className="relative z-10 flex justify-between items-start p-3.5 sm:p-4 gap-2">
         <div className="flex items-center gap-1.5 flex-wrap">
           {isEterShopPartner && (
-            <div className="flex items-center gap-1.5 bg-amber-500/15 backdrop-blur-md border border-amber-500/30 px-2.5 py-1 rounded-full h-fit">
+            <div className="flex items-center gap-1.5 bg-amber-950/80 sm:bg-amber-500/15 sm:backdrop-blur-md border border-amber-500/30 px-2.5 py-1 rounded-full h-fit">
               <Trophy weight="fill" className="text-amber-400" size={12} />
               <span className="text-[9px] font-mono font-semibold text-amber-300 tracking-wider uppercase">Partner</span>
             </div>
           )}
           {serverType === 'REALM' ? (
-            <div className="flex items-center gap-1.5 bg-purple-500/20 backdrop-blur-md border border-purple-500/40 px-2.5 py-1 rounded-full h-fit shadow-[0_0_10px_rgba(168,85,247,0.25)]">
+            <div className="flex items-center gap-1.5 bg-purple-950/80 sm:bg-purple-500/20 sm:backdrop-blur-md border border-purple-500/40 px-2.5 py-1 rounded-full h-fit shadow-[0_0_10px_rgba(168,85,247,0.25)]">
               <Crown weight="fill" className="text-purple-300" size={12} />
               <span className="text-[9px] font-mono font-semibold text-purple-200 tracking-wider uppercase">Realm</span>
             </div>
           ) : platform === 'CROSSPLAY' ? (
-            <div className="flex items-center gap-1 bg-cyan-500/15 backdrop-blur-md border border-cyan-500/35 px-2 py-0.5 rounded-full h-fit">
+            <div className="flex items-center gap-1 bg-cyan-950/80 sm:bg-cyan-500/15 sm:backdrop-blur-md border border-cyan-500/35 px-2 py-0.5 rounded-full h-fit">
               <span className="text-[8px] sm:text-[9px] font-mono font-semibold text-cyan-300 tracking-wider uppercase">Java + Bedrock</span>
             </div>
           ) : platform === 'BEDROCK' ? (
-            <div className="flex items-center gap-1 bg-emerald-500/15 backdrop-blur-md border border-emerald-500/35 px-2 py-0.5 rounded-full h-fit">
+            <div className="flex items-center gap-1 bg-emerald-950/80 sm:bg-emerald-500/15 sm:backdrop-blur-md border border-emerald-500/35 px-2 py-0.5 rounded-full h-fit">
               <span className="text-[8px] sm:text-[9px] font-mono font-semibold text-emerald-300 tracking-wider uppercase">Bedrock</span>
             </div>
           ) : (
-            <div className="flex items-center gap-1 bg-blue-500/15 backdrop-blur-md border border-blue-500/35 px-2 py-0.5 rounded-full h-fit">
+            <div className="flex items-center gap-1 bg-blue-950/80 sm:bg-blue-500/15 sm:backdrop-blur-md border border-blue-500/35 px-2 py-0.5 rounded-full h-fit">
               <span className="text-[8px] sm:text-[9px] font-mono font-semibold text-blue-300 tracking-wider uppercase">Java</span>
             </div>
           )}
@@ -148,7 +168,7 @@ export function ServerCard({
 
         <div className="ml-auto flex flex-col gap-1.5 items-end">
            {safeTags.slice(0, 2).map((tag) => (
-             <span key={tag} className="bg-black/70 backdrop-blur-md border border-white/10 text-[8px] sm:text-[9px] font-mono font-medium text-zinc-300 px-2 py-0.5 uppercase tracking-wider rounded-md">
+             <span key={tag} className="bg-zinc-900/90 sm:bg-black/70 sm:backdrop-blur-md border border-white/10 text-[8px] sm:text-[9px] font-mono font-medium text-zinc-300 px-2 py-0.5 uppercase tracking-wider rounded-md">
                {tag}
              </span>
            ))}

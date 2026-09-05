@@ -94,6 +94,7 @@ export function BackgroundVideo({
             style={{ border: 0 }}
             title="Background Video"
             loading="lazy"
+            tabIndex={-1}
           />
         )}
       </div>
@@ -108,7 +109,7 @@ export function BackgroundVideo({
       muted
       loop
       playsInline
-      preload="metadata"
+      preload="none"
       poster={fallbackImage}
       className={`pointer-events-none object-cover ${className}`}
     />

@@ -88,7 +88,7 @@ export function MobileStickyActionBar({
   };
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#09090b]/92 backdrop-blur-xl border-t border-white/10 px-3 sm:px-4 py-2.5 shadow-[0_-10px_30px_rgba(0,0,0,0.7)] flex items-center justify-between gap-2.5 animate-fade-in">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#09090b] sm:bg-[#09090b]/92 sm:backdrop-blur-xl border-t border-white/10 px-3 sm:px-4 py-2.5 shadow-[0_-10px_30px_rgba(0,0,0,0.7)] flex items-center justify-between gap-2.5 animate-fade-in">
       
       {/* Mini Server Identity */}
       <div className="flex items-center gap-2.5 min-w-0 flex-1">

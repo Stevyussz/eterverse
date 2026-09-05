@@ -53,7 +53,7 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
     <nav
       className={`fixed top-0 w-full z-50 transition-all duration-smooth ${
         scrolled || mobileOpen
-          ? "bg-[#09090b]/90 backdrop-blur-md border-b border-white/10 py-3.5 shadow-2xl"
+          ? "bg-[#09090b] sm:bg-[#09090b]/90 sm:backdrop-blur-md border-b border-white/10 py-3.5 shadow-2xl"
           : "bg-transparent py-5"
       }`}
     >

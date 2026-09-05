@@ -11,7 +11,7 @@ export function BackgroundController() {
     return (
       <>
         <div className="bg-vignette opacity-80" />
-        <div className="fixed inset-0 bg-[#050505]/70 backdrop-blur-[2px] z-[-40] pointer-events-none" />
+        <div className="fixed inset-0 bg-[#050505]/85 z-[-40] pointer-events-none" />
         <picture>
           <source media="(max-width: 768px)" type="image/webp" srcSet="/dashboard-bg-mobile.webp" />
           <source media="(max-width: 768px)" srcSet="/dashboard-bg-mobile.png" />
