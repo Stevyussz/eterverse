@@ -32,10 +32,10 @@ export const metadata: Metadata = {
 
 const ALL_TAGS = ["Survival", "SMP", "Lifesteal", "Economy", "Creative", "PvP", "RPG", "Skyblock", "Factions", "Mini-Games"];
 
-type Props = { searchParams: Promise<{ q?: string; tag?: string; sort?: string }> };
+type Props = { searchParams: Promise<{ q?: string; tag?: string; sort?: string; platform?: string }> };
 
 export default async function DiscoverPage({ searchParams }: Props) {
-  const { q, tag, sort = "votes" } = await searchParams;
+  const { q, tag, sort = "votes", platform } = await searchParams;
 
   await connectToDatabase();
 
@@ -49,6 +49,12 @@ export default async function DiscoverPage({ searchParams }: Props) {
   }
   if (tag) {
     query.tags = { $in: [new RegExp(tag, 'i')] };
+  }
+  if (platform === 'REALM') {
+    query.serverType = 'REALM';
+  } else if (platform && ['JAVA', 'BEDROCK', 'CROSSPLAY'].includes(platform)) {
+    query.serverType = 'SERVER';
+    query.platform = platform;
   }
 
   const sortMap: Record<string, Record<string, 1 | -1>> = {
@@ -73,6 +79,14 @@ export default async function DiscoverPage({ searchParams }: Props) {
 
   const serialized = servers.map(serialize);
 
+  const PLATFORMS = [
+    { id: "", label: "Semua Platform" },
+    { id: "CROSSPLAY", label: "⚡ Crossplay (Java + Bedrock)" },
+    { id: "JAVA", label: "☕ Java Edition" },
+    { id: "BEDROCK", label: "📱 Bedrock / MCPE" },
+    { id: "REALM", label: "👑 Realms" },
+  ];
+
   return (
     <main className="relative min-h-screen pt-28 pb-24 px-6 lg:px-24">
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
@@ -85,6 +99,8 @@ export default async function DiscoverPage({ searchParams }: Props) {
 
         {/* Search & Filters */}
         <form method="GET" className="flex flex-col md:flex-row gap-3">
+          {platform && <input type="hidden" name="platform" value={platform} />}
+          {tag && <input type="hidden" name="tag" value={tag} />}
           <div className="relative flex-1">
             <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
             <input
@@ -110,19 +126,59 @@ export default async function DiscoverPage({ searchParams }: Props) {
           </button>
         </form>
 
-        {/* Tag Pills */}
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-            <FunnelSimple size={14} /> Kategori:
-          </span>
-          <a href="/discover" className={`text-xs font-mono px-3 py-1 rounded-full border transition-colors ${!tag ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}>
-            Semua
-          </a>
-          {ALL_TAGS.map(t => (
-            <a key={t} href={`/discover?${new URLSearchParams({ ...(q && { q }), tag: t, sort }).toString()}`} className={`text-xs font-mono px-3 py-1 rounded-full border transition-colors ${tag?.toLowerCase() === t.toLowerCase() ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}>
-              {t}
+        {/* Filter Rows Container */}
+        <div className="flex flex-col gap-3">
+          {/* Platform Pills */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
+              Edisi:
+            </span>
+            {PLATFORMS.map(p => {
+              const isActive = (platform || "") === p.id;
+              const nextParams = new URLSearchParams({
+                ...(q && { q }),
+                ...(tag && { tag }),
+                ...(sort && { sort }),
+                ...(p.id && { platform: p.id })
+              });
+              if (!p.id) nextParams.delete("platform");
+              return (
+                <a
+                  key={p.id}
+                  href={`/discover?${nextParams.toString()}`}
+                  className={`text-xs font-mono px-3 py-1 rounded-full border transition-all ${
+                    isActive
+                      ? 'bg-white text-zinc-950 font-semibold border-white shadow-sm'
+                      : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white bg-zinc-950/40'
+                  }`}
+                >
+                  {p.label}
+                </a>
+              );
+            })}
+          </div>
+
+          {/* Tag Pills */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+              <FunnelSimple size={14} /> Kategori:
+            </span>
+            <a 
+              href={`/discover?${new URLSearchParams({ ...(q && { q }), ...(platform && { platform }), sort }).toString()}`} 
+              className={`text-xs font-mono px-3 py-1 rounded-full border transition-colors ${!tag ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
+            >
+              Semua
             </a>
-          ))}
+            {ALL_TAGS.map(t => (
+              <a 
+                key={t} 
+                href={`/discover?${new URLSearchParams({ ...(q && { q }), ...(platform && { platform }), tag: t, sort }).toString()}`} 
+                className={`text-xs font-mono px-3 py-1 rounded-full border transition-colors ${tag?.toLowerCase() === t.toLowerCase() ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
+              >
+                {t}
+              </a>
+            ))}
+          </div>
         </div>
 
         {/* Results */}

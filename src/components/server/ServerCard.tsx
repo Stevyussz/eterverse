@@ -9,6 +9,7 @@ interface ServerCardProps {
   name: string;
   slug: string;
   serverType?: 'SERVER' | 'REALM';
+  platform?: 'JAVA' | 'BEDROCK' | 'CROSSPLAY';
   videoUrl?: string;
   bannerUrl?: string;
   isEterShopPartner?: boolean;
@@ -23,6 +24,7 @@ export function ServerCard({
   name,
   slug,
   serverType = 'SERVER',
+  platform = 'CROSSPLAY',
   videoUrl = "",
   bannerUrl,
   isEterShopPartner = false,
@@ -124,10 +126,22 @@ export function ServerCard({
               <span className="text-[9px] font-mono font-semibold text-amber-300 tracking-wider uppercase">Partner</span>
             </div>
           )}
-          {serverType === 'REALM' && (
+          {serverType === 'REALM' ? (
             <div className="flex items-center gap-1.5 bg-purple-500/20 backdrop-blur-md border border-purple-500/40 px-2.5 py-1 rounded-full h-fit shadow-[0_0_10px_rgba(168,85,247,0.25)]">
               <Crown weight="fill" className="text-purple-300" size={12} />
               <span className="text-[9px] font-mono font-semibold text-purple-200 tracking-wider uppercase">Realm</span>
+            </div>
+          ) : platform === 'CROSSPLAY' ? (
+            <div className="flex items-center gap-1 bg-cyan-500/15 backdrop-blur-md border border-cyan-500/35 px-2 py-0.5 rounded-full h-fit">
+              <span className="text-[8px] sm:text-[9px] font-mono font-semibold text-cyan-300 tracking-wider uppercase">Java + Bedrock</span>
+            </div>
+          ) : platform === 'BEDROCK' ? (
+            <div className="flex items-center gap-1 bg-emerald-500/15 backdrop-blur-md border border-emerald-500/35 px-2 py-0.5 rounded-full h-fit">
+              <span className="text-[8px] sm:text-[9px] font-mono font-semibold text-emerald-300 tracking-wider uppercase">Bedrock</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 bg-blue-500/15 backdrop-blur-md border border-blue-500/35 px-2 py-0.5 rounded-full h-fit">
+              <span className="text-[8px] sm:text-[9px] font-mono font-semibold text-blue-300 tracking-wider uppercase">Java</span>
             </div>
           )}
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Spinner, Crown } from "@phosphor-icons/react";
+import { Spinner, Crown, Desktop, DeviceMobile, Lightning } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { ImageUploader } from "@/components/ui/ImageUploader";
 import { VideoUploader } from "@/components/ui/VideoUploader";
@@ -10,9 +10,11 @@ import { MarkdownTextarea } from "@/components/ui/MarkdownTextarea";
 interface ServerData {
   name: string;
   serverType?: "SERVER" | "REALM";
+  platform?: "JAVA" | "BEDROCK" | "CROSSPLAY";
   realmCode?: string;
   ipAddress: string;
   port: number;
+  bedrockPort?: number;
   description: string;
   tags: string[];
   videoUrl: string;
@@ -31,6 +33,7 @@ interface ServerData {
 export function ServerEditForm({ action, server }: { action: (formData: FormData) => Promise<void>; server: ServerData }) {
   const [isPending, setIsPending] = useState(false);
   const [serverType, setServerType] = useState<"SERVER" | "REALM">(server.serverType || "SERVER");
+  const [platform, setPlatform] = useState<"JAVA" | "BEDROCK" | "CROSSPLAY">(server.platform || "CROSSPLAY");
 
   return (
     <form
@@ -48,6 +51,7 @@ export function ServerEditForm({ action, server }: { action: (formData: FormData
       className="flex flex-col gap-6"
     >
       <input type="hidden" name="serverType" value={serverType} />
+      <input type="hidden" name="platform" value={platform} />
 
       {/* Type Selection */}
       <div className="flex flex-col gap-2">
@@ -65,7 +69,7 @@ export function ServerEditForm({ action, server }: { action: (formData: FormData
             }`}
           >
             <span className="font-semibold">Dedicated Server</span>
-            <span className="text-[10px] font-mono text-zinc-400 hidden sm:inline">(Java / Bedrock)</span>
+            <span className="text-[10px] font-mono text-zinc-400 hidden sm:inline">(Java / Bedrock / Crossplay)</span>
           </button>
           <button
             type="button"
@@ -83,6 +87,89 @@ export function ServerEditForm({ action, server }: { action: (formData: FormData
         </div>
       </div>
 
+      {/* Platform Selection (Only for Dedicated Servers) */}
+      {serverType === "SERVER" && (
+        <div className="flex flex-col gap-2.5 p-4 bg-zinc-950/60 border border-zinc-800/90 rounded-xl">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
+              Platform & Edisi Minecraft
+            </label>
+            <span className="text-[10px] text-zinc-500 font-body">Pilih versi pemain yang didukung</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            {/* Crossplay */}
+            <button
+              type="button"
+              onClick={() => setPlatform("CROSSPLAY")}
+              className={`flex flex-col gap-1.5 p-3 rounded-xl border text-left transition-all ${
+                platform === "CROSSPLAY"
+                  ? "bg-cyan-500/10 border-cyan-500/50 shadow-[0_0_15px_rgba(34,211,238,0.12)]"
+                  : "bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700 text-zinc-400"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-semibold flex items-center gap-1.5 ${platform === "CROSSPLAY" ? "text-cyan-300" : "text-zinc-200"}`}>
+                  <Lightning size={14} weight="fill" className="text-cyan-400" /> Crossplay
+                </span>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-semibold uppercase tracking-wider">
+                  Keduanya
+                </span>
+              </div>
+              <span className="text-[11px] text-zinc-400 font-body leading-tight">
+                Java Edition + Bedrock (MCPE) bisa main bersama via GeyserMC.
+              </span>
+            </button>
+
+            {/* Java Edition */}
+            <button
+              type="button"
+              onClick={() => setPlatform("JAVA")}
+              className={`flex flex-col gap-1.5 p-3 rounded-xl border text-left transition-all ${
+                platform === "JAVA"
+                  ? "bg-blue-500/10 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.12)]"
+                  : "bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700 text-zinc-400"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-semibold flex items-center gap-1.5 ${platform === "JAVA" ? "text-blue-300" : "text-zinc-200"}`}>
+                  <Desktop size={14} weight="fill" className="text-blue-400" /> Java Edition
+                </span>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold uppercase tracking-wider">
+                  PC Only
+                </span>
+              </div>
+              <span className="text-[11px] text-zinc-400 font-body leading-tight">
+                Khusus pemain di PC/Mac menggunakan Minecraft Java Edition.
+              </span>
+            </button>
+
+            {/* Bedrock Edition */}
+            <button
+              type="button"
+              onClick={() => setPlatform("BEDROCK")}
+              className={`flex flex-col gap-1.5 p-3 rounded-xl border text-left transition-all ${
+                platform === "BEDROCK"
+                  ? "bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.12)]"
+                  : "bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700 text-zinc-400"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-semibold flex items-center gap-1.5 ${platform === "BEDROCK" ? "text-emerald-300" : "text-zinc-200"}`}>
+                  <DeviceMobile size={14} weight="fill" className="text-emerald-400" /> Bedrock / MCPE
+                </span>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold uppercase tracking-wider">
+                  Mobile/PC
+                </span>
+              </div>
+              <span className="text-[11px] text-zinc-400 font-body leading-tight">
+                Khusus pemain Android, iOS, Windows 10/11, & Konsol.
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-2">
         <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
           {serverType === "REALM" ? "Nama Realm" : "Nama Server"}
@@ -91,19 +178,55 @@ export function ServerEditForm({ action, server }: { action: (formData: FormData
       </div>
 
       {serverType === "SERVER" ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Alamat IP Server</label>
-            <input name="ipAddress" required={serverType === "SERVER"} defaultValue={server.ipAddress} type="text" className="bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-zinc-500 focus:outline-none transition-colors" />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Port Server</label>
-            <input name="port" type="number" defaultValue={server.port || 25565} className="bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-zinc-500 focus:outline-none transition-colors" />
-          </div>
+        <div className="flex flex-col gap-4">
+          {platform === "CROSSPLAY" && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="flex flex-col gap-2 sm:col-span-1">
+                <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Alamat IP / Domain</label>
+                <input name="ipAddress" required defaultValue={server.ipAddress} type="text" className="bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-zinc-500 focus:outline-none transition-colors" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-mono text-blue-300 uppercase tracking-widest">Port Java</label>
+                <input name="port" type="number" defaultValue={server.port || 25565} className="bg-zinc-950 border border-blue-500/30 focus:border-blue-400 rounded-lg px-4 py-2.5 text-white focus:outline-none transition-colors" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-mono text-cyan-300 uppercase tracking-widest">Port Bedrock (MCPE)</label>
+                <input name="bedrockPort" type="number" defaultValue={server.bedrockPort || 19132} className="bg-zinc-950 border border-cyan-500/30 focus:border-cyan-400 rounded-lg px-4 py-2.5 text-white focus:outline-none transition-colors" />
+              </div>
+            </div>
+          )}
+
+          {platform === "JAVA" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Alamat IP Java</label>
+                <input name="ipAddress" required defaultValue={server.ipAddress} type="text" className="bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-zinc-500 focus:outline-none transition-colors" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-mono text-blue-300 uppercase tracking-widest">Port Java (Default: 25565)</label>
+                <input name="port" type="number" defaultValue={server.port || 25565} className="bg-zinc-950 border border-blue-500/30 focus:border-blue-400 rounded-lg px-4 py-2.5 text-white focus:outline-none transition-colors" />
+              </div>
+            </div>
+          )}
+
+          {platform === "BEDROCK" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Alamat IP Bedrock</label>
+                <input name="ipAddress" required defaultValue={server.ipAddress} type="text" className="bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-zinc-500 focus:outline-none transition-colors" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-mono text-emerald-300 uppercase tracking-widest">Port Bedrock (Default: 19132)</label>
+                <input name="port" type="number" defaultValue={server.port || 19132} className="bg-zinc-950 border border-emerald-500/30 focus:border-emerald-400 rounded-lg px-4 py-2.5 text-white focus:outline-none transition-colors" />
+              </div>
+            </div>
+          )}
+
+          {/* Owner WhatsApp */}
           <div className="flex flex-col gap-2">
             <label className="text-xs font-mono text-zinc-400 uppercase tracking-widest flex items-center justify-between">
-              <span>Nomor WA (Owner)</span>
-              <span className="bg-white/5 text-zinc-400 px-2 py-0.5 rounded text-[10px]">Rahasia</span>
+              <span>Nomor WhatsApp Owner</span>
+              <span className="bg-white/5 text-zinc-400 px-2 py-0.5 rounded text-[10px]">Rahasia (Hanya untuk Admin)</span>
             </label>
             <input name="ownerWhatsApp" required type="text" defaultValue={server.ownerWhatsApp || ""} pattern="^62[0-9]{8,14}$" title="Awali dengan 62 tanpa spasi/simbol (contoh: 628123456789)" className="bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-zinc-500 focus:outline-none transition-colors" placeholder="628123456..." />
           </div>

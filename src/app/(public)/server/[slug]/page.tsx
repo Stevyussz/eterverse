@@ -107,6 +107,10 @@ export default async function ServerProfilePage(props: Props) {
   const rating = serverData.metrics?.rating || 0;
   const isRealm = serverData.serverType === "REALM";
 
+  const effectiveBedrockPort = serverData.platform === "BEDROCK" 
+    ? (serverData.port || 19132) 
+    : (serverData.bedrockPort || 19132);
+
   return (
     <>
       <JsonLdSchema server={serverData} />
@@ -166,9 +170,21 @@ export default async function ServerProfilePage(props: Props) {
                     <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white tracking-tight leading-tight">
                       {serverData.name}
                     </h1>
-                    {isRealm && (
+                    {isRealm ? (
                       <div className="bg-purple-500/15 border border-purple-500/35 text-purple-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0 shadow-[0_0_12px_rgba(168,85,247,0.2)]">
                         <Crown weight="fill" size={12} /> Realm
+                      </div>
+                    ) : serverData.platform === "CROSSPLAY" ? (
+                      <div className="bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
+                        ⚡ Java + Bedrock
+                      </div>
+                    ) : serverData.platform === "BEDROCK" ? (
+                      <div className="bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
+                        📱 Bedrock (MCPE)
+                      </div>
+                    ) : (
+                      <div className="bg-blue-500/15 border border-blue-500/35 text-blue-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
+                        ☕ Java Edition
                       </div>
                     )}
                     {serverData.isEterShopPartner && (
@@ -215,13 +231,15 @@ export default async function ServerProfilePage(props: Props) {
               {/* Action Buttons (Desktop & Tablet) */}
               <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-end flex-wrap">
                 <VoteButton slug={serverData.slug} initialVotes={votes} />
-                <DirectPlayButton 
-                  serverName={serverData.name}
-                  ipAddress={serverData.ipAddress}
-                  port={serverData.port}
-                  isRealm={isRealm}
-                  realmCode={serverData.realmCode}
-                />
+                {(isRealm || serverData.platform !== "JAVA") && (
+                  <DirectPlayButton 
+                    serverName={serverData.name}
+                    ipAddress={serverData.ipAddress}
+                    port={effectiveBedrockPort}
+                    isRealm={isRealm}
+                    realmCode={serverData.realmCode}
+                  />
+                )}
                 <CopyIPButton 
                   ipAddress={serverData.ipAddress}
                   port={serverData.port}
@@ -299,9 +317,10 @@ export default async function ServerProfilePage(props: Props) {
       <MobileStickyActionBar 
         serverName={serverData.name}
         ipAddress={serverData.ipAddress}
-        port={serverData.port}
+        port={effectiveBedrockPort}
         isRealm={isRealm}
         realmCode={serverData.realmCode}
+        platform={serverData.platform}
         logoUrl={serverData.logoUrl}
         isOnline={isOnline}
         currentPlayers={currentPlayers}

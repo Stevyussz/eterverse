@@ -11,6 +11,7 @@ interface MobileStickyActionBarProps {
   port?: number;
   isRealm?: boolean;
   realmCode?: string;
+  platform?: 'JAVA' | 'BEDROCK' | 'CROSSPLAY';
   logoUrl?: string;
   isOnline?: boolean;
   currentPlayers?: number;
@@ -24,6 +25,7 @@ export function MobileStickyActionBar({
   port,
   isRealm = false,
   realmCode,
+  platform = 'CROSSPLAY',
   logoUrl,
   isOnline = true,
   currentPlayers = 0,
@@ -140,21 +142,23 @@ export function MobileStickyActionBar({
           <span>{votes}</span>
         </button>
 
-        {/* Direct Play / Join Realm Button */}
-        <a
-          href={directLink}
-          target={isRealm ? "_blank" : undefined}
-          rel={isRealm ? "noopener noreferrer" : undefined}
-          className={`h-9 px-2.5 sm:px-3 rounded-lg font-mono font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all text-white border ${
-            isRealm
-              ? "bg-purple-600 hover:bg-purple-500 border-purple-400/40"
-              : "bg-emerald-600 hover:bg-emerald-500 border-emerald-400/40"
-          }`}
-          title={isRealm ? "Masuk Realm" : "Main Langsung di Minecraft"}
-        >
-          <GameController size={15} weight="fill" />
-          <span className="hidden xs:inline">{isRealm ? "Realm" : "Main"}</span>
-        </a>
+        {/* Direct Play / Join Realm Button (Bedrock & Realms only, Java players copy IP) */}
+        {(isRealm || platform !== 'JAVA') && (
+          <a
+            href={directLink}
+            target={isRealm ? "_blank" : undefined}
+            rel={isRealm ? "noopener noreferrer" : undefined}
+            className={`h-9 px-2.5 sm:px-3 rounded-lg font-mono font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all text-white border ${
+              isRealm
+                ? "bg-purple-600 hover:bg-purple-500 border-purple-400/40"
+                : "bg-emerald-600 hover:bg-emerald-500 border-emerald-400/40"
+            }`}
+            title={isRealm ? "Masuk Realm" : "Main Langsung di Minecraft"}
+          >
+            <GameController size={15} weight="fill" />
+            <span className="hidden xs:inline">{isRealm ? "Realm" : "Main"}</span>
+          </a>
+        )}
 
         {/* Copy IP / Realm Code CTA */}
         <button

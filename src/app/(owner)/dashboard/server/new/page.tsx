@@ -17,11 +17,13 @@ export default async function NewServerPage() {
 
     const name = formData.get("name") as string;
     const serverType = (formData.get("serverType") as 'SERVER' | 'REALM') || 'SERVER';
+    const platform = (formData.get("platform") as 'JAVA' | 'BEDROCK' | 'CROSSPLAY') || 'CROSSPLAY';
     const realmCodeRaw = (formData.get("realmCode") as string) || "";
     const realmCode = realmCodeRaw.replace(/^https?:\/\/realms\.gg\//, "").trim();
 
     let ipAddress = (formData.get("ipAddress") as string) || "";
     let port = parseInt(formData.get("port") as string) || 25565;
+    let bedrockPort = parseInt(formData.get("bedrockPort") as string) || 19132;
 
     if (serverType === 'REALM') {
       ipAddress = realmCode ? `realms.gg/${realmCode}` : "realms.gg";
@@ -48,9 +50,11 @@ export default async function NewServerPage() {
     const newServer = new Server({
       name,
       serverType,
+      platform,
       realmCode,
       ipAddress,
       port,
+      bedrockPort,
       description,
       tags,
       videoUrl,

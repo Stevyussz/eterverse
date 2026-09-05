@@ -5,10 +5,12 @@ export interface IServer extends Document {
   name: string;
   slug: string;
   serverType: 'SERVER' | 'REALM';
+  platform: 'JAVA' | 'BEDROCK' | 'CROSSPLAY';
   realmCode?: string;
   description: string;
   ipAddress: string;
   port: number;
+  bedrockPort?: number;
   videoUrl: string;
   logoUrl?: string;
   bannerUrl?: string;
@@ -44,10 +46,12 @@ const ServerSchema = new Schema<IServer>({
   name: { type: String, required: true },
   slug: { type: String, unique: true, index: true },
   serverType: { type: String, enum: ['SERVER', 'REALM'], default: 'SERVER' },
+  platform: { type: String, enum: ['JAVA', 'BEDROCK', 'CROSSPLAY'], default: 'CROSSPLAY' },
   realmCode: { type: String, default: "" },
   description: { type: String, required: true },
   ipAddress: { type: String, required: true },
   port: { type: Number, default: 25565 },
+  bedrockPort: { type: Number, default: 19132 },
   videoUrl: { type: String, required: true },
   logoUrl: { type: String, default: "" },
   bannerUrl: { type: String, default: "" },
@@ -89,6 +93,7 @@ ServerSchema.index({ moderationStatus: 1, "metrics.rating": -1 });
 ServerSchema.index({ moderationStatus: 1, createdAt: -1 });
 ServerSchema.index({ moderationStatus: 1, "liveStatus.currentPlayers": -1 });
 ServerSchema.index({ moderationStatus: 1, tags: 1 });
+ServerSchema.index({ moderationStatus: 1, platform: 1 });
 
 // Pre-save hook to automatically generate slug from name
 ServerSchema.pre("save", async function () {

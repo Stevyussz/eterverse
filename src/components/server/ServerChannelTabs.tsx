@@ -14,7 +14,8 @@ import {
   TelegramLogo,
   Globe,
   FilmStrip,
-  Sparkle
+  Sparkle,
+  Lightning
 } from "@phosphor-icons/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -174,53 +175,119 @@ export function ServerChannelTabs({
               </div>
             </div>
 
-            {/* Quick Connect & Join Box (Understated Luxury) */}
-            <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-              <div className="flex flex-col">
-                <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
-                  {server.serverType === "REALM" 
-                    ? t("server.realmAddress") 
-                    : t("server.serverAddress")}
-                </span>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xl sm:text-2xl font-mono font-bold text-white tracking-tight break-all">
-                    {server.serverType === "REALM" 
-                      ? (server.realmCode || server.ipAddress)
-                      : server.ipAddress}
+            {/* Quick Connect & Join Box */}
+            {server.serverType !== "REALM" && (server.platform === "CROSSPLAY" || (!server.platform && server.port && server.port !== 19132)) ? (
+              <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 sm:p-6 flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3 flex-wrap gap-2">
+                  <span className="text-xs font-mono text-cyan-300 font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                    <Lightning size={15} weight="fill" className="text-cyan-400" />
+                    Crossplay: Mendukung Java & Bedrock (MCPE)
                   </span>
-                  {server.serverType !== "REALM" && server.port && server.port !== 25565 && (
-                    <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">
-                      Port: {server.port}
-                    </span>
-                  )}
-                  {server.serverType === "REALM" && (
-                    <span className="text-xs font-mono px-2.5 py-0.5 rounded bg-purple-950/60 border border-purple-800/60 text-purple-300">
-                      Minecraft Realms
-                    </span>
-                  )}
+                  <span className="text-[11px] font-mono text-zinc-500">
+                    Pemain PC, HP, & Konsol bisa bermain bersama
+                  </span>
                 </div>
-                <span className="text-xs text-zinc-400 font-body mt-1">
-                  {server.serverType === "REALM"
-                    ? t("server.realmSubtext")
-                    : t("server.serverSubtext")}
-                </span>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Java Connection */}
+                  <div className="flex flex-col justify-between gap-3 p-4 bg-zinc-950/60 border border-zinc-800/80 rounded-xl">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-mono text-blue-300 uppercase tracking-wider mb-1">
+                        ☕ Java Edition (PC)
+                      </span>
+                      <span className="text-base sm:text-lg font-mono font-bold text-white tracking-tight break-all">
+                        {server.ipAddress}
+                      </span>
+                      {server.port && server.port !== 25565 && (
+                        <span className="text-[11px] font-mono text-zinc-400 mt-0.5">Port: {server.port}</span>
+                      )}
+                    </div>
+                    <CopyIPButton 
+                      ipAddress={server.ipAddress}
+                      port={server.port}
+                      className="w-full sm:w-fit"
+                    />
+                  </div>
+
+                  {/* Bedrock Connection */}
+                  <div className="flex flex-col justify-between gap-3 p-4 bg-zinc-950/60 border border-zinc-800/80 rounded-xl">
+                    <div className="flex flex-col">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono text-emerald-300 uppercase tracking-wider mb-1">
+                          📱 Bedrock / MCPE (HP & PC)
+                        </span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-800/60 text-cyan-300 font-semibold">
+                          Port: {server.bedrockPort || 19132}
+                        </span>
+                      </div>
+                      <span className="text-base sm:text-lg font-mono font-bold text-white tracking-tight break-all">
+                        {server.ipAddress}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <DirectPlayButton 
+                        serverName={server.name}
+                        ipAddress={server.ipAddress}
+                        port={server.bedrockPort || 19132}
+                        className="flex-1 sm:flex-initial"
+                      />
+                      <CopyIPButton 
+                        ipAddress={server.ipAddress}
+                        port={server.bedrockPort || 19132}
+                        className="flex-1 sm:flex-initial"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
-                <DirectPlayButton 
-                  serverName={server.name}
-                  ipAddress={server.ipAddress}
-                  port={server.port}
-                  isRealm={server.serverType === "REALM"}
-                  realmCode={server.realmCode}
-                />
-                <CopyIPButton 
-                  ipAddress={server.ipAddress}
-                  port={server.port}
-                  isRealm={server.serverType === "REALM"}
-                  realmCode={server.realmCode}
-                />
+            ) : (
+              <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                <div className="flex flex-col">
+                  <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
+                    {server.serverType === "REALM" 
+                      ? t("server.realmAddress") 
+                      : (server.platform === "BEDROCK" ? "Alamat Server Bedrock (MCPE)" : t("server.serverAddress"))}
+                  </span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xl sm:text-2xl font-mono font-bold text-white tracking-tight break-all">
+                      {server.serverType === "REALM" 
+                        ? (server.realmCode || server.ipAddress)
+                        : server.ipAddress}
+                    </span>
+                    {server.serverType !== "REALM" && server.port && server.port !== 25565 && (
+                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">
+                        Port: {server.port}
+                      </span>
+                    )}
+                    {server.serverType === "REALM" && (
+                      <span className="text-xs font-mono px-2.5 py-0.5 rounded bg-purple-950/60 border border-purple-800/60 text-purple-300">
+                        Minecraft Realms
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs text-zinc-400 font-body mt-1">
+                    {server.serverType === "REALM"
+                      ? t("server.realmSubtext")
+                      : t("server.serverSubtext")}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+                  <DirectPlayButton 
+                    serverName={server.name}
+                    ipAddress={server.ipAddress}
+                    port={server.port}
+                    isRealm={server.serverType === "REALM"}
+                    realmCode={server.realmCode}
+                  />
+                  <CopyIPButton 
+                    ipAddress={server.ipAddress}
+                    port={server.port}
+                    isRealm={server.serverType === "REALM"}
+                    realmCode={server.realmCode}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Featured Trailer Teaser (If available) */}
             {server.videoUrl && (
