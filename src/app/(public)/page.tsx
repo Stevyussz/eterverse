@@ -45,8 +45,8 @@ export default async function Home() {
       <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto space-y-4 w-full mb-10">
         
         {/* Typographical Contrast (Display vs Mono) */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold tracking-tight text-eter-starlight">
-          Find Your Perfect Server.
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold tracking-tight text-white">
+          Temukan Server Minecraft Impianmu.
         </h1>
 
         {/* AI Matchmaker Client Component */}
@@ -66,11 +66,13 @@ export default async function Home() {
         
         {/* 1. Trending Servers Grid */}
         <div className="flex flex-col gap-8 w-full">
-          <div className="flex items-end justify-between border-b border-white/5 pb-4">
-            <h2 className="text-2xl font-display font-semibold text-eter-starlight flex items-center gap-2">
-              Trending This Week
+          <div className="flex items-end justify-between border-b border-zinc-800/80 pb-4">
+            <h2 className="text-2xl font-display font-semibold text-white flex items-center gap-2">
+              Sedang Tren Pekan Ini
             </h2>
-            <a href="/discover" className="text-sm font-mono text-eter-cyan hover:text-cyan-300 transition-colors duration-smooth border-b border-eter-cyan/30 hover:border-cyan-300 pb-0.5">View Directory →</a>
+            <a href="/discover" className="text-sm font-mono text-zinc-400 hover:text-white transition-colors pb-0.5">
+              Lihat Semua Server →
+            </a>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full">
@@ -80,7 +82,7 @@ export default async function Home() {
                ))
             ) : (
               <div className="col-span-full py-20 text-center text-zinc-500 font-mono">
-                No servers available in the database yet.
+                Belum ada server yang terdaftar di database.
               </div>
             )}
           </div>
@@ -88,9 +90,9 @@ export default async function Home() {
 
         {/* 2. Top Rated Grid */}
         <div className="flex flex-col gap-8 w-full">
-          <div className="flex items-end justify-between border-b border-white/5 pb-4">
-            <h2 className="text-2xl font-display font-semibold text-eter-starlight flex items-center gap-2">
-              Top Rated Servers
+          <div className="flex items-end justify-between border-b border-zinc-800/80 pb-4">
+            <h2 className="text-2xl font-display font-semibold text-white flex items-center gap-2">
+              Server Rating Tertinggi
             </h2>
           </div>
           
@@ -101,7 +103,7 @@ export default async function Home() {
                ))
             ) : (
               <div className="col-span-full py-20 text-center text-zinc-500 font-mono">
-                No servers available in the database yet.
+                Belum ada server yang memiliki ulasan.
               </div>
             )}
           </div>
@@ -109,9 +111,9 @@ export default async function Home() {
 
         {/* 3. Newest Servers Grid */}
         <div className="flex flex-col gap-8 w-full">
-          <div className="flex items-end justify-between border-b border-white/5 pb-4">
-            <h2 className="text-2xl font-display font-semibold text-eter-starlight flex items-center gap-2">
-              Recently Discovered
+          <div className="flex items-end justify-between border-b border-zinc-800/80 pb-4">
+            <h2 className="text-2xl font-display font-semibold text-white flex items-center gap-2">
+              Server Baru Ditambahkan
             </h2>
           </div>
           
@@ -122,7 +124,7 @@ export default async function Home() {
                ))
             ) : (
               <div className="col-span-full py-20 text-center text-zinc-500 font-mono">
-                No servers available in the database yet.
+                Belum ada server baru saat ini.
               </div>
             )}
           </div>

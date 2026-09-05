@@ -310,26 +310,26 @@ export function VideoUploader({ name, defaultValue }: VideoUploaderProps) {
               <div className="flex flex-col items-center gap-3 pointer-events-none">
                 <div
                   className={[
-                    "w-14 h-14 rounded-sm flex items-center justify-center transition-all duration-200",
+                    "w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200",
                     isDragging
-                      ? "bg-eter-cyan/20 border border-eter-cyan/40"
+                      ? "bg-white/10 border border-white/30"
                       : "bg-white/5 border border-white/10",
                   ].join(" ")}
                 >
                   <UploadSimple
                     size={26}
-                    className={isDragging ? "text-eter-cyan" : "text-zinc-400"}
+                    className={isDragging ? "text-white" : "text-zinc-400"}
                     weight={isDragging ? "bold" : "regular"}
                   />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-medium text-eter-starlight">
+                  <p className="text-sm font-medium text-white">
                     {isDragging ? (
-                      <span className="text-eter-cyan">Lepaskan di sini!</span>
+                      <span className="text-white">Lepaskan di sini!</span>
                     ) : (
                       <>
                         Seret & Lepas video, atau{" "}
-                        <span className="text-eter-cyan underline underline-offset-2">
+                        <span className="text-white underline underline-offset-2 hover:text-zinc-300">
                           pilih file
                         </span>
                       </>

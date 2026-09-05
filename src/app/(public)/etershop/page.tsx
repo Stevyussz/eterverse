@@ -11,7 +11,7 @@ export default function EterShopPublicPage() {
   const perks = [
     {
       icon: <Trophy size={28} className="text-eter-gold" weight="fill" />,
-      title: "Exclusive Golden Partner Badge",
+      title: "Badge Mitra Emas Eksklusif",
       description: "Tanda pengenal emas eksklusif yang membedakan servermu dari kompetitor di seluruh listing dan card.",
     },
     {
@@ -53,7 +53,7 @@ export default function EterShopPublicPage() {
         <div className="text-center flex flex-col items-center gap-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-xs font-mono font-medium text-amber-300 tracking-wider uppercase">
             <Sparkle weight="fill" size={14} className="text-amber-400" />
-            ETERVERSE PARTNER PROGRAM
+            PROGRAM KEMITRAAN ETERVERSE
           </div>
           
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold text-white tracking-tight leading-[1.15]">
@@ -114,8 +114,8 @@ export default function EterShopPublicPage() {
               <thead>
                 <tr className="border-b border-zinc-800 bg-white/[0.02]">
                   <th className="py-4 px-6 text-zinc-400 font-medium uppercase text-xs tracking-wider">Fitur & Manfaat</th>
-                  <th className="py-4 px-6 text-zinc-400 font-medium uppercase text-xs tracking-wider text-center">Standar</th>
-                  <th className="py-4 px-6 text-amber-300 font-bold uppercase text-xs tracking-wider text-center bg-amber-500/5">EterShop Partner</th>
+                  <th className="py-4 px-6 text-zinc-400 font-medium uppercase text-xs tracking-wider text-center">Reguler</th>
+                  <th className="py-4 px-6 text-amber-300 font-bold uppercase text-xs tracking-wider text-center bg-amber-500/5">Mitra EterShop</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/80 font-sans">

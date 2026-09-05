@@ -27,8 +27,8 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
   const isDashboardOrAdmin = pathname?.startsWith("/dashboard") || pathname?.startsWith("/admin");
 
   const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/discover", label: "Discover" },
+    { href: "/", label: "Beranda" },
+    { href: "/discover", label: "Jelajah" },
     { href: "/etershop", label: "EterShop", isGold: true },
   ];
 
@@ -98,7 +98,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
               className="hidden lg:inline-flex items-center gap-1.5 text-xs font-mono font-medium text-zinc-300 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-zinc-800"
             >
               <PlusCircle size={15} />
-              Submit Server
+              Daftarkan Server
             </Link>
           )}
           
@@ -121,7 +121,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
               <button
                 onClick={() => signOut()}
                 className="flex items-center gap-1 bg-zinc-900/60 hover:bg-red-500/10 border border-zinc-800 hover:border-red-500/30 text-zinc-400 hover:text-red-400 text-xs font-mono px-3 py-2 rounded-lg transition-all"
-                title="Log Out"
+                title="Keluar"
               >
                 <SignOut size={15} />
               </button>
@@ -132,14 +132,14 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
               className="hidden sm:flex items-center gap-2 bg-white/5 hover:bg-[#5865F2]/15 border border-white/10 hover:border-[#5865F2]/30 text-white text-xs font-mono px-4 py-2 rounded-lg transition-all"
             >
               <DiscordLogo weight="fill" size={16} className="text-[#5865F2]" />
-              Sign In
+              Masuk
             </Link>
           )}
 
           {/* Mobile Hamburger Toggle Button */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
             className="md:hidden p-2 rounded-md text-zinc-300 hover:text-white bg-white/5 border border-white/10 transition-colors"
           >
             {mobileOpen ? <X size={20} weight="bold" /> : <List size={20} weight="bold" />}
@@ -178,7 +178,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
               className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-zinc-300 hover:bg-white/5 hover:text-white transition-colors"
             >
               <PlusCircle size={18} className="text-zinc-400" />
-              Submit Server
+              Daftarkan Server
             </Link>
           </div>
 
@@ -190,7 +190,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
                     href="/admin"
                     className="flex items-center justify-center gap-2 bg-amber-500/10 border border-amber-500/25 text-amber-300 font-mono text-sm py-2.5 rounded-lg font-medium"
                   >
-                    Admin Panel
+                    Panel Admin
                   </Link>
                 )}
                 <Link
@@ -203,7 +203,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
                   onClick={() => signOut()}
                   className="flex items-center justify-center gap-2 bg-zinc-900/60 border border-zinc-800 text-zinc-400 hover:text-red-400 font-mono text-sm py-2.5 rounded-lg"
                 >
-                  <SignOut size={16} /> Sign Out
+                  <SignOut size={16} /> Keluar
                 </button>
               </>
             ) : (
@@ -212,7 +212,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
                 className="flex items-center justify-center gap-2 bg-[#5865F2]/15 border border-[#5865F2]/30 text-white font-mono text-sm py-2.5 rounded-lg font-semibold"
               >
                 <DiscordLogo weight="fill" size={18} className="text-[#5865F2]" />
-                Sign In with Discord
+                Masuk dengan Discord
               </Link>
             )}
           </div>

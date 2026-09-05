@@ -48,11 +48,11 @@ export function ImageUploader({ name, label, aspectRatio = "square", onUploadSuc
   const uploadSingleFile = async (file: File, onSuccess: (url: string) => void) => {
     // Validate file
     if (!file.type.startsWith("image/")) {
-      setError("Please select an image file (PNG, JPG, WEBP).");
+      setError("Pilih file gambar yang valid (PNG, JPG, WEBP).");
       return;
     }
     if (file.size > 4 * 1024 * 1024) {
-      setError("File is too large. Maximum size is 4MB.");
+      setError("Ukuran file terlalu besar. Maksimum 4MB.");
       return;
     }
 
@@ -71,7 +71,7 @@ export function ImageUploader({ name, label, aspectRatio = "square", onUploadSuc
         if (onUploadSuccess) onUploadSuccess(res.url);
       }
     } catch (err: any) {
-      setError("Network error occurred during upload.");
+      setError("Terjadi gangguan jaringan saat mengunggah gambar.");
     } finally {
       setIsUploading(false);
     }
@@ -95,28 +95,28 @@ export function ImageUploader({ name, label, aspectRatio = "square", onUploadSuc
           <div 
             onClick={() => fileInputRef.current?.click()}
             className={`
-              relative overflow-hidden flex flex-col items-center justify-center border-2 border-dashed rounded-md cursor-pointer transition-all duration-smooth group
-              ${preview ? 'border-white/10 bg-black/50' : 'border-eter-cyan/30 bg-eter-cyan/5 hover:border-eter-cyan hover:bg-eter-cyan/10'}
+              relative overflow-hidden flex flex-col items-center justify-center border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 group
+              ${preview ? 'border-zinc-700 bg-black/60' : 'border-zinc-700 bg-zinc-900/40 hover:border-zinc-500 hover:bg-zinc-900/60'}
               ${aspectRatio === 'square' ? 'w-24 h-24' : 'w-full h-32'}
             `}
           >
             {isUploading ? (
-              <div className="flex flex-col items-center gap-2 text-eter-cyan">
+              <div className="flex flex-col items-center gap-2 text-zinc-300">
                 <Spinner size={24} className="animate-spin" />
-                <span className="text-[10px] font-medium font-mono uppercase">Uploading...</span>
+                <span className="text-[10px] font-medium font-mono uppercase">Mengunggah...</span>
               </div>
             ) : preview ? (
               <>
                 <img src={preview} alt="Preview" className="w-full h-full object-cover opacity-90 group-hover:opacity-50 transition-opacity" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <UploadSimple size={24} className="text-white drop-shadow-md" weight="bold" />
-                  <span className="text-xs font-semibold text-white drop-shadow-md mt-1">Change</span>
+                  <span className="text-xs font-semibold text-white drop-shadow-md mt-1">Ganti</span>
                 </div>
               </>
             ) : (
-              <div className="flex flex-col items-center text-eter-cyan/70 group-hover:text-eter-cyan transition-colors">
+              <div className="flex flex-col items-center text-zinc-400 group-hover:text-white transition-colors">
                 <UploadSimple size={24} />
-                <span className="text-[10px] font-mono uppercase tracking-wider mt-2">Upload</span>
+                <span className="text-[10px] font-mono uppercase tracking-wider mt-2">Unggah</span>
               </div>
             )}
           </div>
@@ -126,18 +126,18 @@ export function ImageUploader({ name, label, aspectRatio = "square", onUploadSuc
         <div className="flex flex-col gap-4">
           <div 
             onClick={() => !isUploading && fileInputRef.current?.click()}
-            className={`w-full py-6 flex flex-col items-center justify-center border-2 border-dashed rounded-md transition-all duration-smooth ${isUploading ? 'border-zinc-700 bg-zinc-900 cursor-not-allowed opacity-50' : 'cursor-pointer border-eter-cyan/30 bg-eter-cyan/5 hover:border-eter-cyan hover:bg-eter-cyan/10'}`}
+            className={`w-full py-6 flex flex-col items-center justify-center border-2 border-dashed rounded-xl transition-all duration-200 ${isUploading ? 'border-zinc-700 bg-zinc-900 cursor-not-allowed opacity-50' : 'cursor-pointer border-zinc-700 bg-zinc-900/40 hover:border-zinc-500 hover:bg-zinc-900/60'}`}
           >
             {isUploading ? (
-              <div className="flex flex-col items-center gap-2 text-eter-cyan">
+              <div className="flex flex-col items-center gap-2 text-zinc-300">
                 <Spinner size={24} className="animate-spin" />
-                <span className="text-[10px] font-medium font-mono uppercase">Uploading Image...</span>
+                <span className="text-[10px] font-medium font-mono uppercase">Mengunggah Gambar...</span>
               </div>
             ) : (
-              <div className="flex flex-col items-center text-eter-cyan/70">
+              <div className="flex flex-col items-center text-zinc-400">
                 <ImageIcon size={32} />
-                <span className="text-[10px] font-mono uppercase tracking-wider mt-2">Click to Upload Screenshots</span>
-                <span className="text-xs text-zinc-500 mt-1">PNG, JPG, WEBP up to 5MB</span>
+                <span className="text-[10px] font-mono uppercase tracking-wider mt-2">Klik untuk Unggah Screenshot</span>
+                <span className="text-xs text-zinc-500 mt-1">PNG, JPG, WEBP hingga 4MB</span>
               </div>
             )}
           </div>

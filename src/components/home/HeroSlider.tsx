@@ -54,9 +54,9 @@ export function HeroSlider({ servers }: { servers: any[] }) {
               
               {/* Info Side */}
               <div className="w-full md:w-1/2 p-7 sm:p-10 md:p-14 flex flex-col justify-center min-h-[420px] md:min-h-[480px] relative z-20">
-                <div className="inline-flex items-center gap-2 px-3 py-1 mb-5 w-max bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] font-mono font-semibold tracking-wider uppercase rounded-full">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 mb-5 w-max bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] font-mono font-semibold tracking-wider uppercase rounded-full">
                   <Star weight="fill" size={14} className="text-amber-400" />
-                  RECOMMENDED PARTNER
+                  SERVER REKOMENDASI
                 </div>
                 
                 <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-[1.1] mb-4 tracking-tight">
@@ -73,7 +73,7 @@ export function HeroSlider({ servers }: { servers: any[] }) {
                     href={`/server/${server.slug}`}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-white text-zinc-950 font-medium rounded-lg text-sm hover:bg-zinc-200 transition-all duration-200 active:scale-[0.98] shadow-sm"
                   >
-                    Explore Server <ArrowRight size={16} weight="bold" />
+                    Jelajahi Server <ArrowRight size={16} weight="bold" />
                   </Link>
                 </div>
                 

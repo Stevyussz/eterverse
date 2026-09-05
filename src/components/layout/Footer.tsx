@@ -89,18 +89,18 @@ export function Footer() {
               <li>
                 <Link href="/dashboard/server/new" className="hover:text-white transition-colors flex items-center gap-1.5">
                   <span>Daftarkan Server</span>
-                  <span className="text-[9px] font-mono bg-white/10 px-1.5 py-0.2 rounded text-zinc-300">Free</span>
+                  <span className="text-[9px] font-mono bg-white/10 px-1.5 py-0.2 rounded text-zinc-300">Gratis</span>
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard" className="hover:text-white transition-colors">
-                  Owner Dashboard
+                  Dashboard Server
                 </Link>
               </li>
               <li>
                 <Link href="/etershop" className="hover:text-white transition-colors flex items-center gap-1.5">
                   <Sparkle size={13} className="text-amber-400" weight="fill" />
-                  <span className="text-amber-300 font-medium">EterShop Partner</span>
+                  <span className="text-amber-300 font-medium">Mitra EterShop</span>
                 </Link>
               </li>
               <li>
@@ -139,13 +139,13 @@ export function Footer() {
                   className="hover:text-white transition-colors flex items-center gap-1.5"
                 >
                   <DiscordLogo size={14} weight="fill" className="text-[#5865F2]" />
-                  <span>Discord Community</span>
+                  <span>Komunitas Discord</span>
                 </a>
               </li>
               <li>
                 <span className="text-zinc-500 text-xs flex items-center gap-1">
                   <ShieldCheck size={14} />
-                  Verified Safe Platform
+                  Platform Aman & Terverifikasi
                 </span>
               </li>
             </ul>
@@ -156,7 +156,7 @@ export function Footer() {
         {/* Bottom Copyright Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-mono">
           <div className="flex items-center gap-1.5">
-            <span>© {currentYear} EterVerse. All rights reserved.</span>
+            <span>© {currentYear} EterVerse. Hak cipta dilindungi.</span>
           </div>
 
           {/* Minecraft EULA Disclaimer */}

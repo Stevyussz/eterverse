@@ -14,20 +14,20 @@ export default async function WidgetToolsPage() {
   return (
     <div className="max-w-5xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
       <header>
-        <h1 className="text-3xl font-display font-semibold text-eter-starlight">Widget Generator</h1>
-        <p className="text-zinc-500 font-body mt-1">Embed your live player count on your website to rank higher.</p>
+        <h1 className="text-2xl sm:text-3xl font-display font-semibold text-white">Generator Widget Status</h1>
+        <p className="text-zinc-400 font-body mt-1 text-sm">Pasang widget jumlah pemain real-time di website atau forum Anda untuk meningkatkan peringkat.</p>
       </header>
 
       {myServers.length === 0 ? (
-        <div className="p-16 border border-white/5 border-l-2 border-l-eter-cyan bg-[#050505]/60 text-center text-zinc-400 rounded-sm">
-          You need an approved server to generate a widget.
+        <div className="p-16 border border-zinc-800 bg-zinc-950/60 text-center text-zinc-400 rounded-2xl">
+          Anda memerlukan server yang sudah disetujui untuk membuat widget embed.
         </div>
       ) : (
         <div className="flex flex-col gap-10">
           {myServers.map((server: any) => (
-            <div key={server.slug} className="flex flex-col gap-6 p-8 bg-[#09090b]/80 border-l-2 border-l-eter-cyan border-y border-r border-white/10 rounded-sm shadow-sm">
-              <h2 className="text-xl font-display font-semibold text-eter-starlight flex items-center gap-2">
-                <Code size={24} className="text-eter-cyan" />
+            <div key={server.slug} className="flex flex-col gap-6 p-6 sm:p-8 bg-zinc-950/70 border border-zinc-800 rounded-2xl shadow-xl">
+              <h2 className="text-xl font-display font-semibold text-white flex items-center gap-2">
+                <Code size={24} className="text-zinc-300" />
                 {server.name}
               </h2>
               
@@ -38,11 +38,11 @@ export default async function WidgetToolsPage() {
                 </div>
                 
                 {/* Right: Preview */}
-                <div className="bg-black/80 border border-white/10 p-6 flex flex-col items-center justify-center relative overflow-hidden rounded-sm">
-                  <div className="absolute top-2 left-2 flex items-center gap-1.5 text-zinc-600">
-                    <Eye size={16} /> <span className="text-[10px] font-mono uppercase tracking-widest">Live Preview</span>
+                <div className="bg-black border border-zinc-800 p-6 flex flex-col items-center justify-center relative overflow-hidden rounded-xl">
+                  <div className="absolute top-3 left-3 flex items-center gap-1.5 text-zinc-500">
+                    <Eye size={16} /> <span className="text-[10px] font-mono uppercase tracking-widest">Pratinjau Langsung</span>
                   </div>
-                  <img src={`/api/widget/${server.slug}`} alt="Widget Preview" className="mt-8 rounded-sm shadow-xl" />
+                  <img src={`/api/widget/${server.slug}`} alt="Widget Preview" className="mt-8 rounded-lg shadow-xl" />
                 </div>
               </div>
             </div>

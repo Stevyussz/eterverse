@@ -38,53 +38,53 @@ export default async function DashboardOverview() {
       
       <header className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-display font-semibold text-eter-starlight">Dashboard Overview</h1>
-          <p className="text-zinc-500 font-body mt-1 text-sm">Manage your Minecraft servers and monitor growth.</p>
+          <h1 className="text-2xl md:text-3xl font-display font-semibold text-white">Ringkasan Dashboard</h1>
+          <p className="text-zinc-500 font-body mt-1 text-sm">Kelola server Minecraft milikmu dan pantau perkembangannya.</p>
         </div>
         
-        <Link href="/dashboard/server/new" className="bg-eter-cyan text-black px-4 py-2 rounded-sm font-semibold text-sm hover:bg-cyan-300 transition-colors border-l-2 border-l-white border-y border-r border-transparent shrink-0">
-          + Submit Server
+        <Link href="/dashboard/server/new" className="bg-white text-zinc-950 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-zinc-200 transition-colors shrink-0 shadow-sm">
+          + Daftarkan Server
         </Link>
       </header>
 
       {!hasServers ? (
-        <div className="flex flex-col items-center justify-center p-16 mt-10 bg-[#050505]/60 border border-white/5 border-l-2 border-l-eter-cyan rounded-sm shadow-xl text-center">
-          <div className="w-16 h-16 bg-eter-cyan/10 rounded-sm flex items-center justify-center mb-6 border border-eter-cyan/20">
-            <ChartLineUp size={32} className="text-eter-cyan" />
+        <div className="flex flex-col items-center justify-center p-16 mt-10 bg-zinc-950/60 border border-zinc-800 rounded-2xl shadow-xl text-center">
+          <div className="w-16 h-16 bg-zinc-900 rounded-xl flex items-center justify-center mb-6 border border-zinc-800 text-zinc-300">
+            <ChartLineUp size={32} />
           </div>
-          <h2 className="text-2xl font-display font-medium text-eter-starlight mb-2">No Servers Yet</h2>
-          <p className="text-zinc-400 font-body mb-8 max-w-md">
-            You haven't added any servers to EterVerse yet. Submit your first server to start getting players!
+          <h2 className="text-2xl font-display font-semibold text-white mb-2">Belum Ada Server</h2>
+          <p className="text-zinc-400 font-body mb-8 max-w-md text-sm">
+            Kamu belum menambahkan server ke EterVerse. Daftarkan server pertamamu untuk mulai mendapatkan pemain baru!
           </p>
-          <Link href="/dashboard/server/new" className="bg-eter-cyan text-black px-6 py-3 rounded-sm font-semibold hover:bg-cyan-300 transition-colors border-l-2 border-l-white border-y border-r border-transparent">
-            Submit Your First Server
+          <Link href="/dashboard/server/new" className="bg-white text-zinc-950 px-6 py-3 rounded-lg font-semibold hover:bg-zinc-200 transition-colors shadow-sm">
+            Daftarkan Server Pertamamu
           </Link>
         </div>
       ) : (
         <>
           {/* Real Metrics */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <MetricCard title="Total Impressions" value={totalImpressions.toLocaleString()} icon={<Eye size={22} className="text-eter-cyan" />} />
-            <MetricCard title="Total Clicks" value={totalClicks.toLocaleString()} icon={<CursorClick size={22} className="text-eter-cyan" />} />
-            <MetricCard title="Live Servers" value={approvedCount.toString()} icon={<CheckCircle size={22} className="text-green-400" />} />
-            <MetricCard title="Pending Review" value={pendingCount.toString()} icon={<Clock size={22} className="text-yellow-400" />} />
+            <MetricCard title="Total Impresi" value={totalImpressions.toLocaleString()} icon={<Eye size={22} className="text-zinc-400" />} />
+            <MetricCard title="Total Klik" value={totalClicks.toLocaleString()} icon={<CursorClick size={22} className="text-zinc-400" />} />
+            <MetricCard title="Server Disetujui" value={approvedCount.toString()} icon={<CheckCircle size={22} className="text-emerald-400" />} />
+            <MetricCard title="Menunggu Review" value={pendingCount.toString()} icon={<Clock size={22} className="text-amber-400" />} />
           </div>
 
           {/* Server List */}
           <section className="flex flex-col gap-4">
-            <h2 className="text-lg font-display font-semibold text-eter-starlight border-b border-white/5 pb-3">Your Servers</h2>
+            <h2 className="text-lg font-display font-semibold text-white border-b border-zinc-800 pb-3">Daftar Server Kamu</h2>
             {myServers.map((server: any) => (
               <div key={server._id.toString()} className="flex flex-col gap-2">
-                <div className="bg-[#09090b]/80 border border-white/10 rounded-sm p-4 flex items-center justify-between gap-4 flex-wrap">
+                <div className="bg-zinc-950/70 border border-zinc-800 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex flex-col gap-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-display font-semibold text-eter-starlight truncate">{server.name}</span>
+                      <span className="font-display font-semibold text-white truncate">{server.name}</span>
                       <span className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border ${
-                        server.moderationStatus === 'APPROVED' ? 'text-green-400 border-green-500/30 bg-green-500/10' :
+                        server.moderationStatus === 'APPROVED' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' :
                         server.moderationStatus === 'REJECTED' ? 'text-red-400 border-red-500/30 bg-red-500/10' :
                         server.moderationStatus === 'BANNED' ? 'text-orange-400 border-orange-500/30 bg-orange-500/10' :
-                        'text-yellow-400 border-yellow-500/30 bg-yellow-500/10'
-                      }`}>{server.moderationStatus}</span>
+                        'text-amber-400 border-amber-500/30 bg-amber-500/10'
+                      }`}>{server.moderationStatus === 'APPROVED' ? 'DISETUJUI' : server.moderationStatus === 'REJECTED' ? 'DITOLAK' : server.moderationStatus === 'BANNED' ? 'DIBEKUKAN' : 'MENUNGGU'}</span>
                     </div>
                     <span className="text-xs font-mono text-zinc-500">{server.ipAddress}</span>
                   </div>
@@ -96,7 +96,7 @@ export default async function DashboardOverview() {
                     </div>
                     <Link 
                       href={`/dashboard/server/${server._id.toString()}/edit`}
-                      className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-eter-cyan border border-white/10 hover:border-eter-cyan/30 px-3 py-1.5 rounded-sm transition-colors"
+                      className="flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-700 bg-zinc-900/60 px-3 py-1.5 rounded-lg transition-colors"
                     >
                       <PencilSimple size={14} /> Edit
                     </Link>
@@ -105,9 +105,9 @@ export default async function DashboardOverview() {
                       <Link 
                         href={`/server/${server.slug}`}
                         target="_blank"
-                        className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-eter-starlight border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-sm transition-colors"
+                        className="flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-700 bg-zinc-900/60 px-3 py-1.5 rounded-lg transition-colors"
                       >
-                        <Eye size={14} /> View
+                        <Eye size={14} /> Lihat
                       </Link>
                     )}
                   </div>
@@ -133,12 +133,12 @@ export default async function DashboardOverview() {
 
 function MetricCard({ title, value, icon }: { title: string, value: string, icon: React.ReactNode }) {
   return (
-    <div className="bg-[#09090b]/80 backdrop-blur-sm border-l-2 border-l-eter-cyan border-y border-r border-white/10 p-4 shadow-sm rounded-sm">
+    <div className="bg-zinc-950/70 border border-zinc-800 p-4 shadow-sm rounded-xl flex flex-col justify-between">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest leading-tight">{title}</h3>
         {icon}
       </div>
-      <span className="text-2xl font-display font-semibold text-eter-starlight">{value}</span>
+      <span className="text-2xl font-display font-semibold text-white">{value}</span>
     </div>
   );
 }

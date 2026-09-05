@@ -127,12 +127,12 @@ export function MobileStickyActionBar({
           {copied ? (
             <>
               <Check size={14} weight="bold" />
-              <span>Copied!</span>
+              <span>Tersalin!</span>
             </>
           ) : (
             <>
               <Copy size={14} />
-              <span>Copy IP</span>
+              <span>Salin IP</span>
             </>
           )}
         </button>

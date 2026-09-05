@@ -79,8 +79,8 @@ export default async function DiscoverPage({ searchParams }: Props) {
 
         {/* Header */}
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl md:text-4xl font-display font-semibold text-eter-starlight">Discover Servers</h1>
-          <p className="text-zinc-400 font-body text-sm">Browse all {servers.length} server{servers.length !== 1 ? 's' : ''} on EterVerse.</p>
+          <h1 className="text-3xl md:text-4xl font-display font-semibold text-white">Jelajahi Server</h1>
+          <p className="text-zinc-400 font-body text-sm">Menampilkan {servers.length} server Minecraft aktif di EterVerse.</p>
         </div>
 
         {/* Search & Filters */}

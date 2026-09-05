@@ -15,9 +15,9 @@ export function EmbedWidget({ serverSlug }: { serverSlug: string }) {
 
   return (
     <div className="bg-[#050505]/60 border border-white/10 rounded-xl p-6 flex flex-col gap-3">
-      <h3 className="text-sm font-semibold text-eter-starlight uppercase tracking-widest">Support us! Embed Widget</h3>
+      <h3 className="text-sm font-semibold text-eter-starlight uppercase tracking-widest">Widget Status Server (HTML Embed)</h3>
       <p className="text-sm text-zinc-400 font-light">
-        Copy this HTML code to your website or server forum to display your live player count and boost your ranking on EterVerse!
+        Salin kode HTML ini ke website atau forum server Anda untuk menampilkan status live player dan meningkatkan peringkat di EterVerse!
       </p>
       <div className="flex items-center gap-2 mt-2">
         <code className="flex-1 bg-black/60 border border-white/10 rounded-md p-2.5 text-[10px] text-zinc-500 font-mono overflow-hidden whitespace-nowrap text-ellipsis">

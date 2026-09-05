@@ -31,7 +31,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const server = await Server.findOne({ slug: params.slug }).lean();
 
   if (!server) {
-    return { title: "Server Not Found | EterVerse" };
+    return { title: "Server Tidak Ditemukan | EterVerse" };
   }
 
   const ogImage = server.bannerUrl || server.logoUrl || "https://eterverse.com/dashboard-bg.png";
@@ -151,7 +151,7 @@ export default async function ServerProfilePage(props: Props) {
                     </h1>
                     {serverData.isEterShopPartner && (
                       <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
-                        <Trophy weight="fill" size={12} /> Partner
+                        <Trophy weight="fill" size={12} /> Mitra
                       </div>
                     )}
                   </div>

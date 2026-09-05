@@ -19,18 +19,15 @@ export default async function LoginPage(props: Props) {
   return (
     <main className="min-h-screen flex items-center justify-center relative px-6 z-10 pt-20 pb-20">
       
-      <div className="w-full max-w-md bg-[#050505]/80 backdrop-blur-xl border border-white/10 rounded-xl p-8 shadow-2xl flex flex-col gap-8 relative overflow-hidden">
-        
-        {/* Glow effect */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1/2 bg-eter-cyan/20 blur-[100px] pointer-events-none rounded-full" />
+      <div className="w-full max-w-md bg-[#050505]/90 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl flex flex-col gap-8 relative overflow-hidden">
         
         {!isVerifyRequest && (
           <div className="flex flex-col items-center text-center gap-2 relative z-10">
-            <h1 className="text-3xl font-display font-semibold text-eter-starlight tracking-tight">
-              Welcome Back
+            <h1 className="text-2xl sm:text-3xl font-display font-semibold text-white tracking-tight">
+              Selamat Datang Kembali
             </h1>
             <p className="text-zinc-400 font-body text-sm">
-              Sign in to manage your EterVerse servers.
+              Masuk untuk mengelola server dan memantau analitik EterVerse.
             </p>
           </div>
         )}
@@ -39,8 +36,8 @@ export default async function LoginPage(props: Props) {
         <LoginForm isVerifyRequest={isVerifyRequest} />
         
         {!isVerifyRequest && (
-          <p className="text-center text-xs text-zinc-600 relative z-10 mt-4">
-            By signing in, you agree to our Terms of Service and Privacy Policy.
+          <p className="text-center text-xs text-zinc-500 relative z-10 mt-2 leading-relaxed">
+            Dengan masuk, Anda menyetujui Ketentuan Layanan dan Kebijakan Privasi kami.
           </p>
         )}
       </div>

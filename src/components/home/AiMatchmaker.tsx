@@ -33,24 +33,24 @@ export function AiMatchmaker() {
   return (
     <div className="w-full flex flex-col items-center">
       <form onSubmit={handleSearch} className="w-full max-w-2xl mt-2 relative z-20">
-        <div className={`bg-[#050505]/70 backdrop-blur-md border ${isLoading ? 'border-eter-cyan/50' : 'border-white/10 focus-within:border-eter-cyan'} focus-within:bg-[#09090b]/90 transition-all duration-smooth rounded-xl px-5 py-4 flex items-center gap-4 shadow-xl`}>
+        <div className={`bg-zinc-950/80 backdrop-blur-md border ${isLoading ? 'border-zinc-500' : 'border-zinc-800 focus-within:border-zinc-500'} focus-within:bg-zinc-950 transition-all duration-200 rounded-xl px-5 py-4 flex items-center gap-4 shadow-xl`}>
           {isLoading ? (
-            <Spinner weight="bold" className="text-eter-cyan shrink-0 animate-spin" size={24} />
+            <Spinner weight="bold" className="text-zinc-400 shrink-0 animate-spin" size={24} />
           ) : (
-            <MagnifyingGlass weight="bold" className="text-eter-cyan shrink-0" size={24} />
+            <MagnifyingGlass weight="bold" className="text-zinc-400 shrink-0" size={24} />
           )}
           <input 
             type="text" 
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             disabled={isLoading}
-            placeholder="e.g. 'I want a chill survival server with economy'" 
-            className="bg-transparent border-none outline-none w-full text-eter-starlight placeholder:text-zinc-500 font-body text-lg font-light disabled:opacity-50"
+            placeholder="Contoh: 'Cari server survival santai dengan sistem ekonomi'" 
+            className="bg-transparent border-none outline-none w-full text-white placeholder:text-zinc-600 font-body text-base sm:text-lg disabled:opacity-50"
           />
           <button 
             type="submit"
             disabled={isLoading || !query.trim()}
-            className="font-mono text-xs border border-white/10 bg-white/5 rounded-md px-2 py-1 text-zinc-400 shrink-0 hidden sm:block hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50"
+            className="font-mono text-xs border border-zinc-800 bg-zinc-900 rounded-md px-2.5 py-1 text-zinc-400 shrink-0 hidden sm:block hover:bg-zinc-800 hover:text-white transition-colors disabled:opacity-50"
           >
             ↵ Enter
           </button>
@@ -60,13 +60,13 @@ export function AiMatchmaker() {
       {/* AI Results Section */}
       {results !== null && (
         <div className="w-full max-w-7xl mx-auto mt-16 flex flex-col gap-8 relative z-20 animate-fade-in">
-          <div className="flex items-end justify-between border-b border-eter-cyan/30 pb-4">
-            <h2 className="text-2xl font-display font-semibold text-eter-cyan flex items-center gap-2">
-              <MagnifyingGlass weight="bold" />
-              AI Match Results
+          <div className="flex items-end justify-between border-b border-zinc-800 pb-4">
+            <h2 className="text-2xl font-display font-semibold text-white flex items-center gap-2">
+              <MagnifyingGlass weight="bold" size={22} className="text-zinc-400" />
+              Hasil Rekomendasi AI
             </h2>
-            <button onClick={() => setResults(null)} className="text-sm font-mono text-zinc-400 hover:text-white transition-colors">
-              Clear Results
+            <button onClick={() => setResults(null)} className="text-xs font-mono text-zinc-400 hover:text-white transition-colors">
+              Tutup Hasil Rekomendasi
             </button>
           </div>
           
@@ -77,10 +77,10 @@ export function AiMatchmaker() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-center border border-white/5 rounded-2xl bg-black/20">
-              <span className="text-4xl mb-4">🤖</span>
-              <h3 className="text-xl font-display text-eter-starlight mb-2">No servers found for that vibe.</h3>
-              <p className="text-zinc-500 font-body">Try a different prompt or browse the trending servers below.</p>
+            <div className="flex flex-col items-center justify-center py-20 text-center border border-zinc-800/80 rounded-2xl bg-zinc-950/40">
+              <span className="text-4xl mb-3">🔍</span>
+              <h3 className="text-lg font-display text-white mb-1.5">Tidak ada server yang cocok dengan kriteria tersebut</h3>
+              <p className="text-zinc-400 text-sm font-body">Coba gunakan kata kunci atau deskripsi lain, atau jelajahi daftar server di bawah.</p>
             </div>
           )}
         </div>

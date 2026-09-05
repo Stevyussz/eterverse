@@ -28,9 +28,9 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
         </motion.div>
         
         <div className="space-y-2">
-          <h2 className="text-2xl font-display font-semibold text-white">Check your email</h2>
+          <h2 className="text-2xl font-display font-semibold text-white">Cek Email Anda</h2>
           <p className="text-zinc-400 font-body text-sm max-w-[280px]">
-            A magic sign-in link has been sent to your inbox. Click the link to log in to EterVerse.
+            Tautan masuk (magic link) telah dikirim ke inbox Anda. Klik tautan tersebut untuk masuk ke EterVerse.
           </p>
         </div>
       </motion.div>
@@ -51,12 +51,12 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
         className="w-full flex items-center justify-center gap-3 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium py-3.5 px-4 rounded-lg transition-colors duration-200"
       >
         <DiscordLogo size={22} weight="fill" />
-        Continue with Discord
+        Lanjutkan dengan Discord
       </button>
 
       <div className="flex items-center gap-4 my-2">
         <div className="flex-1 h-[1px] bg-zinc-800"></div>
-        <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Or use email</span>
+        <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Atau gunakan email</span>
         <div className="flex-1 h-[1px] bg-zinc-800"></div>
       </div>
 
@@ -82,7 +82,7 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            placeholder="you@example.com"
+            placeholder="kamu@contoh.com"
             className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-3 pl-10 pr-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all duration-200"
           />
         </div>
@@ -91,7 +91,7 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
           disabled={isSubmitting}
           className="w-full flex items-center justify-center bg-white text-zinc-950 hover:bg-zinc-200 font-medium py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50"
         >
-          {isSubmitting ? "Sending..." : "Send Magic Link"}
+          {isSubmitting ? "Mengirim..." : "Kirim Tautan Masuk"}
         </button>
       </form>
 

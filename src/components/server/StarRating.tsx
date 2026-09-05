@@ -19,7 +19,7 @@ export function StarRating({ slug, initialRating, isLoggedIn, userRating = 0 }: 
 
   const handleRate = async (stars: number) => {
     if (!isLoggedIn) {
-      setMessage("Login to rate this server.");
+      setMessage("Masuk untuk memberi rating server ini.");
       return;
     }
     if (loading) return;
@@ -36,13 +36,13 @@ export function StarRating({ slug, initialRating, isLoggedIn, userRating = 0 }: 
       if (res.ok) {
         setSubmitted(stars);
         setCurrentRating(data.rating);
-        setMessage("Rating saved!");
+        setMessage("Rating berhasil disimpan!");
         setTimeout(() => setMessage(""), 2000);
       } else {
-        setMessage(data.error || "Failed to rate.");
+        setMessage(data.error || "Gagal memberi rating.");
       }
     } catch {
-      setMessage("Network error.");
+      setMessage("Kesalahan jaringan.");
     } finally {
       setLoading(false);
     }
@@ -79,13 +79,13 @@ export function StarRating({ slug, initialRating, isLoggedIn, userRating = 0 }: 
       </div>
 
       {!isLoggedIn ? (
-        <p className="text-[10px] font-mono text-zinc-600">Login to rate this server</p>
+        <p className="text-[10px] font-mono text-zinc-600">Masuk untuk memberi rating server ini</p>
       ) : message ? (
         <p className="text-[10px] font-mono text-eter-cyan animate-fade-in">{message}</p>
       ) : submitted ? (
-        <p className="text-[10px] font-mono text-zinc-500">Your rating: {submitted} ★</p>
+        <p className="text-[10px] font-mono text-zinc-500">Rating Anda: {submitted} ★</p>
       ) : (
-        <p className="text-[10px] font-mono text-zinc-600">Click to rate</p>
+        <p className="text-[10px] font-mono text-zinc-600">Klik bintang untuk memberi rating</p>
       )}
     </div>
   );

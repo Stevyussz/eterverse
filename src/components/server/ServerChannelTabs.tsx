@@ -48,7 +48,7 @@ export function ServerChannelTabs({
   const defaultBanner = "/dashboard-bg.png";
 
   const tabs: { key: TabKey; label: string; icon: React.ReactNode; badge?: string | number }[] = [
-    { key: "overview", label: "Overview", icon: <House size={18} weight={activeTab === "overview" ? "fill" : "regular"} /> },
+    { key: "overview", label: "Ringkasan", icon: <House size={18} weight={activeTab === "overview" ? "fill" : "regular"} /> },
     {
       key: "trailer",
       label: "Trailer & Reels",
@@ -260,7 +260,7 @@ export function ServerChannelTabs({
               <div className="flex flex-col gap-4">
                 <div className="bg-black border border-zinc-800 rounded-2xl overflow-hidden aspect-video relative group">
                   <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 bg-zinc-950/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-zinc-700/60 text-xs font-mono text-zinc-300 flex items-center gap-2 pointer-events-none">
-                    <FilmStrip size={16} className="text-zinc-400" /> Official Trailer
+                    <FilmStrip size={16} className="text-zinc-400" /> Trailer Resmi
                   </div>
                   {ytId ? (
                     <iframe
@@ -269,7 +269,7 @@ export function ServerChannelTabs({
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       style={{ border: 0 }}
-                      title="Official Trailer"
+                      title="Trailer Resmi"
                     />
                   ) : (
                     <video
@@ -310,7 +310,7 @@ export function ServerChannelTabs({
                   <h4 className="text-sm font-display font-semibold text-white flex items-center gap-2">
                     EterVerse Clips & Reels
                     <span className="text-[10px] font-mono bg-zinc-800 border border-zinc-700 text-zinc-300 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                      Coming Soon
+                      Segera Hadir
                     </span>
                   </h4>
                   <p className="text-xs text-zinc-400 font-body mt-0.5">
@@ -466,7 +466,7 @@ export function ServerChannelTabs({
                     className="flex items-center gap-3 bg-[#5865F2]/10 hover:bg-[#5865F2]/20 border border-[#5865F2]/25 text-white transition-all px-4 py-3 rounded-xl text-sm font-medium"
                   >
                     <DiscordLogo size={20} weight="fill" className="text-[#5865F2]" />
-                    <span>Join Official Discord Server</span>
+                    <span>Gabung Discord Resmi</span>
                   </a>
                 )}
                 {server.socialLinks?.whatsapp && (

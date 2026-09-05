@@ -55,7 +55,7 @@ export function VoteButton({ slug, initialVotes }: VoteButtonProps) {
       />
       <span className="text-xl font-display font-bold">{votes.toLocaleString()}</span>
       <span className="text-[9px] font-mono uppercase tracking-widest opacity-70">
-        {state === "voted" ? "Voted!" : state === "already" ? "Voted" : "Vote"}
+        {state === "voted" ? "Sudah Vote!" : state === "already" ? "Sudah Vote" : "Vote"}
       </span>
     </button>
   );

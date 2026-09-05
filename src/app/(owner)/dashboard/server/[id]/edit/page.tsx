@@ -88,17 +88,17 @@ export default async function EditServerPage({ params }: Props) {
     <div className="max-w-3xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
       <header>
         <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-3">
-          <a href="/dashboard" className="hover:text-eter-cyan transition-colors">Dashboard</a>
+          <a href="/dashboard" className="hover:text-white transition-colors">Dashboard</a>
           <span>/</span>
           <span className="text-zinc-400">Edit Server</span>
         </div>
-        <h1 className="text-2xl md:text-3xl font-display font-semibold text-eter-starlight">Edit Server</h1>
-        <p className="text-zinc-500 font-body mt-1 text-sm">
-          Updating your server will reset it to <span className="text-yellow-400 font-semibold">PENDING</span> for re-review.
+        <h1 className="text-2xl md:text-3xl font-display font-semibold text-white">Edit Server</h1>
+        <p className="text-zinc-400 font-body mt-1 text-sm">
+          Memperbarui rincian server akan mengembalikan status ke <span className="text-amber-400 font-semibold">MENUNGGU</span> untuk ditinjau ulang oleh tim kurasi.
         </p>
       </header>
       
-      <div className="bg-[#050505]/60 backdrop-blur-sm border border-white/5 border-l-2 border-l-eter-cyan p-6 md:p-8 shadow-xl rounded-sm">
+      <div className="bg-zinc-950/70 border border-zinc-800 p-6 md:p-8 shadow-xl rounded-2xl">
         <ServerEditForm action={updateServer} server={serializedServer} />
       </div>
     </div>

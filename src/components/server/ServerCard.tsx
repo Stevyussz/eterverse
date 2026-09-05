@@ -97,7 +97,7 @@ export function ServerCard({
         {isEterShopPartner ? (
           <div className="flex items-center gap-1.5 bg-amber-500/15 backdrop-blur-md border border-amber-500/30 px-2.5 py-1 rounded-full h-fit">
             <Trophy weight="fill" className="text-amber-400" size={12} />
-            <span className="text-[9px] font-mono font-semibold text-amber-300 tracking-wider uppercase">Partner</span>
+            <span className="text-[9px] font-mono font-semibold text-amber-300 tracking-wider uppercase">Mitra</span>
           </div>
         ) : <div />}
 

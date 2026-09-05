@@ -65,11 +65,11 @@ export default async function NewServerPage() {
   return (
     <div className="max-w-3xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
       <header>
-        <h1 className="text-3xl font-display font-semibold text-eter-starlight">Submit a Server</h1>
-        <p className="text-zinc-500 font-body mt-1">Fill out the details below. Our team will review your submission before it goes live.</p>
+        <h1 className="text-2xl sm:text-3xl font-display font-semibold text-white">Daftarkan Server</h1>
+        <p className="text-zinc-400 font-body mt-1 text-sm">Lengkapi rincian formulir di bawah ini. Tim kurasi kami akan meninjau server Anda sebelum tampil di direktori publik.</p>
       </header>
       
-      <div className="bg-[#050505]/60 backdrop-blur-sm border border-white/5 border-l-2 border-l-eter-cyan p-8 shadow-xl rounded-sm">
+      <div className="bg-zinc-950/70 border border-zinc-800 p-6 sm:p-8 shadow-xl rounded-2xl">
         <ServerSubmitForm action={createServer} />
       </div>
     </div>
