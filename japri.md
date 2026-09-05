@@ -30,7 +30,7 @@ Apa aja benefit yang didapat server kamu di EterVerse?
 Kalau bro/kakak berkenan, yuk amankan slot eksklusifnya di sini (cuma butuh 2 menit):
 👉 https://eterverse.vercel.app/dashboard/server/new
 
-_Santai aja bro, kalau kakak lagi sibuk atau belum sempat buka web, tinggal kirim Nama Server, IP/Port, sama Logonya ke chat ini yaa, nanti biar aku yang bantu inputin sampai beres!_ 🙏✨
+_Kalau ada kendala atau bingung pas proses daftarnya, jangan sungkan buat tanya ke aku yaa, kita siap bantu pandu sampai servermu aktif & tayang!_ 🙏✨
 
 Sukses terus buat *[Nama Server]*! 🔥
 ```
@@ -42,14 +42,14 @@ Sukses terus buat *[Nama Server]*! 🔥
 Jika owner membalas dan bertanya apa saja syarat atau datanya, cukup kirimkan pesan singkat ini:
 
 ```text
-Simpel banget kak, ga ada syarat ribet kok! Cukup siapin:
+Simpel banget kak, ga ada syarat ribet kok! Cukup login dan siapin:
 1. 🏷️ *Nama Server*: (Contoh: [Nama Server])
 2. 🌐 *IP & Port*: (IP Java & Port Bedrock jika crossplay / link invite jika Realms)
 3. 📝 *Deskripsi Singkat*: (Mode permainannya apa aja, misal Survival, SMP, Lifesteal, dll)
 4. 🖼️ *Logo Server*: (Gambar icon server)
 5. 🎨 *Banner Server (Opsional)*: (Gambar pemandangan server biar makin keren)
 
-Bisa langsung isi di https://eterverse.vercel.app/dashboard/server/new atau kirim datanya ke sini kak, biar langsung aku bantu proseskan! 👍
+Tinggal login dan isi formnya di https://eterverse.vercel.app/dashboard/server/new kak. Kalau ada step yang bikin bingung, kabarin aja yaa, siap bantu pandu! 👍
 ```
 
 ---

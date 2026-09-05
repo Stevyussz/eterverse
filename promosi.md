@@ -28,6 +28,7 @@ Kenapa server kamu wajib masuk di EterVerse?
 
 Bagi kalian owner/admin yang mau mengamankan slot sebelum kuota 50 server penuh, yuk daftarkan server kamu sekarang:
 👉 https://eterverse.vercel.app/dashboard/server/new
+_(Kalau bingung atau ada kendala pas daftar, jangan sungkan colek/tanya yaa, kami siap bantu pandu sampai servermu live!)_
 
 Dan buat teman-teman yang lagi hunting server seru buat mabar malam ini:
 👉 https://eterverse.vercel.app/
