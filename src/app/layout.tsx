@@ -29,6 +29,7 @@ export const metadata: Metadata = {
 };
 
 import { BackgroundController } from "@/components/layout/BackgroundController";
+import { Footer } from "@/components/layout/Footer";
 
 export default async function RootLayout({
   children,
@@ -44,11 +45,14 @@ export default async function RootLayout({
   return (
     <html lang="id" className="dark">
       <body
-        className={`${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} antialiased`}
+        className={`${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <BackgroundController />
         <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
-        {children}
+        <div className="flex-1">
+          {children}
+        </div>
+        <Footer />
         <Toaster theme="dark" position="bottom-right" />
       </body>
     </html>
