@@ -34,12 +34,45 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     return { title: "Server Not Found | EterVerse" };
   }
 
+  const ogImage = server.bannerUrl || server.logoUrl || "https://eterverse.com/dashboard-bg.png";
+  const onlineCount = server.liveStatus?.currentPlayers || 0;
+  const rating = server.metrics?.rating ? server.metrics.rating.toFixed(1) : "5.0";
+
   return {
-    title: `${server.name} - IP, Ping & Status | EterVerse`,
-    description: `Main di ${server.name} sekarang! Server Minecraft Indonesia terbaik. Copy IP: ${server.ipAddress}, Online: ${server.liveStatus?.currentPlayers || 0} players. Temukan komunitasmu di EterVerse.`,
+    title: `${server.name} - Server Minecraft Indonesia | IP & Status`,
+    description: `Main di ${server.name} sekarang! IP: ${server.ipAddress}. Status: ${server.liveStatus?.isOnline ? 'Online' : 'Offline'} (${onlineCount} pemain online). Rating: ⭐ ${rating}/5.0. Temukan info lengkap dan vote di EterVerse.`,
+    keywords: [
+      server.name,
+      `${server.name} minecraft`,
+      `ip ${server.name}`,
+      "server minecraft indonesia",
+      ...(server.tags || []),
+    ],
     alternates: {
       canonical: `https://eterverse.com/server/${server.slug}`,
-    }
+    },
+    openGraph: {
+      type: "website",
+      locale: "id_ID",
+      url: `https://eterverse.com/server/${server.slug}`,
+      siteName: "EterVerse",
+      title: `${server.name} - Server Minecraft Indonesia`,
+      description: `IP: ${server.ipAddress} | ${onlineCount} pemain online | Rating ⭐ ${rating}/5.0. Gabung dan main sekarang!`,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${server.name} Minecraft Server Banner`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${server.name} - Server Minecraft Indonesia`,
+      description: `IP: ${server.ipAddress} | ${onlineCount} pemain online | Rating ⭐ ${rating}/5.0.`,
+      images: [ogImage],
+    },
   };
 }
 

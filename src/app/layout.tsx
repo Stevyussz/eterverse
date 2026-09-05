@@ -24,12 +24,73 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EterVerse | Premium Minecraft Server Discovery",
-  description: "Temukan server Minecraft terbaik di EterVerse.",
+  metadataBase: new URL("https://eterverse.com"),
+  title: {
+    default: "EterVerse - Daftar Server Minecraft Indonesia Terbaik (Java & Bedrock)",
+    template: "%s | EterVerse",
+  },
+  description: "Temukan, jelajahi, dan vote server Minecraft Indonesia terbaik. Cek IP address, status online real-time, player count, rating komunitas, dan server SMP/PvP terpopuler.",
+  keywords: [
+    "server minecraft indonesia",
+    "daftar server minecraft",
+    "minecraft server list indonesia",
+    "server minecraft java bedrock",
+    "server minecraft smp",
+    "server minecraft lifesteal indonesia",
+    "ip server minecraft",
+    "eterverse",
+    "vote server minecraft",
+    "minecraft server terbaik",
+  ],
+  authors: [{ name: "EterVerse Team", url: "https://eterverse.com" }],
+  creator: "EterVerse",
+  publisher: "EterVerse",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: "https://eterverse.com",
+  },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: "https://eterverse.com",
+    siteName: "EterVerse",
+    title: "EterVerse - Platform Server Minecraft Indonesia Modern",
+    description: "Temukan server Minecraft impianmu. Cek IP, live status, player count, rating, dan vote server favoritmu di EterVerse.",
+    images: [
+      {
+        url: "https://eterverse.com/dashboard-bg.png",
+        width: 1200,
+        height: 630,
+        alt: "EterVerse Minecraft Server Discovery",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "EterVerse - Platform Server Minecraft Indonesia Modern",
+    description: "Temukan server Minecraft impianmu. Cek IP, live status, player count, rating, dan vote server favoritmu di EterVerse.",
+    images: ["https://eterverse.com/dashboard-bg.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 import { BackgroundController } from "@/components/layout/BackgroundController";
 import { Footer } from "@/components/layout/Footer";
+import { WebsiteJsonLd } from "@/components/seo/JsonLdSchema";
 
 export default async function RootLayout({
   children,
@@ -47,6 +108,7 @@ export default async function RootLayout({
       <body
         className={`${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} antialiased flex flex-col min-h-screen`}
       >
+        <WebsiteJsonLd />
         <BackgroundController />
         <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
         <div className="flex-1">

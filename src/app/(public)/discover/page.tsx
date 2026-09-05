@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import { ServerCard } from "@/components/server/ServerCard";
@@ -5,9 +6,28 @@ import { MagnifyingGlass, FunnelSimple } from "@phosphor-icons/react/dist/ssr";
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
-  title: "Discover Servers | EterVerse",
-  description: "Temukan dan jelajahi semua server Minecraft Indonesia terbaik di EterVerse. Filter berdasarkan kategori, mode permainan, dan rating.",
+export const metadata: Metadata = {
+  title: "Jelajahi Server Minecraft Indonesia (SMP, PvP, Survival, Lifesteal)",
+  description: "Daftar lengkap server Minecraft Indonesia terbaik (Java & Bedrock). Filter berdasarkan mode permainan SMP, PvP, Lifesteal, RPG, dan Skyblock dengan status online real-time.",
+  keywords: [
+    "cari server minecraft",
+    "daftar server minecraft indonesia",
+    "server minecraft smp indonesia",
+    "server minecraft pvp",
+    "server minecraft lifesteal",
+    "minecraft server list",
+  ],
+  alternates: {
+    canonical: "https://eterverse.com/discover",
+  },
+  openGraph: {
+    title: "Jelajahi Server Minecraft Indonesia | EterVerse",
+    description: "Temukan ratusan server Minecraft Indonesia terpopuler. Cek IP, status online real-time, dan vote server favoritmu.",
+    url: "https://eterverse.com/discover",
+    siteName: "EterVerse",
+    locale: "id_ID",
+    type: "website",
+  },
 };
 
 const ALL_TAGS = ["Survival", "SMP", "Lifesteal", "Economy", "Creative", "PvP", "RPG", "Skyblock", "Factions", "Mini-Games"];
