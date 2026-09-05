@@ -8,6 +8,7 @@ import {
   ListPlus, 
   Code, 
   Lightning,
+  Sparkle,
   SignOut,
   List,
   X
@@ -79,6 +80,14 @@ export function DashboardSidebar({ user }: SidebarProps) {
             <SidebarLink href="/dashboard" icon={<SquaresFour size={20} />} label="Ringkasan" pathname={pathname} onClick={closeSidebar} />
             <SidebarLink href="/dashboard/server/new" icon={<ListPlus size={20} />} label="Daftarkan Server" pathname={pathname} onClick={closeSidebar} />
             <SidebarLink href="/dashboard/tools/widget" icon={<Code size={20} />} label="Alat Widget Status" pathname={pathname} onClick={closeSidebar} />
+            <SidebarLink 
+              href="/dashboard/tools/votifier" 
+              icon={<Sparkle size={20} weight="fill" className="text-cyan-400" />} 
+              label="Reward Votifier" 
+              badge="SOON"
+              pathname={pathname} 
+              onClick={closeSidebar} 
+            />
             <div className="mt-3 pt-3 border-t border-zinc-800">
               <SidebarLink href="/dashboard/boost" icon={<Lightning size={20} weight="fill" />} label="Promosi EterShop" isGold pathname={pathname} onClick={closeSidebar} />
             </div>
@@ -97,14 +106,30 @@ export function DashboardSidebar({ user }: SidebarProps) {
   );
 }
 
-function SidebarLink({ href, icon, label, isGold = false, pathname, onClick }: { href: string, icon: React.ReactNode, label: string, isGold?: boolean, pathname: string, onClick: () => void }) {
+function SidebarLink({ 
+  href, 
+  icon, 
+  label, 
+  isGold = false, 
+  badge,
+  pathname, 
+  onClick 
+}: { 
+  href: string;
+  icon: React.ReactNode; 
+  label: string; 
+  isGold?: boolean; 
+  badge?: string;
+  pathname: string; 
+  onClick: () => void;
+}) {
   const isActive = href === "/dashboard" ? pathname === "/dashboard" : pathname === href || pathname.startsWith(`${href}/`);
   
   return (
     <Link 
       href={href} 
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border ${
+      className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border ${
         isGold 
           ? isActive
             ? 'text-amber-300 bg-amber-500/15 border-amber-500/30 font-semibold'
@@ -114,8 +139,15 @@ function SidebarLink({ href, icon, label, isGold = false, pathname, onClick }: {
             : 'text-zinc-400 hover:text-white hover:bg-white/5 border-transparent'
       }`}
     >
-      {icon}
-      {label}
+      <div className="flex items-center gap-3">
+        {icon}
+        <span>{label}</span>
+      </div>
+      {badge && (
+        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 tracking-wider">
+          {badge}
+        </span>
+      )}
     </Link>
   );
 }

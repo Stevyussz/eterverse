@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
-import { CheckCircle, XCircle, Shield, ArrowSquareOut, WhatsappLogo, Trash, Star, PencilSimple } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircle, XCircle, Shield, ArrowSquareOut, WhatsappLogo, Trash, Star, PencilSimple, Sparkle } from "@phosphor-icons/react/dist/ssr";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
@@ -121,6 +121,34 @@ export default async function AdminModerationPage() {
             <p className="text-xs font-mono text-zinc-500 mt-1 uppercase tracking-widest">{s.label}</p>
           </div>
         ))}
+      </div>
+
+      {/* NuVotifier Feature Roadmap for Admin */}
+      <div className="bg-gradient-to-r from-cyan-950/30 via-[#09090b] to-[#09090b] border border-cyan-500/30 p-5 rounded-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-md bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+            <Sparkle size={20} weight="fill" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
+                Fitur Integrasi • Segera Hadir
+              </span>
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-semibold uppercase">
+                NuVotifier
+              </span>
+            </div>
+            <p className="text-sm font-semibold text-white mt-0.5">In-Game Vote Reward &amp; Syarat Kualifikasi Server</p>
+            <p className="text-xs text-zinc-400 font-body">Protokol TCP socket &amp; RSA encryption untuk reward pemain in-game.</p>
+          </div>
+        </div>
+        <Link 
+          href="/dashboard/tools/votifier" 
+          className="text-xs font-mono text-cyan-300 border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 px-3 py-2 rounded-sm flex items-center gap-1.5 shrink-0 transition-colors whitespace-nowrap"
+        >
+          <span>Buka Panduan &amp; Syarat</span>
+          <ArrowSquareOut size={13} />
+        </Link>
       </div>
 
       {/* Pending Queue */}

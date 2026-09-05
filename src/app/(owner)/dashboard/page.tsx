@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import Link from "next/link";
-import { ChartLineUp, Users, CursorClick, Clock, CheckCircle, Eye, PencilSimple, WarningCircle } from "@phosphor-icons/react/dist/ssr";
+import { ChartLineUp, Users, CursorClick, Clock, CheckCircle, Eye, PencilSimple, WarningCircle, Sparkle, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { revalidatePath } from "next/cache";
 import { DeleteServerButton } from "@/components/dashboard/DeleteServerButton";
 
@@ -46,6 +46,39 @@ export default async function DashboardOverview() {
           + Daftarkan Server
         </Link>
       </header>
+
+      {/* Coming Soon: NuVotifier Teaser Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-950/40 via-zinc-950 to-zinc-950 border border-cyan-500/30 p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-lg">
+        <div className="flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0 mt-0.5">
+            <Sparkle size={22} weight="fill" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
+                Fitur Baru Segera Hadir
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-semibold">
+                NuVotifier
+              </span>
+            </div>
+            <h3 className="text-base sm:text-lg font-display font-semibold text-white">
+              In-Game Vote Reward untuk Pemain Servermu
+            </h3>
+            <p className="text-xs sm:text-sm text-zinc-400 font-body max-w-2xl">
+              Beri hadiah otomatis (Crate Key, Diamond, Koin) langsung di dalam game setiap kali pemain melakukan vote di EterVerse. Pelajari syarat dan cara menyiapkan servermu lebih awal.
+            </p>
+          </div>
+        </div>
+
+        <Link
+          href="/dashboard/tools/votifier"
+          className="bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 font-mono text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center gap-2 shrink-0 transition-all active:scale-95 whitespace-nowrap"
+        >
+          <span>Pelajari &amp; Cek Syarat</span>
+          <ArrowRight size={14} weight="bold" />
+        </Link>
+      </div>
 
       {!hasServers ? (
         <div className="flex flex-col items-center justify-center p-16 mt-10 bg-zinc-950/60 border border-zinc-800 rounded-2xl shadow-xl text-center">

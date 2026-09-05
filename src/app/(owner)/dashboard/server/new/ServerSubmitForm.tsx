@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Spinner, Crown, Desktop, DeviceMobile, Lightning } from "@phosphor-icons/react";
+import { Spinner, Crown, Desktop, DeviceMobile, Lightning, Sparkle } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { ImageUploader } from "@/components/ui/ImageUploader";
 import { VideoUploader } from "@/components/ui/VideoUploader";
@@ -209,6 +209,24 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
               </div>
             </div>
           )}
+
+          {/* Votifier Teaser Notice */}
+          <div className="p-3.5 rounded-xl bg-cyan-950/20 border border-cyan-500/20 flex items-start justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 text-cyan-300">
+              <Sparkle size={16} weight="fill" className="shrink-0 text-cyan-400" />
+              <span className="font-body">
+                <strong>In-Game Vote Reward (NuVotifier)</strong> segera hadir! Pemainmu nanti bisa klaim reward in-game saat vote.
+              </span>
+            </div>
+            <a 
+              href="/dashboard/tools/votifier" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-[11px] font-mono font-semibold text-cyan-400 hover:text-cyan-300 underline shrink-0"
+            >
+              Cek Syarat &rarr;
+            </a>
+          </div>
 
           {/* Owner WhatsApp */}
           <div className="flex flex-col gap-2">
