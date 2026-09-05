@@ -16,7 +16,11 @@ export async function GET(req: Request) {
   try {
     await connectToDatabase();
     
-    const servers = await Server.find({ moderationStatus: 'APPROVED' }).select('_id ipAddress port').lean();
+    // Fetch approved dedicated servers (exclude Realms, as Realms are cloud-managed and don't expose TCP sockets)
+    const servers = await Server.find({
+      moderationStatus: 'APPROVED',
+      serverType: { $ne: 'REALM' }
+    }).select('_id ipAddress port').lean();
     
     if (!servers.length) {
       return NextResponse.json({ message: 'No servers to ping' });
@@ -24,7 +28,11 @@ export async function GET(req: Request) {
 
     const updates = await Promise.all(servers.map(async (srv: any) => {
       try {
-        const result = await util.status(srv.ipAddress, srv.port || 25565, { timeout: 3000 });
+        const isBedrock = srv.port === 19132;
+        const result = isBedrock
+          ? await util.statusBedrock(srv.ipAddress, srv.port, { timeout: 3500 })
+          : await util.status(srv.ipAddress, srv.port || 25565, { timeout: 3500 });
+
         return {
           id: srv._id,
           status: {

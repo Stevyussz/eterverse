@@ -83,6 +83,13 @@ const ServerSchema = new Schema<IServer>({
   createdAt: { type: Date, default: Date.now },
 });
 
+// High-performance compound indexes for scaling to thousands of servers
+ServerSchema.index({ moderationStatus: 1, "metrics.votes": -1 });
+ServerSchema.index({ moderationStatus: 1, "metrics.rating": -1 });
+ServerSchema.index({ moderationStatus: 1, createdAt: -1 });
+ServerSchema.index({ moderationStatus: 1, "liveStatus.currentPlayers": -1 });
+ServerSchema.index({ moderationStatus: 1, tags: 1 });
+
 // Pre-save hook to automatically generate slug from name
 ServerSchema.pre("save", async function () {
   if (this.isModified("name") || !this.slug) {
