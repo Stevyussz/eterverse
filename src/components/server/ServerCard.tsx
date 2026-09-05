@@ -34,21 +34,57 @@ export function ServerCard({
   const [isHovered, setIsHovered] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Clean up hover timeout on unmount
+  // Clean up hover timeout on unmount and setup focal-zone observer on touch devices
   useEffect(() => {
+    const currentCard = cardRef.current;
+    if (!currentCard) return;
+
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    if (!isTouch) {
+      return () => {
+        if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      };
+    }
+
+    // Focal-Zone IntersectionObserver:
+    // rootMargin restricts triggering to the center reading area of the screen (-25% top, -25% bottom)
+    // Only ONE card in the user's primary view will auto-play, matching TikTok / Reels behavior!
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+            // Settle debounce (100ms): only start playing when user slows down/settles on this card
+            hoverTimeoutRef.current = setTimeout(() => {
+              setIsHovered(true);
+            }, 100);
+          } else {
+            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+            setIsHovered(false);
+          }
+        });
+      },
+      {
+        rootMargin: "-25% 0px -25% 0px",
+        threshold: 0.35,
+      }
+    );
+
+    observer.observe(currentCard);
+
     return () => {
+      observer.unobserve(currentCard);
       if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     };
   }, []);
 
-  // Only enable video previews on desktop with mouse pointers (never on mobile touch scrolling)
+  // Desktop mouse hover
   const handleMouseEnter = () => {
     if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) return;
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-    // 150ms gentle debounce to prevent accidental video spins on fast mouse flicks
     hoverTimeoutRef.current = setTimeout(() => {
       setIsHovered(true);
-    }, 150);
+    }, 120);
   };
 
   const handleMouseLeave = () => {

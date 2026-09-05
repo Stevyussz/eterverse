@@ -39,7 +39,7 @@ export default async function Home() {
   if (partnerServers.length === 0) partnerServers = serializedTrending.slice(0, 3); // Fallback
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center pt-28 md:pt-36 pb-24 px-4 sm:px-6 lg:px-24 overflow-x-hidden">
+    <main className="relative min-h-screen flex flex-col items-center pt-28 md:pt-36 pb-24 px-4 sm:px-6 lg:px-24 overflow-x-clip">
       
       {/* Search Header Area */}
       <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto space-y-4 w-full mb-10">

@@ -21,11 +21,18 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     background-color: var(--color-eter-abyss);
     color: var(--color-eter-starlight);
     font-family: var(--font-body);
     scrollbar-color: rgba(255, 255, 255, 0.15) var(--color-eter-abyss); 
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
   
   h1, h2, h3, h4, h5, h6 {

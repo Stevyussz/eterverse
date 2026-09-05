@@ -48,14 +48,6 @@ export function HeroSlider({ servers }: { servers: any[] }) {
     [emblaApi]
   );
 
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
-    }
-  }, []);
-
   return (
     <div className="relative w-full max-w-6xl mx-auto group mt-8">
       
@@ -107,7 +99,7 @@ export function HeroSlider({ servers }: { servers: any[] }) {
                   <BackgroundVideo
                     videoUrl={server.videoUrl}
                     fallbackImage={server.bannerUrl}
-                    autoPlay={isActive && !isTouchDevice}
+                    autoPlay={isActive}
                     className="absolute inset-0 w-full h-full object-cover opacity-75"
                   />
                 </div>
