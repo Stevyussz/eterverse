@@ -5,7 +5,7 @@ import { Code, CheckCircle } from "@phosphor-icons/react";
 
 export function EmbedWidget({ serverSlug }: { serverSlug: string }) {
   const [copied, setCopied] = useState(false);
-  const embedCode = `<a href="https://eterverse.com/server/${serverSlug}" target="_blank"><img src="https://eterverse.com/api/widget/${serverSlug}" alt="EterVerse Live Status" /></a>`;
+  const embedCode = `<a href="https://eterverse.vercel.app/server/${serverSlug}" target="_blank"><img src="https://eterverse.vercel.app/api/widget/${serverSlug}" alt="EterVerse Live Status" /></a>`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(embedCode);

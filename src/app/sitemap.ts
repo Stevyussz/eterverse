@@ -3,7 +3,7 @@ import connectToDatabase from '@/lib/db';
 import { Server } from '@/models/Server';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://eterverse.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eterverse.vercel.app';
   
   try {
     await connectToDatabase();

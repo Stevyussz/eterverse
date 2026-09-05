@@ -23,10 +23,12 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://eterverse.vercel.app";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://eterverse.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "EterVerse - Daftar Server Minecraft Indonesia Terbaik (Java & Bedrock)",
+    default: "EterVerse - Platform Server Minecraft Indonesia Terbaik (Java & Bedrock)",
     template: "%s | EterVerse",
   },
   description: "Temukan, jelajahi, dan vote server Minecraft Indonesia terbaik. Cek IP address, status online real-time, player count, rating komunitas, dan server SMP/PvP terpopuler.",
@@ -42,7 +44,7 @@ export const metadata: Metadata = {
     "vote server minecraft",
     "minecraft server terbaik",
   ],
-  authors: [{ name: "EterVerse Team", url: "https://eterverse.com" }],
+  authors: [{ name: "EterVerse Team", url: SITE_URL }],
   creator: "EterVerse",
   publisher: "EterVerse",
   formatDetection: {
@@ -51,20 +53,22 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: "https://eterverse.com",
+    canonical: SITE_URL,
   },
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://eterverse.com",
+    url: SITE_URL,
     siteName: "EterVerse",
     title: "EterVerse - Platform Server Minecraft Indonesia Modern",
     description: "Temukan server Minecraft impianmu. Cek IP, live status, player count, rating, dan vote server favoritmu di EterVerse.",
     images: [
       {
-        url: "https://eterverse.com/dashboard-bg.png",
+        url: `${SITE_URL}/og-image.jpg`,
+        secureUrl: `${SITE_URL}/og-image.jpg`,
         width: 1200,
         height: 630,
+        type: "image/jpeg",
         alt: "EterVerse Minecraft Server Discovery",
       },
     ],
@@ -73,7 +77,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "EterVerse - Platform Server Minecraft Indonesia Modern",
     description: "Temukan server Minecraft impianmu. Cek IP, live status, player count, rating, dan vote server favoritmu di EterVerse.",
-    images: ["https://eterverse.com/dashboard-bg.png"],
+    images: [`${SITE_URL}/og-image.jpg`],
   },
   robots: {
     index: true,
@@ -106,6 +110,15 @@ export default async function RootLayout({
 
   return (
     <html lang="id" className="dark">
+      <head>
+        <meta property="og:image" content={`${SITE_URL}/og-image.jpg`} />
+        <meta property="og:image:secure_url" content={`${SITE_URL}/og-image.jpg`} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="EterVerse - Platform Server Minecraft Indonesia" />
+        <link rel="image_src" href={`${SITE_URL}/og-image.jpg`} />
+      </head>
       <body
         className={`${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} antialiased flex flex-col min-h-screen`}
       >

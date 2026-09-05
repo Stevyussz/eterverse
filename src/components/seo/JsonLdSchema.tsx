@@ -1,7 +1,9 @@
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://eterverse.vercel.app";
+
 export function JsonLdSchema({ server }: { server: any }) {
   const ratingValue = Number(server.metrics?.rating || 5).toFixed(1);
   const reviewCount = Math.max(1, Number(server.metrics?.votes || 1));
-  const defaultBanner = "https://eterverse.com/dashboard-bg.png";
+  const defaultBanner = `${SITE_URL}/og-image.jpg`;
 
   const schema = {
     "@context": "https://schema.org",
@@ -15,7 +17,7 @@ export function JsonLdSchema({ server }: { server: any }) {
     image: server.bannerUrl || server.logoUrl || defaultBanner,
     screenshot: server.galleryUrls?.length > 0 ? server.galleryUrls : [server.bannerUrl || defaultBanner],
     description: server.description || `Server Minecraft ${server.name}. Main sekarang dengan IP ${server.ipAddress}.`,
-    url: `https://eterverse.com/server/${server.slug}`,
+    url: `${SITE_URL}/server/${server.slug}`,
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: ratingValue,
@@ -32,7 +34,7 @@ export function JsonLdSchema({ server }: { server: any }) {
     author: {
       "@type": "Organization",
       name: "EterVerse",
-      url: "https://eterverse.com",
+      url: SITE_URL,
     },
   };
 
@@ -50,12 +52,12 @@ export function WebsiteJsonLd() {
     "@type": "WebSite",
     name: "EterVerse",
     alternateName: ["EterVerse Minecraft", "EterVerse Server List"],
-    url: "https://eterverse.com",
+    url: SITE_URL,
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: "https://eterverse.com/discover?q={search_term_string}",
+        urlTemplate: `${SITE_URL}/discover?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },

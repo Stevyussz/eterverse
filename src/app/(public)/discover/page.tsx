@@ -18,15 +18,24 @@ export const metadata: Metadata = {
     "minecraft server list",
   ],
   alternates: {
-    canonical: "https://eterverse.com/discover",
+    canonical: "https://eterverse.vercel.app/discover",
   },
   openGraph: {
     title: "Jelajahi Server Minecraft Indonesia | EterVerse",
     description: "Temukan ratusan server Minecraft Indonesia terpopuler. Cek IP, status online real-time, dan vote server favoritmu.",
-    url: "https://eterverse.com/discover",
+    url: "https://eterverse.vercel.app/discover",
     siteName: "EterVerse",
     locale: "id_ID",
     type: "website",
+    images: [
+      {
+        url: "https://eterverse.vercel.app/og-image.jpg",
+        width: 1200,
+        height: 630,
+        type: "image/jpeg",
+        alt: "Jelajahi Server Minecraft Indonesia",
+      },
+    ],
   },
 };
 

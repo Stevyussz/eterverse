@@ -34,7 +34,7 @@ Halo halo bro/kak [Nama Owner]! Salam kenal yaa 👋
 
 Aku perhatiin server Minecraft kamu *[Nama Server]* konsepnya keren banget dan kelihatan niat banget dibangunnya! Keren euy 🔥
 
-Kebetulan aku dan tim lagi ngembangin *EterVerse* (https://eterverse.com), platform server list & komunitas Minecraft modern buatan anak bangsa. 
+Kebetulan aku dan tim lagi ngembangin *EterVerse* (https://eterverse.vercel.app), platform server list & komunitas Minecraft modern buatan anak bangsa. 
 
 Di EterVerse, kita bikin fitur yang khusus nyelesaiin masalah klasik server Minecraft:
 ✨ *Port Bedrock & Java terpisah*: Pemain HP / MCPE ga bakal gagal koneksi lagi karena port 19132 tersimpan rapi.
@@ -45,7 +45,7 @@ Di EterVerse, kita bikin fitur yang khusus nyelesaiin masalah klasik server Mine
 Kalau bro/kakak berkenan, yuk daftarin *[Nama Server]* di EterVerse biar makin banyak pemain baru yang nemuin server kamu! 🚀
 
 👉 *Link Pendaftaran (Cuma butuh 2 menit):*
-https://eterverse.com/dashboard/server/new
+https://eterverse.vercel.app/dashboard/server/new
 
 Kalau butuh bantuan atau mau dibantu input datanya, kabarin aja ya bro. Sukses terus buat servernya! 🙏✨
 ```
@@ -58,7 +58,7 @@ Kalau butuh bantuan atau mau dibantu input datanya, kabarin aja ya bro. Sukses t
 ```text
 Selamat siang/malam kak [Nama Owner] 🙏
 
-Perkenalkan, saya dari tim *EterVerse* (https://eterverse.com). 
+Perkenalkan, saya dari tim *EterVerse* (https://eterverse.vercel.app). 
 
 Kami sangat mengapresiasi konsistensi kakak dalam membangun komunitas *[Nama Server]*. Melihat potensinya yang luar biasa, kami ingin mengundang server kakak untuk ikut bergabung dan tampil di etalase utama *EterVerse*.
 
@@ -69,7 +69,7 @@ Mengapa EterVerse berbeda dari server list lainnya?
 4. *Bebas Biaya*: 100% gratis tanpa dipungut biaya apapun.
 
 Pendaftarannya sangat cepat (hanya perlu IP, deskripsi, dan logo server):
-👉 https://eterverse.com/dashboard/server/new
+👉 https://eterverse.vercel.app/dashboard/server/new
 
 Besar harapan kami *[Nama Server]* bisa menjadi bagian dari ekosistem EterVerse. Terima kasih atas waktunya kak, semoga servernya makin maju dan ramai! 🌟
 ```
@@ -85,7 +85,7 @@ Halo kak [Nama Owner]! 👋
 Lagi cari cara nambah pemain baru untuk *[Nama Server]* secara gratis? 
 
 Coba daftarin server kamu di *EterVerse* kak:
-👉 https://eterverse.com
+👉 https://eterverse.vercel.app
 
 Keuntungan buat server kamu:
 ✅ Pemain HP (MCPE) bisa join otomatis 1 klik (Direct Play)
@@ -94,7 +94,7 @@ Keuntungan buat server kamu:
 ✅ Gratis 100% tanpa syarat ribet
 
 Daftarnya cuma 2 menit di sini kak:
-🌐 https://eterverse.com/dashboard/server/new
+🌐 https://eterverse.vercel.app/dashboard/server/new
 
 Semoga bermanfaat dan servernya makin ramai pemain aktif ya kak! 🔥
 ```
@@ -121,7 +121,7 @@ Daftarnya simpel banget kak, cuma butuh waktu 2 menit dan ga ribet sama sekali! 
 8. 📱 *Nomor WhatsApp Owner*: Rahasia (hanya untuk verifikasi darurat tim EterVerse).
 
 Langsung klik form di sini kak:
-👉 https://eterverse.com/dashboard/server/new
+👉 https://eterverse.vercel.app/dashboard/server/new
 ```
 
 ---
@@ -163,7 +163,7 @@ Tinggalkan server list jadul yang tampilannya kaku dan fiturnya membingungkan. D
 Tunggu apa lagi? Daftarkan servermu sekarang sebelum keduluan kompetitor dan raih peringkat teratas di Beranda EterVerse! 🏆
 
 👉 *Daftarkan Servermu Disini:*
-🌐 https://eterverse.com/dashboard/server/new
+🌐 https://eterverse.vercel.app/dashboard/server/new
 
 _EterVerse — Rumah Terbaik untuk Server Minecraft Indonesia._
 ```
@@ -188,8 +188,8 @@ Ga perlu bingung lagi nyari server di internet yang ternyata sudah mati atau ban
 
 Temukan server impianmu dan ajak teman mabar sekarang juga! 👇
 
-🌐 *Kunjungi Website:* https://eterverse.com/discover
-🌐 *Beranda:* https://eterverse.com
+🌐 *Kunjungi Website:* https://eterverse.vercel.app/discover
+🌐 *Beranda:* https://eterverse.vercel.app
 
 _Save linknya biar ga lupa pas mau mabar nanti malam!_ 🚀
 ```
@@ -211,7 +211,7 @@ Keunggulannya:
 ✨ Live player count & video trailer showcase
 
 Daftarin servermu atau cari server mabar terseru disini:
-👉 https://eterverse.com
+👉 https://eterverse.vercel.app
 
 _Gratis tanpa biaya langganan apapun!_ 🔥
 ```
@@ -234,10 +234,10 @@ Pendaftarannya *100% Gratis* dan sudah dilengkapi fitur modern:
 - Live player ping & status uptime 24 jam
 
 Bagi yang mau mendaftarkan servernya, silakan kunjungi:
-👉 https://eterverse.com/dashboard/server/new
+👉 https://eterverse.vercel.app/dashboard/server/new
 
 Dan untuk teman-teman yang sedang mencari teman mabar atau server baru:
-👉 https://eterverse.com/discover
+👉 https://eterverse.vercel.app/discover
 
 Terima kasih banyak Admin atas kesempatannya! Sukses selalu untuk grup ini. 🌟
 ```
@@ -261,20 +261,25 @@ EterVerse adalah server list pertama yang memiliki kategori khusus *Minecraft Re
 ✅ Bebas biaya pendaftaran (100% Gratis).
 
 Yuk daftarkan Realm kamu dan temukan teman petualangan baru:
-👉 https://eterverse.com/dashboard/server/new
+👉 https://eterverse.vercel.app/dashboard/server/new
 
 Cek daftar Realm lainnya disini:
-👉 https://eterverse.com/discover?platform=REALM
+👉 https://eterverse.vercel.app/discover?platform=REALM
 ```
 
 ---
 
-## 💡 Tips & Strategi Jam Prime Time Share
-
+## 💡 Tips & Strategi Share ke WhatsApp
+ 
 1. **⏰ Jam Emas Posting di WhatsApp**:
    * **Sore Hari (15.30 - 17.30 WIB)**: Saat anak sekolah / kuliahan baru pulang dan mulai bersantai membuka HP.
    * **Malam Hari (19.30 - 21.30 WIB)**: Jam santai *prime time* komunitas gamer mabar atau kumpul di Discord/WhatsApp.
    * **Weekend (Sabtu & Minggu pagi jam 10.00 & malam jam 20.00 WIB)**: Waktu paling aktif pemain mencari server baru untuk dimainkan seharian.
 
-2. **📸 Tips Tambahan (Gunakan Gambar/Screenshot)**:
-   * Saat mengirimkan teks di atas, sertakan **1 tangkapan layar (screenshot)** halaman EterVerse yang menampilkan desain modern gelap beranda atau tampilan kartu server. Visual yang estetik akan meningkatkan rasio klik hingga **300%**!
+2. **🖼️ Cara Agar Gambar Banner EterVerse Otomatis Ter-Embed di WhatsApp (Link Preview)**:
+   * **Langkah 1**: Salin teks template yang ada link `https://eterverse.vercel.app/`.
+   * **Langkah 2**: Paste / tempelkan ke kolom chat WhatsApp.
+   * **Langkah 3 (SANGAT PENTING)**: ⚠️ **Tunggu 1–2 detik setelah paste!** Jangan langsung pencet kirim.
+   * Perhatikan sampai muncul kotak kartu pratinjau (Rich Link Preview) lengkap dengan gambar banner EterVerse, judul, dan deskripsi di atas kolom ketik.
+   * **Langkah 4**: Setelah kotak gambar pratinjau muncul, baru tekan tombol **Kirim (Send)**.
+   * Hasilnya di chat WA akan muncul kartu pratinjau mewah dengan gambar banner resmi EterVerse! 🌟

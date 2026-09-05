@@ -36,7 +36,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     return { title: "Server Tidak Ditemukan | EterVerse" };
   }
 
-  const ogImage = server.bannerUrl || server.logoUrl || "https://eterverse.com/dashboard-bg.png";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://eterverse.vercel.app";
+  const ogImage = server.bannerUrl || server.logoUrl || `${baseUrl}/og-image.jpg`;
   const onlineCount = server.liveStatus?.currentPlayers || 0;
   const rating = server.metrics?.rating ? server.metrics.rating.toFixed(1) : "5.0";
 
@@ -51,12 +52,12 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       ...(server.tags || []),
     ],
     alternates: {
-      canonical: `https://eterverse.com/server/${server.slug}`,
+      canonical: `${baseUrl}/server/${server.slug}`,
     },
     openGraph: {
       type: "website",
       locale: "id_ID",
-      url: `https://eterverse.com/server/${server.slug}`,
+      url: `${baseUrl}/server/${server.slug}`,
       siteName: "EterVerse",
       title: `${server.name} - Server Minecraft Indonesia`,
       description: `IP: ${server.ipAddress} | ${onlineCount} pemain online | Rating ⭐ ${rating}/5.0. Gabung dan main sekarang!`,
