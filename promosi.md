@@ -13,10 +13,13 @@ Punya server Minecraft tapi sepi atau susah cari pemain aktif baru?
 
 Yuk gabung di *EterVerse* (https://eterverse.vercel.app/) — platform server list & komunitas Minecraft modern, murni *dari komunitas untuk komunitas* 🇮🇩✨
 
+EterVerse hadir dengan konsep inovatif *Video-First* 🎬. Kartu server ga cuma gambar mati, tapi langsung memutar cuplikan video pendek (portrait 9:16) gameplay servermu yang bikin pemain langsung penasaran & kepincut!
+
 Saat ini kami resmi membuka fase *BETA TERTUTUP* dengan kuota terbatas:
 🔥 *HANYA 50 SLOT SERVER EKSKLUSIF (BATCH #1)* 🔥
 
 Kenapa wajib amankan slot servermu sekarang?
+🎬 *Kartu Video-First*: Tampilan server hidup & interaktif lewat cuplikan gameplay vertikal (wajib punya minimal 1 video short/portrait).
 🚀 *Promosi Organik*: Servermu langsung dipromosikan ke ribuan pemain lokal.
 🎮 *Pemain HP 1-Klik Join*: Tombol *Direct Play* bikin pemain MCPE langsung masuk game tanpa repot copas IP.
 🏆 *Panggung Bersaing Sehat*: Raih ranking teratas lewat vote & ulasan komunitas.
