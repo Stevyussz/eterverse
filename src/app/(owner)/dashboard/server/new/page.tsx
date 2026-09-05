@@ -16,8 +16,18 @@ export default async function NewServerPage() {
     if (!ownerIdentifier) throw new Error("Unauthorized");
 
     const name = formData.get("name") as string;
-    const ipAddress = formData.get("ipAddress") as string;
-    const port = parseInt(formData.get("port") as string) || 25565;
+    const serverType = (formData.get("serverType") as 'SERVER' | 'REALM') || 'SERVER';
+    const realmCodeRaw = (formData.get("realmCode") as string) || "";
+    const realmCode = realmCodeRaw.replace(/^https?:\/\/realms\.gg\//, "").trim();
+
+    let ipAddress = (formData.get("ipAddress") as string) || "";
+    let port = parseInt(formData.get("port") as string) || 25565;
+
+    if (serverType === 'REALM') {
+      ipAddress = realmCode ? `realms.gg/${realmCode}` : "realms.gg";
+      port = 19132;
+    }
+
     const description = formData.get("description") as string;
     const tags = (formData.get("tags") as string).split(",").map(t => t.trim());
     const videoUrl = formData.get("videoUrl") as string;
@@ -37,6 +47,8 @@ export default async function NewServerPage() {
     
     const newServer = new Server({
       name,
+      serverType,
+      realmCode,
       ipAddress,
       port,
       description,

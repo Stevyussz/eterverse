@@ -34,8 +34,18 @@ export default async function EditServerPage({ params }: Props) {
     if (!existing) throw new Error("Server not found or unauthorized");
 
     const name = formData.get("name") as string;
-    const ipAddress = formData.get("ipAddress") as string;
-    const port = parseInt(formData.get("port") as string) || 25565;
+    const serverType = (formData.get("serverType") as 'SERVER' | 'REALM') || 'SERVER';
+    const realmCodeRaw = (formData.get("realmCode") as string) || "";
+    const realmCode = realmCodeRaw.replace(/^https?:\/\/realms\.gg\//, "").trim();
+
+    let ipAddress = (formData.get("ipAddress") as string) || "";
+    let port = parseInt(formData.get("port") as string) || 25565;
+
+    if (serverType === 'REALM') {
+      ipAddress = realmCode ? `realms.gg/${realmCode}` : (existing.ipAddress || "realms.gg");
+      port = 19132;
+    }
+
     const description = formData.get("description") as string;
     const tagsRaw = formData.get("tags") as string;
     const tags = tagsRaw ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean) : [];
@@ -55,6 +65,8 @@ export default async function EditServerPage({ params }: Props) {
 
     await Server.findByIdAndUpdate(id, {
       name,
+      serverType,
+      realmCode,
       ipAddress,
       port,
       description,

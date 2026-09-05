@@ -4,6 +4,8 @@ import { slugify } from "@/utils/slugify";
 export interface IServer extends Document {
   name: string;
   slug: string;
+  serverType: 'SERVER' | 'REALM';
+  realmCode?: string;
   description: string;
   ipAddress: string;
   port: number;
@@ -41,6 +43,8 @@ export interface IServer extends Document {
 const ServerSchema = new Schema<IServer>({
   name: { type: String, required: true },
   slug: { type: String, unique: true, index: true },
+  serverType: { type: String, enum: ['SERVER', 'REALM'], default: 'SERVER' },
+  realmCode: { type: String, default: "" },
   description: { type: String, required: true },
   ipAddress: { type: String, required: true },
   port: { type: Number, default: 25565 },

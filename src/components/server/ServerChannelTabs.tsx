@@ -21,6 +21,7 @@ import remarkGfm from "remark-gfm";
 import { StarRating } from "@/components/server/StarRating";
 import { EmbedWidget } from "@/components/server/EmbedWidget";
 import { CopyIPButton } from "@/components/server/CopyIPButton";
+import { DirectPlayButton } from "@/components/server/DirectPlayButton";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface ServerChannelTabsProps {
@@ -177,23 +178,48 @@ export function ServerChannelTabs({
             <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
               <div className="flex flex-col">
                 <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
-                  {t("server.serverAddress")}
+                  {server.serverType === "REALM" 
+                    ? t("server.realmAddress") 
+                    : t("server.serverAddress")}
                 </span>
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xl sm:text-2xl font-mono font-bold text-white tracking-tight break-all">
-                    {server.ipAddress}
+                    {server.serverType === "REALM" 
+                      ? (server.realmCode || server.ipAddress)
+                      : server.ipAddress}
                   </span>
-                  {server.port && server.port !== 25565 && (
+                  {server.serverType !== "REALM" && server.port && server.port !== 25565 && (
                     <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">
                       Port: {server.port}
                     </span>
                   )}
+                  {server.serverType === "REALM" && (
+                    <span className="text-xs font-mono px-2.5 py-0.5 rounded bg-purple-950/60 border border-purple-800/60 text-purple-300">
+                      Minecraft Realms
+                    </span>
+                  )}
                 </div>
                 <span className="text-xs text-zinc-400 font-body mt-1">
-                  {t("server.serverSubtext")}
+                  {server.serverType === "REALM"
+                    ? t("server.realmSubtext")
+                    : t("server.serverSubtext")}
                 </span>
               </div>
-              <CopyIPButton ipAddress={server.ipAddress} />
+              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+                <DirectPlayButton 
+                  serverName={server.name}
+                  ipAddress={server.ipAddress}
+                  port={server.port}
+                  isRealm={server.serverType === "REALM"}
+                  realmCode={server.realmCode}
+                />
+                <CopyIPButton 
+                  ipAddress={server.ipAddress}
+                  port={server.port}
+                  isRealm={server.serverType === "REALM"}
+                  realmCode={server.realmCode}
+                />
+              </div>
             </div>
 
             {/* Featured Trailer Teaser (If available) */}
@@ -291,7 +317,21 @@ export function ServerChannelTabs({
                     <span className="text-sm font-semibold text-zinc-200">{server.name} {t("server.officialTrailer")}</span>
                     <span className="text-xs font-mono text-zinc-500">HD 1080p</span>
                   </div>
-                  <CopyIPButton ipAddress={server.ipAddress} />
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <DirectPlayButton 
+                      serverName={server.name}
+                      ipAddress={server.ipAddress}
+                      port={server.port}
+                      isRealm={server.serverType === "REALM"}
+                      realmCode={server.realmCode}
+                    />
+                    <CopyIPButton 
+                      ipAddress={server.ipAddress}
+                      port={server.port}
+                      isRealm={server.serverType === "REALM"}
+                      realmCode={server.realmCode}
+                    />
+                  </div>
                 </div>
               </div>
             ) : (

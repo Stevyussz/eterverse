@@ -1,13 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Users, CaretUp } from "@phosphor-icons/react";
+import { Check, Copy, Users, CaretUp, GameController, Crown } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface MobileStickyActionBarProps {
   serverName: string;
   ipAddress: string;
+  port?: number;
+  isRealm?: boolean;
+  realmCode?: string;
   logoUrl?: string;
   isOnline?: boolean;
   currentPlayers?: number;
@@ -18,6 +21,9 @@ interface MobileStickyActionBarProps {
 export function MobileStickyActionBar({
   serverName,
   ipAddress,
+  port,
+  isRealm = false,
+  realmCode,
   logoUrl,
   isOnline = true,
   currentPlayers = 0,
@@ -28,23 +34,32 @@ export function MobileStickyActionBar({
   const [votes, setVotes] = useState(initialVotes);
   const [voted, setVoted] = useState(false);
   const [voting, setVoting] = useState(false);
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+
+  const cleanRealm = realmCode ? realmCode.replace(/^https?:\/\/realms\.gg\//, "").trim() : ipAddress;
+  const fullAddress = isRealm
+    ? cleanRealm
+    : (port && port !== 25565 ? `${ipAddress}:${port}` : ipAddress);
+
+  const directLink = isRealm
+    ? `https://realms.gg/${cleanRealm}`
+    : `minecraft://?addExternalServer=${encodeURIComponent(serverName)}|${ipAddress}:${port || 19132}`;
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(ipAddress);
+      await navigator.clipboard.writeText(fullAddress);
       setCopied(true);
-      toast.success(`${ipAddress} ${t("server.copied")}`);
+      toast.success(`${fullAddress} ${t("server.copied")}`);
       setTimeout(() => setCopied(false), 2500);
     } catch {
       const el = document.createElement("textarea");
-      el.value = ipAddress;
+      el.value = fullAddress;
       document.body.appendChild(el);
       el.select();
       document.execCommand("copy");
       document.body.removeChild(el);
       setCopied(true);
-      toast.success(`${ipAddress} ${t("server.copied")}`);
+      toast.success(`${fullAddress} ${t("server.copied")}`);
       setTimeout(() => setCopied(false), 2500);
     }
   };
@@ -71,7 +86,7 @@ export function MobileStickyActionBar({
   };
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#09090b]/92 backdrop-blur-xl border-t border-white/10 px-4 py-2.5 shadow-[0_-10px_30px_rgba(0,0,0,0.7)] flex items-center justify-between gap-3 animate-fade-in">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#09090b]/92 backdrop-blur-xl border-t border-white/10 px-3 sm:px-4 py-2.5 shadow-[0_-10px_30px_rgba(0,0,0,0.7)] flex items-center justify-between gap-2.5 animate-fade-in">
       
       {/* Mini Server Identity */}
       <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -93,14 +108,22 @@ export function MobileStickyActionBar({
             {serverName}
           </span>
           <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-400">
-            <Users size={11} className="text-zinc-400 shrink-0" weight="fill" />
-            <span>{currentPlayers.toLocaleString()} Online</span>
+            {isRealm ? (
+              <span className="flex items-center gap-1 text-purple-300">
+                <Crown size={11} weight="fill" /> Realm
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 truncate">
+                <Users size={11} className="text-zinc-400 shrink-0" weight="fill" />
+                <span>{currentPlayers.toLocaleString()} Online</span>
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1.5 shrink-0">
         {/* Quick Vote Button */}
         <button
           onClick={handleQuickVote}
@@ -117,24 +140,41 @@ export function MobileStickyActionBar({
           <span>{votes}</span>
         </button>
 
-        {/* Copy IP CTA */}
+        {/* Direct Play / Join Realm Button */}
+        <a
+          href={directLink}
+          target={isRealm ? "_blank" : undefined}
+          rel={isRealm ? "noopener noreferrer" : undefined}
+          className={`h-9 px-2.5 sm:px-3 rounded-lg font-mono font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all text-white border ${
+            isRealm
+              ? "bg-purple-600 hover:bg-purple-500 border-purple-400/40"
+              : "bg-emerald-600 hover:bg-emerald-500 border-emerald-400/40"
+          }`}
+          title={isRealm ? "Masuk Realm" : "Main Langsung di Minecraft"}
+        >
+          <GameController size={15} weight="fill" />
+          <span className="hidden xs:inline">{isRealm ? "Realm" : "Main"}</span>
+        </a>
+
+        {/* Copy IP / Realm Code CTA */}
         <button
           onClick={handleCopy}
-          className={`h-9 px-3.5 rounded-lg font-mono font-medium text-xs transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95 ${
+          className={`h-9 px-3 rounded-lg font-mono font-medium text-xs transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95 ${
             copied
               ? "bg-emerald-600 text-white"
               : "bg-white text-zinc-950 hover:bg-zinc-200"
           }`}
+          title={isRealm ? "Salin Kode Realm" : `Salin ${fullAddress}`}
         >
           {copied ? (
             <>
               <Check size={14} weight="bold" />
-              <span>{t("server.copied")}</span>
+              <span className="hidden sm:inline">{t("server.copied")}</span>
             </>
           ) : (
             <>
               <Copy size={14} />
-              <span>{t("server.copyIp")}</span>
+              <span className="hidden xs:inline">{isRealm ? (lang === "id" ? "Kode" : "Code") : t("server.copyIp")}</span>
             </>
           )}
         </button>

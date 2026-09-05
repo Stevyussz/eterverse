@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { notFound } from "next/navigation";
 import { JsonLdSchema } from "@/components/seo/JsonLdSchema";
 import { CopyIPButton } from "@/components/server/CopyIPButton";
+import { DirectPlayButton } from "@/components/server/DirectPlayButton";
 import { VoteButton } from "@/components/server/VoteButton";
 import { ImpressionTracker } from "@/components/server/ImpressionTracker";
 import { MobileStickyActionBar } from "@/components/server/MobileStickyActionBar";
@@ -13,6 +14,7 @@ import { ServerChannelTabs } from "@/components/server/ServerChannelTabs";
 import {
   Users,
   Trophy,
+  Crown,
   DiscordLogo,
   WhatsappLogo,
   TelegramLogo,
@@ -103,32 +105,36 @@ export default async function ServerProfilePage(props: Props) {
   const maxPlayers = serverData.liveStatus?.maxPlayers || 0;
   const votes = serverData.metrics?.votes || 0;
   const rating = serverData.metrics?.rating || 0;
+  const isRealm = serverData.serverType === "REALM";
 
   return (
     <>
       <JsonLdSchema server={serverData} />
       <ImpressionTracker slug={serverData.slug} />
       
-      {/* Cinematic Server Banner with Organic Deep Ambient Blend */}
-      <div className="relative w-full h-[260px] sm:h-[360px] md:h-[440px] bg-[#09090b] overflow-hidden select-none">
-        {/* Ambient Glow / Backdrop */}
-        <div className="absolute inset-0 bg-[#09090b]" />
-        <img 
-          src={serverData.bannerUrl || defaultBanner} 
-          alt={`${serverData.name} Banner`} 
-          className="w-full h-full object-cover opacity-70 scale-[1.03] transition-transform duration-700 filter saturate-[1.1]"
-        />
-        
-        {/* Multi-layered Organic Gradient Vignettes (No Harsh Boundaries) */}
-        {/* Top Fade into Navbar */}
-        <div className="absolute top-0 inset-x-0 h-36 bg-gradient-to-b from-[#09090b] via-[#09090b]/70 to-transparent pointer-events-none z-10" />
-        
-        {/* Soft Radial Vignette for Atmospheric Focus */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_25%,rgba(9,9,11,0.85)_100%)] pointer-events-none z-10" />
-        
-        {/* Bottom Dissolve into Main Profile Area */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/80 via-35% to-transparent pointer-events-none z-10" />
-        <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#09090b] to-transparent pointer-events-none z-10" />
+      {/* Cinematic Server Banner with 100% Organic Transparent Ambient Blend */}
+      <div className="relative w-full h-[280px] sm:h-[380px] md:h-[460px] bg-transparent overflow-hidden select-none pointer-events-none">
+        {/* Banner with radial + linear masks fading smoothly into the site wallpaper */}
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{
+            maskImage: "radial-gradient(ellipse 96% 85% at 50% 35%, black 45%, transparent 95%)",
+            WebkitMaskImage: "radial-gradient(ellipse 96% 85% at 50% 35%, black 45%, transparent 95%)",
+          }}
+        >
+          <img 
+            src={serverData.bannerUrl || defaultBanner} 
+            alt={`${serverData.name} Banner`} 
+            className="w-full h-full object-cover opacity-75 scale-[1.02] filter saturate-[1.15] transition-transform duration-700"
+            style={{
+              maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 65%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 65%, transparent 100%)",
+            }}
+          />
+        </div>
+
+        {/* Soft atmospheric gradient at bottom for text contrast without harsh box collision */}
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#09090b]/85 via-[#09090b]/30 to-transparent pointer-events-none" />
       </div>
 
       <main className="relative min-h-screen px-4 sm:px-6 lg:px-24 pb-32 -mt-20 sm:-mt-28">
@@ -160,6 +166,11 @@ export default async function ServerProfilePage(props: Props) {
                     <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white tracking-tight leading-tight">
                       {serverData.name}
                     </h1>
+                    {isRealm && (
+                      <div className="bg-purple-500/15 border border-purple-500/35 text-purple-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0 shadow-[0_0_12px_rgba(168,85,247,0.2)]">
+                        <Crown weight="fill" size={12} /> Realm
+                      </div>
+                    )}
                     {serverData.isEterShopPartner && (
                       <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
                         <Trophy weight="fill" size={12} /> Partner
@@ -168,12 +179,26 @@ export default async function ServerProfilePage(props: Props) {
                   </div>
 
                   <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-                    <span className="text-zinc-300 font-semibold break-all">{serverData.ipAddress}</span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <Users size={13} className="text-zinc-400" weight="fill" />
-                      {currentPlayers.toLocaleString()} Online
-                    </span>
+                    {isRealm ? (
+                      <>
+                        <span className="text-purple-300 font-semibold break-all">
+                          {serverData.realmCode || serverData.ipAddress}
+                        </span>
+                        <span>•</span>
+                        <span className="text-zinc-400">Minecraft Realms</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-zinc-300 font-semibold break-all">
+                          {serverData.ipAddress}{serverData.port && serverData.port !== 25565 ? `:${serverData.port}` : ''}
+                        </span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1">
+                          <Users size={13} className="text-zinc-400" weight="fill" />
+                          {currentPlayers.toLocaleString()} Online
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   {/* Tags Carousel/Pills */}
@@ -188,9 +213,21 @@ export default async function ServerProfilePage(props: Props) {
               </div>
 
               {/* Action Buttons (Desktop & Tablet) */}
-              <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-end">
+              <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-end flex-wrap">
                 <VoteButton slug={serverData.slug} initialVotes={votes} />
-                <CopyIPButton ipAddress={serverData.ipAddress} />
+                <DirectPlayButton 
+                  serverName={serverData.name}
+                  ipAddress={serverData.ipAddress}
+                  port={serverData.port}
+                  isRealm={isRealm}
+                  realmCode={serverData.realmCode}
+                />
+                <CopyIPButton 
+                  ipAddress={serverData.ipAddress}
+                  port={serverData.port}
+                  isRealm={isRealm}
+                  realmCode={serverData.realmCode}
+                />
               </div>
 
             </div>
@@ -262,6 +299,9 @@ export default async function ServerProfilePage(props: Props) {
       <MobileStickyActionBar 
         serverName={serverData.name}
         ipAddress={serverData.ipAddress}
+        port={serverData.port}
+        isRealm={isRealm}
+        realmCode={serverData.realmCode}
         logoUrl={serverData.logoUrl}
         isOnline={isOnline}
         currentPlayers={currentPlayers}

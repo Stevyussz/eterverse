@@ -54,6 +54,9 @@ export const translations = {
   "server.about": { id: "Tentang Server", en: "About Server" },
   "server.reviews": { id: "Rating & Komunitas", en: "Rating & Community" },
   "server.copyIp": { id: "Salin IP", en: "Copy IP" },
+  "server.copyRealm": { id: "Salin Kode Realm", en: "Copy Realm Code" },
+  "server.directPlay": { id: "Main Langsung", en: "Direct Play" },
+  "server.joinRealm": { id: "Masuk Realm", en: "Join Realm" },
   "server.copied": { id: "Tersalin!", en: "Copied!" },
   "server.vote": { id: "Vote", en: "Vote" },
   "server.voted": { id: "Sudah Vote!", en: "Voted!" },
@@ -63,9 +66,14 @@ export const translations = {
   "server.totalVote": { id: "Total Vote", en: "Total Votes" },
   "server.starRating": { id: "Rating Bintang", en: "Star Rating" },
   "server.serverAddress": { id: "Alamat Server Minecraft", en: "Minecraft Server Address" },
+  "server.realmAddress": { id: "Kode Undangan Realm", en: "Realm Invite Code" },
   "server.serverSubtext": {
     id: "Mendukung Java & Bedrock Edition · Klik tombol untuk menyalin IP",
     en: "Supports Java & Bedrock Edition · Click button to copy IP"
+  },
+  "server.realmSubtext": {
+    id: "Klik tombol untuk langsung bergabung ke Realm di Minecraft.",
+    en: "Click button to join the Realm directly in Minecraft."
   },
   "server.summaryTitle": { id: "Ringkasan Server", en: "Server Overview" },
   "server.readFull": { id: "Baca Informasi & Aturan Selengkapnya →", en: "Read Full Information & Rules →" },

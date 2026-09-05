@@ -1,13 +1,14 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Users, Star, CaretUp, Trophy } from "@phosphor-icons/react";
+import { Users, Star, CaretUp, Trophy, Crown } from "@phosphor-icons/react";
 import Link from "next/link";
 import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
 
 interface ServerCardProps {
   name: string;
   slug: string;
+  serverType?: 'SERVER' | 'REALM';
   videoUrl?: string;
   bannerUrl?: string;
   isEterShopPartner?: boolean;
@@ -21,6 +22,7 @@ interface ServerCardProps {
 export function ServerCard({
   name,
   slug,
+  serverType = 'SERVER',
   videoUrl = "",
   bannerUrl,
   isEterShopPartner = false,
@@ -114,13 +116,21 @@ export function ServerCard({
       <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/50 to-transparent pointer-events-none" />
 
       {/* Top Badges */}
-      <div className="relative z-10 flex justify-between p-3.5 sm:p-4">
-        {isEterShopPartner ? (
-          <div className="flex items-center gap-1.5 bg-amber-500/15 backdrop-blur-md border border-amber-500/30 px-2.5 py-1 rounded-full h-fit">
-            <Trophy weight="fill" className="text-amber-400" size={12} />
-            <span className="text-[9px] font-mono font-semibold text-amber-300 tracking-wider uppercase">Partner</span>
-          </div>
-        ) : <div />}
+      <div className="relative z-10 flex justify-between items-start p-3.5 sm:p-4 gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {isEterShopPartner && (
+            <div className="flex items-center gap-1.5 bg-amber-500/15 backdrop-blur-md border border-amber-500/30 px-2.5 py-1 rounded-full h-fit">
+              <Trophy weight="fill" className="text-amber-400" size={12} />
+              <span className="text-[9px] font-mono font-semibold text-amber-300 tracking-wider uppercase">Partner</span>
+            </div>
+          )}
+          {serverType === 'REALM' && (
+            <div className="flex items-center gap-1.5 bg-purple-500/20 backdrop-blur-md border border-purple-500/40 px-2.5 py-1 rounded-full h-fit shadow-[0_0_10px_rgba(168,85,247,0.25)]">
+              <Crown weight="fill" className="text-purple-300" size={12} />
+              <span className="text-[9px] font-mono font-semibold text-purple-200 tracking-wider uppercase">Realm</span>
+            </div>
+          )}
+        </div>
 
         <div className="ml-auto flex flex-col gap-1.5 items-end">
            {safeTags.slice(0, 2).map((tag) => (
@@ -138,10 +148,17 @@ export function ServerCard({
         </h3>
         
         <div className="flex items-center gap-2 sm:gap-4 flex-wrap pt-2 border-t border-zinc-800/80">
-          <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300">
-            <Users weight="fill" className="text-zinc-400" size={14} />
-            <span>{(onlinePlayers || 0).toLocaleString()} / {(maxPlayers || 0).toLocaleString()}</span>
-          </div>
+          {serverType === 'REALM' ? (
+            <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-purple-300">
+              <Crown weight="fill" className="text-purple-400" size={13} />
+              <span>Mojang Realm</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300">
+              <Users weight="fill" className="text-zinc-400" size={14} />
+              <span>{(onlinePlayers || 0).toLocaleString()} / {(maxPlayers || 0).toLocaleString()}</span>
+            </div>
+          )}
           
           <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs text-zinc-300">
             <CaretUp weight="bold" className="text-zinc-400" size={14} />
