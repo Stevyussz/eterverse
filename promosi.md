@@ -1,8 +1,8 @@
 # 📢 Template Promosi Grup WhatsApp — EterVerse (Official Beta)
 
-Template ini dirancang khusus untuk dibagikan di **Grup WhatsApp Komunitas Minecraft** (Grup Mabar, Grup Admin/Owner Server, Grup MCPE & Java). 
+Template ini dirancang khusus untuk dibagikan di **Grup WhatsApp Komunitas Minecraft** (Grup Mabar, Forum Owner/Admin Server, Komunitas MCPE & Java).
 
-Menggunakan gaya bahasa **santai sesama penikmat Minecraft**, bukan bahasa sales kaku, dengan fokus **"Dari Komunitas untuk Komunitas"** dan urgensi **50 Slot Eksklusif Beta**.
+Gaya bahasa **santai sesama penikmat Minecraft**, fokus **"Dari Komunitas untuk Komunitas"**, dan memiliki daya tarik nyata bagi owner server: **Promosi Organik, Panggung Bersaing Sehat, & Kuota 50 Slot Eksklusif Beta**.
 
 ---
 
@@ -11,28 +11,28 @@ Menggunakan gaya bahasa **santai sesama penikmat Minecraft**, bukan bahasa sales
 ```text
 Halo kawan-kawan Minecrafter Indonesia! 👋⛏️
 
-Pernah ga sih ngerasa nyari server lokal yang seru atau promosiin server sendiri itu ribet banget? Player HP (MCPE) sering males join karena harus ketik IP manual, port tabrakan, dan web server list yang ada sekarang tampilannya jadul & penuh iklan. 
+Pernah ga ngerasa bangun server Minecraft udah niat dan seru banget, tapi perjuangan nyari pemain aktifnya susah minta ampun? Di sisi lain, pemain juga sering bingung nyari server lokal yang beneran aktif dan terpercaya.
 
-Berangkat dari keresahan itu, kami dari sesama penikmat Minecraft lagi ngebangun *EterVerse* — platform server list & komunitas modern, *dari komunitas untuk komunitas* 🇮🇩✨
+Berangkat dari keresahan itu, kami sesama anak komunitas lagi ngebangun *EterVerse* (https://eterverse.vercel.app/) — platform server list & komunitas Minecraft generasi baru, murni *dari komunitas untuk komunitas* 🇮🇩✨
 
-Saat ini EterVerse resmi membuka fase *BETA TERTUTUP* dan kami hanya menyediakan:
+Saat ini EterVerse resmi membuka fase *BETA TERTUTUP* dan kami hanya membuka:
 🔥 *KUOTA 50 SLOT SERVER EKSKLUSIF (BATCH #1)* 🔥
 
-Kenapa harus daftarin server kamu sekarang?
-🎮 *Tombol 1-Klik Masuk (Direct Play)*: Khusus pemain HP / Bedrock, tinggal klik tombol di web, Minecraft langsung otomatis kebuka dan masuk ke servermu!
-🔌 *Port Bedrock (19132) & Java Terpisah*: Ga ada lagi drama gagal konek karena salah port.
-🏰 *Support Minecraft Realms & Crossplay*: Mau server Java, Bedrock, maupun Realms resmi didukung rapi.
-✨ *Etalase Profil Estetik & Modern*: Tampilan dark mode mewah ala Discord/YouTube lengkap dengan trailer video & live player count.
-💎 *Early Pioneer Status*: 50 server pertama akan mendapatkan spotlight khusus di halaman utama.
-💰 *100% Gratis Selamanya*: Murni proyek komunitas untuk memajukan server-server Minecraft lokal.
+Kenapa server kamu wajib masuk di EterVerse?
+🚀 *Promosi Organik Gratis*: Servermu langsung dipajang ke pemain-pemain Minecraft yang tiap hari aktif nyari tempat mabar baru.
+🏆 *Panggung Bersaing Sehat*: Tunjukkan kualitas servermu dan raih posisi teratas di Indonesia lewat sistem vote & ulasan jujur komunitas.
+🎮 *Pemain Join Lebih Gampang (Direct Play)*: Khusus pemain HP (MCPE), cukup 1 klik di web langsung membuka Minecraft dan otomatis masuk ke duniamu!
+✨ *Showcase Server Berkelas*: Halaman profil profesional untuk memamerkan keunikan duniamu — lengkap dengan cuplikan video, live status pemain, dan review pemain.
+💎 *Privilese 50 Server Perintis*: Server yang bergabung di batch awal akan mendapatkan spotlight prioritas di halaman penjelajahan utama.
+💰 *100% Gratis Selamanya*: Murni gerakan komunitas untuk saling memajukan sesama pengembang server Minecraft lokal.
 
-Bagi kalian owner/admin server yang mau mengamankan slot eksklusif ini sebelum kuota 50 server penuh, yuk daftarkan server kalian di sini:
+Bagi kalian owner/admin yang mau mengamankan slot sebelum kuota 50 server penuh, yuk daftarkan server kamu sekarang:
 👉 https://eterverse.vercel.app/dashboard/server/new
 
-Dan buat teman-teman yang lagi cari teman mabar atau server survival/SMP terpopuler:
+Dan buat teman-teman yang lagi hunting server seru buat mabar malam ini:
 👉 https://eterverse.vercel.app/
 
-Yuk ramaikan dan jadi bagian dari generasi pertama ekosistem EterVerse! 🚀
+Jadilah yang pertama dan mari tumbuh bersama di ekosistem EterVerse! 🌟
 ```
 
 ---

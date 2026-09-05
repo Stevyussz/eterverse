@@ -15,15 +15,17 @@ Halo halo bro/kak [Nama Owner]! Salam kenal yaa 👋⛏️
 
 Aku perhatiin server kamu *[Nama Server]* konsepnya keren banget dan kelihatan niat banget dibangunnya! Salut euy 🔥
 
-Kenalin, aku sesama penikmat Minecraft. Kebetulan aku dan kawan-kawan komunitas lagi ngebangun *EterVerse* (https://eterverse.vercel.app/) — platform server list & komunitas Minecraft modern, murni *dari komunitas untuk komunitas*.
+Kenalin, aku sesama penikmat Minecraft. Kebetulan aku dan kawan-kawan komunitas lagi ngebangun *EterVerse* (https://eterverse.vercel.app/) — platform server list & komunitas Minecraft generasi baru, murni *dari komunitas untuk komunitas*.
 
-Saat ini EterVerse masih di tahap *BETA AWAL*, dan kita baru ngebuka *50 slot server eksklusif* untuk server-server pilihan yang kita undang jadi perintis pertama (Early Pioneer). Dan aku pengen banget *[Nama Server]* bisa ikut mejeng di barisan awal ini! 🌟
+Saat ini EterVerse masih di tahap *BETA AWAL*, dan kami baru membuka *50 slot server eksklusif* untuk server-server pilihan yang kita undang jadi perintis pertama (Early Pioneer). Melihat kualitasnya, aku pengen banget *[Nama Server]* bisa ikut mejeng di barisan utama ini! 🌟
 
-Kenapa kita bikin EterVerse & apa untungnya buat server kamu?
-✨ *Pemain HP (MCPE) Bisa 1-Klik Join*: Ada tombol *Direct Play*, pemain tinggal klik di web, Minecraft di HP mereka langsung otomatis kebuka dan masuk ke servermu (ga perlu ribet salin-salin IP lagi!).
-✨ *Port Bedrock & Java Terpisah Rapi*: Port 19132 dan 25565 tersimpan rapi, jadi ga ada lagi player gagal konek.
-✨ *Tampilan Estetik & Bebas Iklan*: Desain modern gelap mirip YouTube/Discord, bisa pasang trailer, ulasan komunitas, & live player status.
-✨ *Gratis 100% Selamanya*: Ga ada biaya apapun, pure buat saling bantu sesama server lokal biar makin rame.
+Apa aja benefit yang didapat server kamu di EterVerse?
+🚀 *Promosi Organik Gratis*: Servermu langsung dipromosikan ke ribuan pemain Minecraft yang tiap hari aktif nyari tempat mabar.
+🏆 *Panggung Reputasi & Bersaing Sehat*: Raih posisi teratas di komunitas lokal lewat ulasan jujur dan vote dari pemain setiamu.
+🎮 *Pemain HP Lebih Gampang Masuk (Direct Play)*: Ada tombol 1-klik, pemain tinggal klik di web dan Minecraft di HP mereka langsung otomatis kebuka dan masuk ke servermu (ga ada lagi drama males copas IP).
+✨ *Showcase Server Berkelas*: Halaman khusus buat pamerin video trailer, keunikan gameplay, galeri, dan live status pemain secara real-time.
+💎 *Prioritas Spotlight 50 Server Perintis*: Server kamu dapat sorotan utama di halaman depan karena jadi bagian dari batch awal.
+💰 *100% Gratis Selamanya*: Murni proyek komunitas untuk saling dukung server lokal, tanpa biaya apapun.
 
 Kalau bro/kakak berkenan, yuk amankan slot eksklusifnya di sini (cuma butuh 2 menit):
 👉 https://eterverse.vercel.app/dashboard/server/new
