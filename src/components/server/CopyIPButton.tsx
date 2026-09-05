@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { Check, Copy } from "@phosphor-icons/react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function CopyIPButton({ ipAddress }: { ipAddress: string }) {
   const [copied, setCopied] = useState(false);
+  const { t } = useLanguage();
 
   const handleCopy = async () => {
     try {
@@ -27,22 +29,22 @@ export function CopyIPButton({ ipAddress }: { ipAddress: string }) {
   return (
     <button
       onClick={handleCopy}
-      className={`w-full sm:w-auto font-medium text-sm px-6 py-3.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm active:scale-[0.98]
-        ${copied
-          ? "bg-emerald-600 text-white"
-          : "bg-white text-zinc-950 hover:bg-zinc-200"
-        }
-      `}
+      className={`font-mono text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 border select-none active:scale-[0.97] shrink-0 ${
+        copied
+          ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
+          : "bg-zinc-100 text-zinc-950 hover:bg-white border-zinc-200/40 hover:border-zinc-300 shadow-sm hover:shadow-[0_2px_12px_rgba(255,255,255,0.08)]"
+      }`}
+      title={ipAddress}
     >
       {copied ? (
         <>
-          <Check size={18} weight="bold" />
-          <span>Tersalin!</span>
+          <Check size={16} weight="bold" className="text-emerald-400 shrink-0" />
+          <span className="font-semibold">{t("server.copied")}</span>
         </>
       ) : (
         <>
-          <Copy size={18} />
-          <span>Salin IP Server</span>
+          <Copy size={16} className="text-zinc-700 shrink-0" />
+          <span className="font-medium tracking-tight">{t("server.copyIp")}</span>
         </>
       )}
     </button>

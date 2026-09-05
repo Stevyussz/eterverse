@@ -21,6 +21,7 @@ import remarkGfm from "remark-gfm";
 import { StarRating } from "@/components/server/StarRating";
 import { EmbedWidget } from "@/components/server/EmbedWidget";
 import { CopyIPButton } from "@/components/server/CopyIPButton";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ServerChannelTabsProps {
   server: any;
@@ -38,6 +39,7 @@ export function ServerChannelTabs({
   ytId,
 }: ServerChannelTabsProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
+  const { t } = useLanguage();
 
   const isOnline = !!server.liveStatus?.isOnline;
   const currentPlayers = server.liveStatus?.currentPlayers || 0;
@@ -48,23 +50,23 @@ export function ServerChannelTabs({
   const defaultBanner = "/dashboard-bg.png";
 
   const tabs: { key: TabKey; label: string; icon: React.ReactNode; badge?: string | number }[] = [
-    { key: "overview", label: "Ringkasan", icon: <House size={18} weight={activeTab === "overview" ? "fill" : "regular"} /> },
+    { key: "overview", label: t("server.overview"), icon: <House size={18} weight={activeTab === "overview" ? "fill" : "regular"} /> },
     {
       key: "trailer",
-      label: "Trailer & Reels",
+      label: t("server.trailer"),
       icon: <FilmStrip size={18} weight={activeTab === "trailer" ? "fill" : "regular"} />,
       badge: server.videoUrl ? "HD" : undefined,
     },
     {
       key: "gallery",
-      label: "Galeri",
+      label: t("server.gallery"),
       icon: <ImageIcon size={18} weight={activeTab === "gallery" ? "fill" : "regular"} />,
       badge: gallery.length > 0 ? gallery.length : undefined,
     },
-    { key: "about", label: "Tentang Server", icon: <BookOpenText size={18} weight={activeTab === "about" ? "fill" : "regular"} /> },
+    { key: "about", label: t("server.about"), icon: <BookOpenText size={18} weight={activeTab === "about" ? "fill" : "regular"} /> },
     {
       key: "reviews",
-      label: "Rating & Komunitas",
+      label: t("server.reviews"),
       icon: <Star size={18} weight={activeTab === "reviews" ? "fill" : "regular"} />,
       badge: rating > 0 ? rating.toFixed(1) : undefined,
     },
@@ -126,7 +128,7 @@ export function ServerChannelTabs({
               
               {/* Status */}
               <div className="flex flex-col gap-1 p-3.5 rounded-xl bg-zinc-950/50 border border-zinc-800/60">
-                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">Status Server</span>
+                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">{t("server.serverStatus")}</span>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className={`w-2 h-2 rounded-full ring-4 ${isOnline ? "bg-emerald-500 ring-emerald-500/20" : "bg-red-500 ring-red-500/20"}`} />
                   <span className={`text-xs sm:text-sm font-mono font-semibold ${isOnline ? "text-emerald-400" : "text-red-400"}`}>
@@ -137,7 +139,7 @@ export function ServerChannelTabs({
 
               {/* Current Players */}
               <div className="flex flex-col gap-1 p-3.5 rounded-xl bg-zinc-950/50 border border-zinc-800/60">
-                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">Pemain Online</span>
+                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">{t("server.onlinePlayers")}</span>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <Users size={16} className="text-zinc-400" weight="fill" />
                   <span className="text-xs sm:text-sm font-mono font-semibold text-white">
@@ -149,7 +151,7 @@ export function ServerChannelTabs({
 
               {/* Votes */}
               <div className="flex flex-col gap-1 p-3.5 rounded-xl bg-zinc-950/50 border border-zinc-800/60">
-                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">Total Vote</span>
+                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">{t("server.totalVote")}</span>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <Trophy size={16} className="text-amber-400/90" weight="fill" />
                   <span className="text-xs sm:text-sm font-mono font-semibold text-white">
@@ -160,7 +162,7 @@ export function ServerChannelTabs({
 
               {/* Rating */}
               <div className="flex flex-col gap-1 p-3.5 rounded-xl bg-zinc-950/50 border border-zinc-800/60">
-                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">Rating Bintang</span>
+                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">{t("server.starRating")}</span>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <Star size={16} className="text-amber-400" weight="fill" />
                   <span className="text-xs sm:text-sm font-mono font-semibold text-amber-300">
@@ -175,7 +177,7 @@ export function ServerChannelTabs({
             <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
               <div className="flex flex-col">
                 <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
-                  Alamat Server Minecraft
+                  {t("server.serverAddress")}
                 </span>
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xl sm:text-2xl font-mono font-bold text-white tracking-tight break-all">
@@ -188,7 +190,7 @@ export function ServerChannelTabs({
                   )}
                 </div>
                 <span className="text-xs text-zinc-400 font-body mt-1">
-                  Mendukung Java & Bedrock Edition · Klik tombol untuk menyalin IP
+                  {t("server.serverSubtext")}
                 </span>
               </div>
               <CopyIPButton ipAddress={server.ipAddress} />
@@ -199,13 +201,13 @@ export function ServerChannelTabs({
               <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-display font-semibold text-zinc-200 flex items-center gap-2">
-                    <VideoCamera size={18} className="text-zinc-400" /> Cuplikan Trailer Server
+                    <VideoCamera size={18} className="text-zinc-400" /> {t("server.officialTrailer")}
                   </h3>
                   <button
                     onClick={() => setActiveTab("trailer")}
                     className="text-xs font-mono text-zinc-400 hover:text-white transition-colors"
                   >
-                    Buka Tab Trailer →
+                    Tab {t("server.trailer")} →
                   </button>
                 </div>
                 
@@ -232,19 +234,21 @@ export function ServerChannelTabs({
               </div>
             )}
 
-            {/* Overview Quick Summary */}
+            {/* Overview Quick Summary (Markdown Fixed) */}
             <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 sm:p-6 flex flex-col gap-3">
               <h3 className="text-sm font-display font-semibold text-zinc-200 flex items-center gap-2">
-                <Sparkle size={18} className="text-zinc-400" /> Ringkasan Server
+                <Sparkle size={18} className="text-zinc-400" /> {t("server.summaryTitle")}
               </h3>
-              <p className="text-sm text-zinc-300 font-body leading-relaxed line-clamp-4">
-                {server.description}
-              </p>
+              <div className="prose prose-invert max-w-none text-sm text-zinc-300 font-body leading-relaxed line-clamp-4 overflow-hidden">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {server.description}
+                </ReactMarkdown>
+              </div>
               <button
                 onClick={() => setActiveTab("about")}
                 className="text-xs font-mono text-zinc-400 hover:text-white transition-colors w-fit mt-1"
               >
-                Baca Informasi & Aturan Selengkapnya →
+                {t("server.readFull")}
               </button>
             </div>
 
@@ -260,7 +264,7 @@ export function ServerChannelTabs({
               <div className="flex flex-col gap-4">
                 <div className="bg-black border border-zinc-800 rounded-2xl overflow-hidden aspect-video relative group">
                   <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 bg-zinc-950/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-zinc-700/60 text-xs font-mono text-zinc-300 flex items-center gap-2 pointer-events-none">
-                    <FilmStrip size={16} className="text-zinc-400" /> Trailer Resmi
+                    <FilmStrip size={16} className="text-zinc-400" /> {t("server.officialTrailer")}
                   </div>
                   {ytId ? (
                     <iframe
@@ -269,7 +273,7 @@ export function ServerChannelTabs({
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       style={{ border: 0 }}
-                      title="Trailer Resmi"
+                      title={t("server.officialTrailer")}
                     />
                   ) : (
                     <video
@@ -284,8 +288,8 @@ export function ServerChannelTabs({
 
                 <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-zinc-200">{server.name} Trailer Resmi</span>
-                    <span className="text-xs font-mono text-zinc-500">Kualitas HD · Dioptimasi untuk streaming</span>
+                    <span className="text-sm font-semibold text-zinc-200">{server.name} {t("server.officialTrailer")}</span>
+                    <span className="text-xs font-mono text-zinc-500">HD 1080p</span>
                   </div>
                   <CopyIPButton ipAddress={server.ipAddress} />
                 </div>
@@ -293,9 +297,9 @@ export function ServerChannelTabs({
             ) : (
               <div className="py-16 text-center border border-zinc-800/60 rounded-2xl bg-zinc-950/40 flex flex-col items-center gap-3">
                 <FilmStrip size={36} className="text-zinc-600" />
-                <h3 className="text-base font-display text-zinc-300">Belum ada video trailer resmi</h3>
+                <h3 className="text-base font-display text-zinc-300">{t("server.noTrailer")}</h3>
                 <p className="text-xs font-body text-zinc-500 max-w-sm">
-                  Owner server belum menambahkan video trailer untuk server ini.
+                  {t("server.noTrailerDesc")}
                 </p>
               </div>
             )}
@@ -310,11 +314,11 @@ export function ServerChannelTabs({
                   <h4 className="text-sm font-display font-semibold text-white flex items-center gap-2">
                     EterVerse Clips & Reels
                     <span className="text-[10px] font-mono bg-zinc-800 border border-zinc-700 text-zinc-300 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                      Segera Hadir
+                      {t("server.comingSoon")}
                     </span>
                   </h4>
                   <p className="text-xs text-zinc-400 font-body mt-0.5">
-                    Fitur Reels vertikal untuk cuplikan gameplay PvP, build timelapse, dan momen seru server ini.
+                    {t("server.clipsSubtitle")}
                   </p>
                 </div>
               </div>
@@ -349,7 +353,7 @@ export function ServerChannelTabs({
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-                    {gallery.length} Tangkapan Layar Tersedia
+                    {gallery.length} Tangkapan Layar
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -374,9 +378,9 @@ export function ServerChannelTabs({
             ) : (
               <div className="py-16 text-center border border-zinc-800/60 rounded-2xl bg-zinc-950/40 flex flex-col items-center gap-3">
                 <ImageIcon size={36} className="text-zinc-600" />
-                <h3 className="text-base font-display text-zinc-300">Belum ada foto galeri</h3>
+                <h3 className="text-base font-display text-zinc-300">{t("server.noGallery")}</h3>
                 <p className="text-xs font-body text-zinc-500 max-w-sm">
-                  Owner server belum menambahkan screenshot galeri untuk server ini.
+                  {t("server.noGalleryDesc")}
                 </p>
               </div>
             )}
@@ -428,10 +432,10 @@ export function ServerChannelTabs({
               <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
                 <div>
                   <h3 className="text-base font-display font-semibold text-white flex items-center gap-2">
-                    <Star size={18} className="text-amber-400" weight="fill" /> Beri Penilaian untuk {server.name}
+                    <Star size={18} className="text-amber-400" weight="fill" /> {t("server.rateTitle")} {server.name}
                   </h3>
                   <p className="text-xs text-zinc-400 font-body mt-1">
-                    Bantu komunitas mengetahui kualitas gameplay dan pelayanan server ini.
+                    {t("server.rateDesc")}
                   </p>
                 </div>
                 <div className="text-right">
@@ -452,9 +456,9 @@ export function ServerChannelTabs({
 
             {/* Social Media & Community Grid */}
             <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-6 flex flex-col gap-4">
-              <h3 className="text-base font-display font-semibold text-white">Hub Komunitas Resmi</h3>
+              <h3 className="text-base font-display font-semibold text-white">{t("server.officialCommunity")}</h3>
               <p className="text-xs text-zinc-400 font-body -mt-2">
-                Gabung ke grup resmi untuk pengumuman event, update server, dan interaksi komunitas.
+                {t("server.communitySubtitle")}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
@@ -466,7 +470,7 @@ export function ServerChannelTabs({
                     className="flex items-center gap-3 bg-[#5865F2]/10 hover:bg-[#5865F2]/20 border border-[#5865F2]/25 text-white transition-all px-4 py-3 rounded-xl text-sm font-medium"
                   >
                     <DiscordLogo size={20} weight="fill" className="text-[#5865F2]" />
-                    <span>Gabung Discord Resmi</span>
+                    <span>{t("server.joinDiscord")}</span>
                   </a>
                 )}
                 {server.socialLinks?.whatsapp && (
@@ -477,7 +481,7 @@ export function ServerChannelTabs({
                     className="flex items-center gap-3 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/25 text-white transition-all px-4 py-3 rounded-xl text-sm font-medium"
                   >
                     <WhatsappLogo size={20} weight="fill" className="text-[#25D366]" />
-                    <span>Grup WhatsApp Komunitas</span>
+                    <span>{t("server.whatsappGroup")}</span>
                   </a>
                 )}
                 {server.socialLinks?.telegram && (
@@ -488,7 +492,7 @@ export function ServerChannelTabs({
                     className="flex items-center gap-3 bg-[#229ED9]/10 hover:bg-[#229ED9]/20 border border-[#229ED9]/25 text-white transition-all px-4 py-3 rounded-xl text-sm font-medium"
                   >
                     <TelegramLogo size={20} weight="fill" className="text-[#229ED9]" />
-                    <span>Channel / Grup Telegram</span>
+                    <span>{t("server.telegramGroup")}</span>
                   </a>
                 )}
                 {server.socialLinks?.website && (
@@ -499,7 +503,7 @@ export function ServerChannelTabs({
                     className="flex items-center gap-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 text-zinc-200 hover:text-white transition-all px-4 py-3 rounded-xl text-sm font-medium"
                   >
                     <Globe size={20} className="text-zinc-400" />
-                    <span>Kunjungi Website Resmi</span>
+                    <span>{t("server.officialWebsite")}</span>
                   </a>
                 )}
               </div>

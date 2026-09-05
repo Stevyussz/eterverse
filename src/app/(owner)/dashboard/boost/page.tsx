@@ -7,7 +7,7 @@ export default function EterShopBoostPage() {
       <div className="text-center flex flex-col items-center">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 mb-6 bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] font-mono font-semibold tracking-wider uppercase rounded-full">
           <Sparkle weight="fill" size={14} className="text-amber-400" />
-          PROGRAM KEMITRAAN PREMIUM
+          PROGRAM PARTNER PREMIUM
         </div>
         <h1 className="text-3xl md:text-5xl font-display font-bold text-white">EterShop Partner</h1>
         <p className="text-base sm:text-lg text-zinc-400 font-body mt-4 max-w-2xl leading-relaxed">
@@ -18,7 +18,7 @@ export default function EterShopBoostPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
         <FeatureCard 
           icon={<Trophy size={28} className="text-amber-400" />}
-          title="Badge Mitra Emas"
+          title="Badge Partner Emas"
           desc="Tampilkan status Partner resmi pada kartu server di seluruh platform."
         />
         <FeatureCard 
@@ -36,7 +36,7 @@ export default function EterShopBoostPage() {
       <div className="bg-zinc-900/30 border border-zinc-800 p-8 sm:p-10 mt-4 flex flex-col items-center text-center rounded-2xl">
         <h2 className="text-xl sm:text-2xl font-display font-semibold text-white mb-3">Siap Tingkatkan Popularitas Server?</h2>
         <p className="text-zinc-400 text-sm max-w-md mb-6 leading-relaxed">
-          Slot kemitraan dibatasi untuk menjaga eksklusivitas dan efektivitas promosi. Hubungi tim kami untuk pengajuan server partner.
+          Slot partner dibatasi untuk menjaga eksklusivitas dan efektivitas promosi. Hubungi tim kami untuk pengajuan server partner.
         </p>
         <a 
           href="mailto:admin@eterverse.com?subject=EterShop%20Partner%20Application"

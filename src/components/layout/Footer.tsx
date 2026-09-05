@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Cube, DiscordLogo, EnvelopeSimple, Heart, ShieldCheck, Sparkle } from "@phosphor-icons/react";
+import { Cube, DiscordLogo, EnvelopeSimple, ShieldCheck, Sparkle } from "@phosphor-icons/react";
+import { useLanguage } from "@/context/LanguageContext";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
 export function Footer() {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   // Hide footer on dashboard, admin, and login pages for clean focused workspace
   const isExcludedPage = 
@@ -20,7 +23,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative z-20 border-t border-zinc-800/80 bg-[#09090b] text-zinc-400 font-body text-sm overflow-hidden pb-28 lg:pb-12 pt-16">
+    <footer className="relative z-20 border-t border-zinc-800/80 bg-[#09090b]/75 backdrop-blur-xl text-zinc-400 font-body text-sm overflow-hidden pb-28 lg:pb-12 pt-16">
       
       {/* Subtle top hair-line light highlight */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[1px] bg-gradient-to-r from-transparent via-zinc-700/50 to-transparent" />
@@ -42,19 +45,23 @@ export function Footer() {
             </Link>
             
             <p className="text-xs sm:text-sm text-zinc-400 font-body leading-relaxed max-w-sm">
-              Platform discovery dan kurasi server Minecraft Indonesia generasi modern. Temukan server impianmu, vote favoritmu, dan bangun komunitas gaming tanpa batas.
+              {t("footer.tagline")}
             </p>
+
+            <div className="pt-2">
+              <LanguageSwitcher showIcon />
+            </div>
           </div>
 
           {/* Column 2: Jelajahi Server */}
           <div className="flex flex-col gap-3">
             <h4 className="text-xs font-mono uppercase text-zinc-200 font-semibold tracking-wider">
-              Jelajahi Server
+              {t("footer.explore")}
             </h4>
             <ul className="flex flex-col gap-2.5 text-xs sm:text-sm">
               <li>
                 <Link href="/discover" className="hover:text-white transition-colors">
-                  Semua Server
+                  {t("footer.allServers")}
                 </Link>
               </li>
               <li>
@@ -74,7 +81,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/discover?sort=newest" className="hover:text-white transition-colors">
-                  Server Baru Ditambahkan
+                  {t("footer.newServers")}
                 </Link>
               </li>
             </ul>
@@ -83,34 +90,34 @@ export function Footer() {
           {/* Column 3: Pemilik Server */}
           <div className="flex flex-col gap-3">
             <h4 className="text-xs font-mono uppercase text-zinc-200 font-semibold tracking-wider">
-              Pemilik Server
+              {t("footer.owners")}
             </h4>
             <ul className="flex flex-col gap-2.5 text-xs sm:text-sm">
               <li>
                 <Link href="/dashboard/server/new" className="hover:text-white transition-colors flex items-center gap-1.5">
-                  <span>Daftarkan Server</span>
-                  <span className="text-[9px] font-mono bg-white/10 px-1.5 py-0.2 rounded text-zinc-300">Gratis</span>
+                  <span>{t("footer.submitServer")}</span>
+                  <span className="text-[9px] font-mono bg-white/10 px-1.5 py-0.2 rounded text-zinc-300">{t("footer.free")}</span>
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard" className="hover:text-white transition-colors">
-                  Dashboard Server
+                  {t("footer.dashboard")}
                 </Link>
               </li>
               <li>
                 <Link href="/etershop" className="hover:text-white transition-colors flex items-center gap-1.5">
                   <Sparkle size={13} className="text-amber-400" weight="fill" />
-                  <span className="text-amber-300 font-medium">Mitra EterShop</span>
+                  <span className="text-amber-300 font-medium">{t("footer.partner")}</span>
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/boost" className="hover:text-white transition-colors">
-                  Promosi & Boost
+                  {t("footer.boost")}
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/tools/widget" className="hover:text-white transition-colors">
-                  Embed Status Widget
+                  {t("footer.widget")}
                 </Link>
               </li>
             </ul>
@@ -119,7 +126,7 @@ export function Footer() {
           {/* Column 4: Komunitas & Bantuan */}
           <div className="flex flex-col gap-3">
             <h4 className="text-xs font-mono uppercase text-zinc-200 font-semibold tracking-wider">
-              Komunitas & Info
+              {t("footer.community")}
             </h4>
             <ul className="flex flex-col gap-2.5 text-xs sm:text-sm">
               <li>
@@ -128,7 +135,7 @@ export function Footer() {
                   className="hover:text-white transition-colors flex items-center gap-1.5"
                 >
                   <EnvelopeSimple size={14} />
-                  <span>Hubungi Kami</span>
+                  <span>{t("footer.contact")}</span>
                 </a>
               </li>
               <li>
@@ -139,13 +146,13 @@ export function Footer() {
                   className="hover:text-white transition-colors flex items-center gap-1.5"
                 >
                   <DiscordLogo size={14} weight="fill" className="text-[#5865F2]" />
-                  <span>Komunitas Discord</span>
+                  <span>{t("footer.discord")}</span>
                 </a>
               </li>
               <li>
                 <span className="text-zinc-500 text-xs flex items-center gap-1">
                   <ShieldCheck size={14} />
-                  Platform Aman & Terverifikasi
+                  {t("footer.safe")}
                 </span>
               </li>
             </ul>
@@ -156,12 +163,12 @@ export function Footer() {
         {/* Bottom Copyright Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-mono">
           <div className="flex items-center gap-1.5">
-            <span>© {currentYear} EterVerse. Hak cipta dilindungi.</span>
+            <span>© {currentYear} EterVerse. {t("footer.rights")}</span>
           </div>
 
           {/* Minecraft EULA Disclaimer */}
           <div className="text-center sm:text-right text-[11px] text-zinc-600 max-w-md font-sans">
-            EterVerse bukan layanan resmi Mojang Studios atau Microsoft. Minecraft adalah merek dagang terdaftar milik Mojang AB.
+            {t("footer.disclaimer")}
           </div>
         </div>
 

@@ -8,9 +8,14 @@ import { CaretLeft, CaretRight, Star, ArrowRight } from "@phosphor-icons/react";
 import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
 import Link from "next/link";
 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { useLanguage } from "@/context/LanguageContext";
+
 export function HeroSlider({ servers }: { servers: any[] }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const { t } = useLanguage();
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -56,16 +61,18 @@ export function HeroSlider({ servers }: { servers: any[] }) {
               <div className="w-full md:w-1/2 p-7 sm:p-10 md:p-14 flex flex-col justify-center min-h-[420px] md:min-h-[480px] relative z-20">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 mb-5 w-max bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] font-mono font-semibold tracking-wider uppercase rounded-full">
                   <Star weight="fill" size={14} className="text-amber-400" />
-                  SERVER REKOMENDASI
+                  {t("home.featuredServer")}
                 </div>
                 
                 <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-[1.1] mb-4 tracking-tight">
                   {server.name}
                 </h2>
                 
-                <p className="text-zinc-400 font-body font-light text-base sm:text-lg mb-6 max-w-md line-clamp-2 sm:line-clamp-3 leading-relaxed">
-                  {server.description}
-                </p>
+                <div className="text-zinc-400 font-body font-light text-base sm:text-lg mb-6 max-w-md line-clamp-2 sm:line-clamp-3 leading-relaxed prose prose-invert prose-p:my-0 prose-strong:text-white prose-strong:font-semibold prose-em:text-zinc-300 prose-headings:text-white prose-headings:text-base">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {server.description}
+                  </ReactMarkdown>
+                </div>
 
                 {/* Mobile & Desktop Quick CTA */}
                 <div className="flex items-center gap-4 mb-4">
@@ -73,7 +80,7 @@ export function HeroSlider({ servers }: { servers: any[] }) {
                     href={`/server/${server.slug}`}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-white text-zinc-950 font-medium rounded-lg text-sm hover:bg-zinc-200 transition-all duration-200 active:scale-[0.98] shadow-sm"
                   >
-                    Jelajahi Server <ArrowRight size={16} weight="bold" />
+                    {t("home.exploreServer")} <ArrowRight size={16} weight="bold" />
                   </Link>
                 </div>
                 

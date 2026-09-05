@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, Copy, Users, CaretUp } from "@phosphor-icons/react";
 import { toast } from "sonner";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface MobileStickyActionBarProps {
   serverName: string;
@@ -27,12 +28,13 @@ export function MobileStickyActionBar({
   const [votes, setVotes] = useState(initialVotes);
   const [voted, setVoted] = useState(false);
   const [voting, setVoting] = useState(false);
+  const { t } = useLanguage();
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(ipAddress);
       setCopied(true);
-      toast.success(`IP ${ipAddress} berhasil disalin! 🎮`);
+      toast.success(`${ipAddress} ${t("server.copied")}`);
       setTimeout(() => setCopied(false), 2500);
     } catch {
       const el = document.createElement("textarea");
@@ -42,7 +44,7 @@ export function MobileStickyActionBar({
       document.execCommand("copy");
       document.body.removeChild(el);
       setCopied(true);
-      toast.success(`IP ${ipAddress} berhasil disalin!`);
+      toast.success(`${ipAddress} ${t("server.copied")}`);
       setTimeout(() => setCopied(false), 2500);
     }
   };
@@ -127,12 +129,12 @@ export function MobileStickyActionBar({
           {copied ? (
             <>
               <Check size={14} weight="bold" />
-              <span>Tersalin!</span>
+              <span>{t("server.copied")}</span>
             </>
           ) : (
             <>
               <Copy size={14} />
-              <span>Salin IP</span>
+              <span>{t("server.copyIp")}</span>
             </>
           )}
         </button>

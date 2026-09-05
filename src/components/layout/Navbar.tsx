@@ -5,11 +5,19 @@ import { usePathname } from "next/navigation";
 import { Cube, DiscordLogo, List, X, Sparkle, PlusCircle, SignOut } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
+import { useLanguage } from "@/context/LanguageContext";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
-export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: boolean; isAdmin?: boolean }) {
+interface NavbarProps {
+  isLoggedIn: boolean;
+  isAdmin: boolean;
+}
+
+export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,9 +35,9 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
   const isDashboardOrAdmin = pathname?.startsWith("/dashboard") || pathname?.startsWith("/admin");
 
   const navLinks = [
-    { href: "/", label: "Beranda" },
-    { href: "/discover", label: "Jelajah" },
-    { href: "/etershop", label: "EterShop", isGold: true },
+    { href: "/", label: t("nav.home") },
+    { href: "/discover", label: t("nav.discover") },
+    { href: "/etershop", label: t("nav.etershop"), isGold: true },
   ];
 
   return (
@@ -91,14 +99,19 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
         )}
 
         {/* Auth / Action Area */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Language Switcher on Desktop */}
+          <div className="hidden sm:flex items-center">
+            <LanguageSwitcher />
+          </div>
+
           {!isDashboardOrAdmin && (
             <Link
               href="/dashboard/server/new"
               className="hidden lg:inline-flex items-center gap-1.5 text-xs font-mono font-medium text-zinc-300 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-zinc-800"
             >
               <PlusCircle size={15} />
-              Daftarkan Server
+              {t("nav.submitServer")}
             </Link>
           )}
           
@@ -109,19 +122,19 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
                   href="/admin"
                   className="flex items-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 text-amber-300 text-xs font-mono font-semibold px-3 py-2 rounded-lg transition-all"
                 >
-                  Admin
+                  {t("nav.admin")}
                 </Link>
               )}
               <Link
                 href="/dashboard"
                 className="flex items-center gap-1.5 bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-mono font-semibold px-3.5 py-2 rounded-lg transition-all shadow-sm"
               >
-                Dashboard
+                {t("nav.dashboard")}
               </Link>
               <button
                 onClick={() => signOut()}
                 className="flex items-center gap-1 bg-zinc-900/60 hover:bg-red-500/10 border border-zinc-800 hover:border-red-500/30 text-zinc-400 hover:text-red-400 text-xs font-mono px-3 py-2 rounded-lg transition-all"
-                title="Keluar"
+                title={t("nav.signOut")}
               >
                 <SignOut size={15} />
               </button>
@@ -132,7 +145,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
               className="hidden sm:flex items-center gap-2 bg-white/5 hover:bg-[#5865F2]/15 border border-white/10 hover:border-[#5865F2]/30 text-white text-xs font-mono px-4 py-2 rounded-lg transition-all"
             >
               <DiscordLogo weight="fill" size={16} className="text-[#5865F2]" />
-              Masuk
+              {t("nav.signIn")}
             </Link>
           )}
 
@@ -150,6 +163,12 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
       {/* Mobile Drawer Menu */}
       {mobileOpen && (
         <div className="md:hidden bg-[#09090b]/95 backdrop-blur-2xl border-b border-zinc-800 px-6 py-6 flex flex-col gap-4 animate-fade-in shadow-2xl">
+          {/* Mobile Language Switcher Row */}
+          <div className="flex items-center justify-between pb-3 border-b border-zinc-800/80">
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Bahasa / Language</span>
+            <LanguageSwitcher showIcon />
+          </div>
+
           <div className="flex flex-col gap-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
@@ -178,7 +197,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
               className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-zinc-300 hover:bg-white/5 hover:text-white transition-colors"
             >
               <PlusCircle size={18} className="text-zinc-400" />
-              Daftarkan Server
+              {t("nav.submitServer")}
             </Link>
           </div>
 
@@ -190,20 +209,20 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
                     href="/admin"
                     className="flex items-center justify-center gap-2 bg-amber-500/10 border border-amber-500/25 text-amber-300 font-mono text-sm py-2.5 rounded-lg font-medium"
                   >
-                    Panel Admin
+                    {t("nav.admin")}
                   </Link>
                 )}
                 <Link
                   href="/dashboard"
                   className="flex items-center justify-center gap-2 bg-white text-zinc-950 font-mono text-sm py-2.5 rounded-lg font-semibold"
                 >
-                  Dashboard
+                  {t("nav.dashboard")}
                 </Link>
                 <button
                   onClick={() => signOut()}
                   className="flex items-center justify-center gap-2 bg-zinc-900/60 border border-zinc-800 text-zinc-400 hover:text-red-400 font-mono text-sm py-2.5 rounded-lg"
                 >
-                  <SignOut size={16} /> Keluar
+                  <SignOut size={16} /> {t("nav.signOut")}
                 </button>
               </>
             ) : (
@@ -212,7 +231,7 @@ export function Navbar({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: b
                 className="flex items-center justify-center gap-2 bg-[#5865F2]/15 border border-[#5865F2]/30 text-white font-mono text-sm py-2.5 rounded-lg font-semibold"
               >
                 <DiscordLogo weight="fill" size={18} className="text-[#5865F2]" />
-                Masuk dengan Discord
+                {t("nav.signInDiscord")}
               </Link>
             )}
           </div>

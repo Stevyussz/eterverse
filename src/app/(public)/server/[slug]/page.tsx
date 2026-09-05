@@ -109,18 +109,29 @@ export default async function ServerProfilePage(props: Props) {
       <JsonLdSchema server={serverData} />
       <ImpressionTracker slug={serverData.slug} />
       
-      {/* Portfolio Banner with Dynamic Ambient Fade */}
-      <div className="relative w-full h-[220px] sm:h-[300px] md:h-[400px] bg-[#09090b] mt-16 sm:mt-20 overflow-hidden">
+      {/* Cinematic Server Banner with Organic Deep Ambient Blend */}
+      <div className="relative w-full h-[260px] sm:h-[360px] md:h-[440px] bg-[#09090b] overflow-hidden select-none">
+        {/* Ambient Glow / Backdrop */}
+        <div className="absolute inset-0 bg-[#09090b]" />
         <img 
           src={serverData.bannerUrl || defaultBanner} 
           alt={`${serverData.name} Banner`} 
-          className="w-full h-full object-cover opacity-60 scale-105 filter blur-[0.5px]"
+          className="w-full h-full object-cover opacity-70 scale-[1.03] transition-transform duration-700 filter saturate-[1.1]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none" />
+        
+        {/* Multi-layered Organic Gradient Vignettes (No Harsh Boundaries) */}
+        {/* Top Fade into Navbar */}
+        <div className="absolute top-0 inset-x-0 h-36 bg-gradient-to-b from-[#09090b] via-[#09090b]/70 to-transparent pointer-events-none z-10" />
+        
+        {/* Soft Radial Vignette for Atmospheric Focus */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_25%,rgba(9,9,11,0.85)_100%)] pointer-events-none z-10" />
+        
+        {/* Bottom Dissolve into Main Profile Area */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/80 via-35% to-transparent pointer-events-none z-10" />
+        <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#09090b] to-transparent pointer-events-none z-10" />
       </div>
 
-      <main className="relative min-h-screen px-4 sm:px-6 lg:px-24 pb-32 -mt-16 sm:-mt-24">
+      <main className="relative min-h-screen px-4 sm:px-6 lg:px-24 pb-32 -mt-20 sm:-mt-28">
         
         {/* Profile Content Container */}
         <div className="max-w-5xl mx-auto flex flex-col gap-6">
@@ -151,7 +162,7 @@ export default async function ServerProfilePage(props: Props) {
                     </h1>
                     {serverData.isEterShopPartner && (
                       <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
-                        <Trophy weight="fill" size={12} /> Mitra
+                        <Trophy weight="fill" size={12} /> Partner
                       </div>
                     )}
                   </div>

@@ -11,7 +11,7 @@ export default function EterShopPublicPage() {
   const perks = [
     {
       icon: <Trophy size={28} className="text-eter-gold" weight="fill" />,
-      title: "Badge Mitra Emas Eksklusif",
+      title: "Badge Partner Emas Eksklusif",
       description: "Tanda pengenal emas eksklusif yang membedakan servermu dari kompetitor di seluruh listing dan card.",
     },
     {
@@ -53,7 +53,7 @@ export default function EterShopPublicPage() {
         <div className="text-center flex flex-col items-center gap-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-xs font-mono font-medium text-amber-300 tracking-wider uppercase">
             <Sparkle weight="fill" size={14} className="text-amber-400" />
-            PROGRAM KEMITRAAN ETERVERSE
+            PROGRAM PARTNER ETERVERSE
           </div>
           
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold text-white tracking-tight leading-[1.15]">
@@ -115,7 +115,7 @@ export default function EterShopPublicPage() {
                 <tr className="border-b border-zinc-800 bg-white/[0.02]">
                   <th className="py-4 px-6 text-zinc-400 font-medium uppercase text-xs tracking-wider">Fitur & Manfaat</th>
                   <th className="py-4 px-6 text-zinc-400 font-medium uppercase text-xs tracking-wider text-center">Reguler</th>
-                  <th className="py-4 px-6 text-amber-300 font-bold uppercase text-xs tracking-wider text-center bg-amber-500/5">Mitra EterShop</th>
+                  <th className="py-4 px-6 text-amber-300 font-bold uppercase text-xs tracking-wider text-center bg-amber-500/5">Partner EterShop</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/80 font-sans">
@@ -143,7 +143,7 @@ export default function EterShopPublicPage() {
         <div className="bg-zinc-900/40 border border-zinc-800 p-8 sm:p-12 rounded-2xl text-center flex flex-col items-center gap-4 relative overflow-hidden">
           <Trophy size={40} weight="fill" className="text-amber-400 mb-1" />
           <h2 className="text-2xl sm:text-3xl font-display font-semibold text-white">
-            Slot Kemitraan Sangat Terbatas
+            Slot Partner Sangat Terbatas
           </h2>
           <p className="text-zinc-400 font-body text-sm sm:text-base max-w-xl">
             Untuk memastikan setiap partner mendapatkan eksposur maksimal, slot partner dibatasi per periode. Daftarkan servermu sekarang sebelum slot bulan ini penuh.

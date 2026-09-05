@@ -91,6 +91,7 @@ export const metadata: Metadata = {
 import { BackgroundController } from "@/components/layout/BackgroundController";
 import { Footer } from "@/components/layout/Footer";
 import { WebsiteJsonLd } from "@/components/seo/JsonLdSchema";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 export default async function RootLayout({
   children,
@@ -108,14 +109,16 @@ export default async function RootLayout({
       <body
         className={`${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        <WebsiteJsonLd />
-        <BackgroundController />
-        <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
-        <div className="flex-1">
-          {children}
-        </div>
-        <Footer />
-        <Toaster theme="dark" position="bottom-right" />
+        <LanguageProvider>
+          <WebsiteJsonLd />
+          <BackgroundController />
+          <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
+          <div className="flex-1">
+            {children}
+          </div>
+          <Footer />
+          <Toaster theme="dark" position="bottom-right" />
+        </LanguageProvider>
       </body>
     </html>
   );
