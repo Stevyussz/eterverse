@@ -75,23 +75,42 @@
   box-shadow: 0 0 25px rgba(234, 179, 8, 0.25);
 }
 
-/* Background utama (Gambar dari user) */
+/* Background utama (Gambar wallpaper) */
 .bg-wallpaper {
   position: fixed;
   inset: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: -2;
   object-fit: cover;
-  filter: contrast(105%) brightness(90%);
+  pointer-events: none;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Vignette gelap di sekeliling layar dan bagian bawah */
 .bg-vignette {
   position: fixed;
   inset: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: -1;
+  pointer-events: none;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   background: 
     linear-gradient(to top, #09090B 15%, rgba(9,9,11,0.85) 40%, rgba(9,9,11,0.2) 100%),
     radial-gradient(circle at center, transparent 30%, rgba(9,9,11,0.75) 100%);
+}
+
+/* Off-screen layout optimization for ultra-smooth mobile scroll */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 420px;
 }
 
 /* TipTap Editor Styling */

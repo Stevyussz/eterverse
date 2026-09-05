@@ -53,6 +53,8 @@ export function BackgroundVideo({
         <img
           src={fallbackImage}
           alt="Background Preview"
+          loading="lazy"
+          decoding="async"
           className={`object-cover pointer-events-none ${className}`}
         />
       );
@@ -79,6 +81,8 @@ export function BackgroundVideo({
         ) : (
           <img
             src={thumbSrc}
+            loading="lazy"
+            decoding="async"
             onError={() => {
               if (ytId) {
                 setThumbSrc(`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`);
@@ -100,6 +104,7 @@ export function BackgroundVideo({
       muted
       loop
       playsInline
+      preload="none"
       poster={fallbackImage}
       className={`pointer-events-none object-cover ${className}`}
     />

@@ -32,42 +32,27 @@ export function ServerCard({
 }: ServerCardProps) {
   const cardRef = useRef<HTMLAnchorElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Clean up hover timeout on unmount
   useEffect(() => {
-    // Use IntersectionObserver specifically for mobile/touch devices
-    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-    if (!isTouchDevice) return;
-
-    const currentCard = cardRef.current;
-    if (!currentCard) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsHovered(true);
-          } else {
-            setIsHovered(false);
-          }
-        });
-      },
-      { threshold: 0.6 } // Play when 60% of the card is visible on screen
-    );
-
-    observer.observe(currentCard);
-
     return () => {
-      if (currentCard) observer.unobserve(currentCard);
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     };
   }, []);
 
+  // Only enable video previews on desktop with mouse pointers (never on mobile touch scrolling)
   const handleMouseEnter = () => {
-    if (window.matchMedia("(pointer: coarse)").matches) return;
-    setIsHovered(true);
+    if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) return;
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    // 150ms gentle debounce to prevent accidental video spins on fast mouse flicks
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsHovered(true);
+    }, 150);
   };
 
   const handleMouseLeave = () => {
-    if (window.matchMedia("(pointer: coarse)").matches) return;
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     setIsHovered(false);
   };
 
@@ -77,7 +62,7 @@ export function ServerCard({
     <Link 
       href={`/server/${slug}`}
       ref={cardRef}
-      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-xl overflow-hidden border border-zinc-800/90 bg-zinc-950 hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/60"
+      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-xl overflow-hidden border border-zinc-800/90 bg-zinc-950 hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/60 [contain:paint]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

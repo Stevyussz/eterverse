@@ -75,7 +75,7 @@ export default async function Home() {
             </a>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full content-auto">
             {serializedTrending.length > 0 ? (
                serializedTrending.map((server) => (
                  <ServerCard key={server.slug} {...server as any} />
@@ -96,7 +96,7 @@ export default async function Home() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full content-auto">
             {serializedTopRated.length > 0 ? (
                serializedTopRated.map((server) => (
                  <ServerCard key={server.slug} {...server as any} />
@@ -117,7 +117,7 @@ export default async function Home() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full content-auto">
             {serializedNewest.length > 0 ? (
                serializedNewest.map((server) => (
                  <ServerCard key={server.slug} {...server as any} />

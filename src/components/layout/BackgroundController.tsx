@@ -10,11 +10,20 @@ export function BackgroundController() {
   if (isDashboardOrAdmin) {
     return (
       <>
-        <div className="bg-vignette opacity-80"></div>
-        <div className="fixed inset-0 bg-[#050505]/70 backdrop-blur-[2px] z-[-40]"></div>
+        <div className="bg-vignette opacity-80" />
+        <div className="fixed inset-0 bg-[#050505]/70 backdrop-blur-[2px] z-[-40] pointer-events-none" />
         <picture>
+          <source media="(max-width: 768px)" type="image/webp" srcSet="/dashboard-bg-mobile.webp" />
           <source media="(max-width: 768px)" srcSet="/dashboard-bg-mobile.png" />
-          <img src="/dashboard-bg.png" className="bg-wallpaper grayscale border-b-2" style={{ filter: "brightness(0.3) grayscale(0.5)" }} alt="EterVerse Dashboard Wallpaper" />
+          <source type="image/webp" srcSet="/dashboard-bg.webp" />
+          <img
+            src="/dashboard-bg.png"
+            className="bg-wallpaper grayscale border-b-2"
+            style={{ filter: "brightness(0.3) grayscale(0.5)" }}
+            alt="EterVerse Dashboard Wallpaper"
+            loading="eager"
+            decoding="async"
+          />
         </picture>
       </>
     );
@@ -22,10 +31,18 @@ export function BackgroundController() {
 
   return (
     <>
-      <div className="bg-vignette"></div>
+      <div className="bg-vignette" />
       <picture>
+        <source media="(max-width: 768px)" type="image/webp" srcSet="/wallpaper-mobile.webp" />
         <source media="(max-width: 768px)" srcSet="/wallpaper-mobile.png" />
-        <img src="/wallpaper.png" className="bg-wallpaper" alt="EterVerse Wallpaper" />
+        <source type="image/webp" srcSet="/wallpaper.webp" />
+        <img
+          src="/wallpaper.png"
+          className="bg-wallpaper"
+          alt="EterVerse Wallpaper"
+          loading="eager"
+          decoding="async"
+        />
       </picture>
     </>
   );
