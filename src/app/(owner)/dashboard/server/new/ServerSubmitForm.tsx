@@ -7,7 +7,7 @@ import { ImageUploader } from "@/components/ui/ImageUploader";
 import { VideoUploader } from "@/components/ui/VideoUploader";
 import { MarkdownTextarea } from "@/components/ui/MarkdownTextarea";
 
-export function ServerSubmitForm({ action }: { action: (formData: FormData) => Promise<void> }) {
+export function ServerSubmitForm({ action }: { action: (formData: FormData) => Promise<{ error: string } | void> }) {
   const [isPending, setIsPending] = useState(false);
   const [serverType, setServerType] = useState<"SERVER" | "REALM">("SERVER");
   const [platform, setPlatform] = useState<"JAVA" | "BEDROCK" | "CROSSPLAY">("CROSSPLAY");
@@ -17,7 +17,13 @@ export function ServerSubmitForm({ action }: { action: (formData: FormData) => P
       action={async (formData) => {
         setIsPending(true);
         try {
-          await action(formData);
+          const result = await action(formData);
+          // Validation problems come back as a message (thrown errors are hidden in production).
+          if (result?.error) {
+            toast.error(result.error);
+            setIsPending(false);
+            return;
+          }
           toast.success(
             serverType === "REALM" 
               ? "Realm berhasil didaftarkan dan menunggu peninjauan!" 

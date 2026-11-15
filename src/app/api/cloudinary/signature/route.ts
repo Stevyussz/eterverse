@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -13,6 +14,16 @@ export async function POST() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Each signature allows one direct upload to our Cloudinary account (bandwidth and
+  // storage are billed), so a single account cannot mint them without limit.
+  const limit = await rateLimit(`cldsig:${session.user.id}`, 12, 3600);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Terlalu banyak upload video dalam satu jam. Coba lagi nanti." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSec) } }
+    );
   }
 
   const timestamp = Math.round(new Date().getTime() / 1000);

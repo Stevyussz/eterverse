@@ -30,7 +30,7 @@ interface ServerData {
   };
 }
 
-export function ServerEditForm({ action, server }: { action: (formData: FormData) => Promise<void>; server: ServerData }) {
+export function ServerEditForm({ action, server }: { action: (formData: FormData) => Promise<{ error: string } | void>; server: ServerData }) {
   const [isPending, setIsPending] = useState(false);
   const [serverType, setServerType] = useState<"SERVER" | "REALM">(server.serverType || "SERVER");
   const [platform, setPlatform] = useState<"JAVA" | "BEDROCK" | "CROSSPLAY">(server.platform || "CROSSPLAY");
@@ -40,7 +40,13 @@ export function ServerEditForm({ action, server }: { action: (formData: FormData
       action={async (formData) => {
         setIsPending(true);
         try {
-          await action(formData);
+          const result = await action(formData);
+          // Validation problems come back as a message (thrown errors are hidden in production).
+          if (result?.error) {
+            toast.error(result.error);
+            setIsPending(false);
+            return;
+          }
           toast.success("Perubahan listing berhasil disimpan! Status dikembalikan ke peninjauan.");
         } catch (e: any) {
           console.error(e);

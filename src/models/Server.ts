@@ -118,7 +118,17 @@ ServerSchema.index({ moderationStatus: 1, platform: 1 });
 // Pre-save hook to automatically generate slug from name
 ServerSchema.pre("save", async function () {
   if (this.isModified("name") || !this.slug) {
-    this.slug = slugify(this.name);
+    // Two servers with the same name used to collide on the unique slug index and the
+    // second owner got a 500. Append -2, -3... and fall back for names with no latin chars.
+    const base = slugify(this.name) || "server";
+    const Model = this.constructor as Model<IServer>;
+    let candidate = base;
+    for (let n = 2; n < 100; n++) {
+      const taken = await Model.exists({ slug: candidate, _id: { $ne: this._id } });
+      if (!taken) break;
+      candidate = `${base}-${n}`;
+    }
+    this.slug = candidate;
   }
 });
 

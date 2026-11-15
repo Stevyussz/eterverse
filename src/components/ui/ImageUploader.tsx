@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { UploadSimple, Spinner, CheckCircle, WarningCircle, Image as ImageIcon, X } from "@phosphor-icons/react";
 import { uploadImageToImgBB } from "@/app/actions/uploadImage";
+import { compressImage } from "@/lib/image-compress";
 
 interface ImageUploaderProps {
   name: string;
@@ -45,19 +46,22 @@ export function ImageUploader({ name, label, aspectRatio = "square", onUploadSuc
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const uploadSingleFile = async (file: File, onSuccess: (url: string) => void) => {
+  const uploadSingleFile = async (original: File, onSuccess: (url: string) => void) => {
     // Validate file
-    if (!file.type.startsWith("image/")) {
+    if (!original.type.startsWith("image/")) {
       setError("Pilih file gambar yang valid (PNG, JPG, WEBP).");
-      return;
-    }
-    if (file.size > 4 * 1024 * 1024) {
-      setError("Ukuran file terlalu besar. Maksimum 4MB.");
       return;
     }
 
     setIsUploading(true);
     setError(null);
+
+    const file = await compressImage(original);
+    if (file.size > 4 * 1024 * 1024) {
+      setError("Ukuran file terlalu besar. Maksimum 4MB.");
+      setIsUploading(false);
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", file);
@@ -137,7 +141,7 @@ export function ImageUploader({ name, label, aspectRatio = "square", onUploadSuc
               <div className="flex flex-col items-center text-zinc-400">
                 <ImageIcon size={32} />
                 <span className="text-[10px] font-mono uppercase tracking-wider mt-2">Klik untuk Unggah Screenshot</span>
-                <span className="text-xs text-zinc-500 mt-1">PNG, JPG, WEBP hingga 4MB</span>
+                <span className="text-xs text-zinc-400 mt-1">PNG, JPG, WEBP. Foto besar otomatis diperkecil.</span>
               </div>
             )}
           </div>

@@ -4,6 +4,7 @@ import { Server } from "@/models/Server";
 import { redirect, notFound } from "next/navigation";
 import { ServerEditForm } from "./ServerEditForm";
 import { invalidateServerLists } from "@/lib/server-queries";
+import { parseServerForm } from "@/lib/server-form";
 import mongoose from "mongoose";
 
 type Props = { params: Promise<{ id: string }> };
@@ -20,73 +21,26 @@ export default async function EditServerPage({ params }: Props) {
 
   if (!server) notFound(); // Also handles unauthorized (server belongs to someone else)
 
-  async function updateServer(formData: FormData) {
+  async function updateServer(formData: FormData): Promise<{ error: string } | void> {
     "use server";
     const session = await auth();
     const ownerIdentifier = session?.user?.id;
-    if (!ownerIdentifier) throw new Error("Unauthorized");
+    if (!ownerIdentifier) return { error: "Sesi login habis. Masuk lagi lalu simpan ulang." };
 
-    if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid server ID");
+    if (!mongoose.Types.ObjectId.isValid(id)) return { error: "Server tidak ditemukan." };
 
     await connectToDatabase();
 
     // Ensure ownership before allowing update
     const existing = await Server.findOne({ _id: id, ownerId: ownerIdentifier });
-    if (!existing) throw new Error("Server not found or unauthorized");
+    if (!existing) return { error: "Server tidak ditemukan atau bukan milikmu." };
 
-    const name = formData.get("name") as string;
-    const serverType = (formData.get("serverType") as 'SERVER' | 'REALM') || 'SERVER';
-    const platform = (formData.get("platform") as 'JAVA' | 'BEDROCK' | 'CROSSPLAY') || 'CROSSPLAY';
-    const realmCodeRaw = (formData.get("realmCode") as string) || "";
-    const realmCode = realmCodeRaw.replace(/^https?:\/\/realms\.gg\//, "").trim();
+    const parsed = parseServerForm(formData, existing);
+    if (!parsed.ok) return { error: parsed.error };
 
-    let ipAddress = (formData.get("ipAddress") as string) || "";
-    let port = parseInt(formData.get("port") as string) || 25565;
-    const bedrockPort = parseInt(formData.get("bedrockPort") as string) || existing.bedrockPort || 19132;
-
-    if (serverType === 'REALM') {
-      ipAddress = realmCode ? `realms.gg/${realmCode}` : (existing.ipAddress || "realms.gg");
-      port = 19132;
-    }
-
-    const description = formData.get("description") as string;
-    const tagsRaw = formData.get("tags") as string;
-    const tags = tagsRaw ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean) : [];
-    const videoUrl = formData.get("videoUrl") as string;
-    const logoUrl = formData.get("logoUrl") as string || existing.logoUrl || "";
-    const bannerUrl = formData.get("bannerUrl") as string || existing.bannerUrl || "";
-    const ownerWhatsApp = formData.get("ownerWhatsApp") as string;
-    const discordUrl = formData.get("discordUrl") as string;
-    const whatsappUrl = formData.get("whatsappUrl") as string;
-    const telegramUrl = formData.get("telegramUrl") as string;
-    const websiteUrl = formData.get("websiteUrl") as string;
-
-    const galleryUrlsRaw = formData.get("galleryUrls") as string;
-    const galleryUrls = galleryUrlsRaw
-      ? galleryUrlsRaw.split(",").map(u => u.trim()).filter(Boolean)
-      : existing.galleryUrls || [];
-
+    // The slug is kept on edit: renaming must not break links already shared or indexed.
     await Server.findByIdAndUpdate(id, {
-      name,
-      serverType,
-      platform,
-      realmCode,
-      ipAddress,
-      port,
-      bedrockPort,
-      description,
-      tags,
-      videoUrl,
-      logoUrl,
-      bannerUrl,
-      galleryUrls,
-      ownerWhatsApp,
-      socialLinks: {
-        discord: discordUrl || "",
-        whatsapp: whatsappUrl || "",
-        telegram: telegramUrl || "",
-        website: websiteUrl || "",
-      },
+      ...parsed.data,
       // Reset to PENDING so admin can re-review significant changes
       moderationStatus: 'PENDING',
     });

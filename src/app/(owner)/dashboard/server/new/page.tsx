@@ -2,79 +2,44 @@ import { auth } from "@/auth";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import { redirect } from "next/navigation";
-import { ServerSubmitForm } from "./ServerSubmitForm"; 
+import { ServerSubmitForm } from "./ServerSubmitForm";
+import { parseServerForm } from "@/lib/server-form";
+import { rateLimit } from "@/lib/rate-limit";
 
 export default async function NewServerPage() {
   const session = await auth();
 
-  async function createServer(formData: FormData) {
+  async function createServer(formData: FormData): Promise<{ error: string } | void> {
     "use server";
-    
+
     const session = await auth();
     // Strictly use session.user.id (ObjectId from MongoDBAdapter) to prevent CastError
     const ownerIdentifier = session?.user?.id;
-    if (!ownerIdentifier) throw new Error("Unauthorized");
+    if (!ownerIdentifier) return { error: "Sesi login habis. Masuk lagi lalu kirim ulang." };
 
-    const name = formData.get("name") as string;
-    const serverType = (formData.get("serverType") as 'SERVER' | 'REALM') || 'SERVER';
-    const platform = (formData.get("platform") as 'JAVA' | 'BEDROCK' | 'CROSSPLAY') || 'CROSSPLAY';
-    const realmCodeRaw = (formData.get("realmCode") as string) || "";
-    const realmCode = realmCodeRaw.replace(/^https?:\/\/realms\.gg\//, "").trim();
+    const parsed = parseServerForm(formData);
+    if (!parsed.ok) return { error: parsed.error };
 
-    let ipAddress = (formData.get("ipAddress") as string) || "";
-    let port = parseInt(formData.get("port") as string) || 25565;
-    let bedrockPort = parseInt(formData.get("bedrockPort") as string) || 19132;
-
-    if (serverType === 'REALM') {
-      ipAddress = realmCode ? `realms.gg/${realmCode}` : "realms.gg";
-      port = 19132;
-    }
-
-    const description = formData.get("description") as string;
-    const tags = (formData.get("tags") as string).split(",").map(t => t.trim());
-    const videoUrl = formData.get("videoUrl") as string;
-    const logoUrl = formData.get("logoUrl") as string || "";
-    const bannerUrl = formData.get("bannerUrl") as string || "";
-    
-    const galleryUrlsRaw = formData.get("galleryUrls") as string;
-    const galleryUrls = galleryUrlsRaw ? galleryUrlsRaw.split(",").map(url => url.trim()).filter(url => url.length > 0) : [];
-
-    const discordUrl = formData.get("discordUrl") as string || "";
-    const whatsappUrl = formData.get("whatsappUrl") as string || "";
-    const telegramUrl = formData.get("telegramUrl") as string || "";
-    const websiteUrl = formData.get("websiteUrl") as string || "";
-    const ownerWhatsApp = formData.get("ownerWhatsApp") as string;
+    // Each listing costs an admin review; this stops one account flooding the queue.
+    const limit = await rateLimit(`newsrv:${ownerIdentifier}`, 5, 86400);
+    if (!limit.ok) return { error: "Batas 5 pendaftaran per hari tercapai. Coba lagi besok." };
 
     await connectToDatabase();
-    
+
     const newServer = new Server({
-      name,
-      serverType,
-      platform,
-      realmCode,
-      ipAddress,
-      port,
-      bedrockPort,
-      description,
-      tags,
-      videoUrl,
-      logoUrl,
-      bannerUrl,
-      galleryUrls,
-      socialLinks: {
-        discord: discordUrl,
-        whatsapp: whatsappUrl,
-        telegram: telegramUrl,
-        website: websiteUrl,
-      },
+      ...parsed.data,
       ownerId: ownerIdentifier,
-      ownerWhatsApp,
       moderationStatus: 'PENDING',
       metrics: { impressions: 0, clicks: 0, votes: 0, rating: 0 },
       liveStatus: { isOnline: false, currentPlayers: 0, maxPlayers: 0, lastChecked: new Date() }
     });
 
-    await newServer.save();
+    try {
+      await newServer.save();
+    } catch (err) {
+      console.error("createServer failed:", err);
+      return { error: "Server gagal disimpan. Coba lagi sebentar lagi." };
+    }
     redirect("/dashboard");
   }
 
