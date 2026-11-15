@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { submitVote } from "@/lib/vote-client";
 import { VoteUsernameDialog } from "@/components/server/VoteUsernameDialog";
+import { SafeImage } from "@/components/ui/SafeImage";
 
 interface MobileStickyActionBarProps {
   serverName: string;
@@ -96,14 +97,10 @@ export function MobileStickyActionBar({
       {/* Mini Server Identity */}
       <div className="flex items-center gap-2.5 min-w-0 flex-1">
         <div className="relative w-9 h-9 rounded-lg bg-black border border-white/15 overflow-hidden shrink-0">
-          <img
-            src={logoUrl || "/icon-placeholder.png"}
-            alt={serverName}
-            className="w-full h-full object-cover"
-          />
+          <SafeImage src={logoUrl} fallbackName={serverName} alt={`Logo ${serverName}`} className="w-full h-full object-cover text-xs" />
           <span
             className={`absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full ring-1 ring-black ${
-              isOnline ? "bg-green-500" : "bg-red-500"
+              isOnline ? "bg-cyan-400" : "bg-zinc-500"
             }`}
           />
         </div>

@@ -24,9 +24,9 @@ export const translations = {
   },
   "home.featuredServer": { id: "SERVER REKOMENDASI", en: "FEATURED SERVER" },
   // Paid placement must read as paid; the fallback slot is ranked purely by votes.
-  "home.partnerServer": { id: "PARTNER ETERSHOP", en: "ETERSHOP PARTNER" },
-  "home.mostVotedServer": { id: "VOTE TERBANYAK", en: "MOST VOTED" },
-  "home.exploreServer": { id: "Jelajahi Server", en: "Explore Server" },
+  "home.partnerServer": { id: "Partner EterShop", en: "EterShop Partner" },
+  "home.mostVotedServer": { id: "Vote terbanyak", en: "Most voted" },
+  "home.exploreServer": { id: "Lihat Trailer & IP", en: "See Trailer & IP" },
   "home.trendingNow": { id: "Vote Terbanyak", en: "Most Voted" },
   "home.topRated": { id: "Server Rating Tertinggi", en: "Top Rated Servers" },
   "home.newlyAdded": { id: "Server Baru Ditambahkan", en: "Recently Added" },
@@ -123,8 +123,8 @@ export const translations = {
 
   // Footer
   "footer.tagline": {
-    id: "Platform discovery dan kurasi server Minecraft generasi modern. Temukan server impianmu, vote favoritmu, dan bangun komunitas gaming tanpa batas.",
-    en: "Modern Minecraft server discovery and curation platform. Find your dream server, vote for favorites, and build your gaming community."
+    id: "Daftar server Minecraft Indonesia yang bisa kamu tonton dulu sebelum main. Cek IP, status online, dan vote server favoritmu.",
+    en: "Indonesian Minecraft servers you can watch before you join. Check the IP, live status, and vote for your favorites."
   },
   "footer.explore": { id: "Jelajahi Server", en: "Explore Servers" },
   "footer.allServers": { id: "Semua Server", en: "All Servers" },

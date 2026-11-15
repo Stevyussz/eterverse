@@ -89,6 +89,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
   const sortOption = sortMap[sort] || sortMap.votes;
   const servers = await Server.find(query).sort(sortOption as any).limit(48).select(CARD_FIELDS).lean();
   const serialized = servers.map(toCard);
+  const hasFilters = !!(q || tag || version || platform || (sort && sort !== "votes"));
 
   // Version pills come from what listed servers actually report, newest first.
   const reported: string[] = await Server.distinct('liveStatus.version', { moderationStatus: 'APPROVED' });
@@ -111,8 +112,26 @@ export default async function DiscoverPage({ searchParams }: Props) {
         {/* Header */}
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl md:text-4xl font-display font-semibold text-white">Jelajahi Server</h1>
-          <p className="text-zinc-400 font-body text-sm">Menampilkan {servers.length} server Minecraft aktif di EterVerse.</p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-body text-zinc-400" aria-live="polite">
+            <span>
+              {servers.length >= 48 ? "48+ server" : `${servers.length} server`} ditemukan
+              {hasFilters ? " dengan filter ini" : ""}.
+            </span>
+            {hasFilters && (
+              <a href="/discover" className="font-mono text-xs text-white underline underline-offset-4 min-h-[44px] sm:min-h-0 inline-flex items-center focus-visible:outline-2 focus-visible:outline-white rounded">
+                Reset filter
+              </a>
+            )}
+          </div>
         </div>
+
+        {/* Keyboard users otherwise tab through ~20 filter pills before the first result. */}
+        <a
+          href="#hasil"
+          className="sr-only focus:not-sr-only focus:self-start focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-zinc-950"
+        >
+          Lewati ke hasil
+        </a>
 
         {/* Search & Filters */}
         <form method="GET" className="flex flex-col md:flex-row gap-3">
@@ -150,7 +169,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
         {/* Filter Rows Container */}
         <div className="flex flex-col gap-3">
           {/* Platform Pills */}
-          <div className="flex flex-wrap gap-2 items-center">
+          <div className="filter-row">
             <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">
               Edisi:
             </span>
@@ -168,7 +187,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
                 <a
                   key={p.id}
                   href={`/discover?${nextParams.toString()}`}
-                  className={`inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all ${
+                  className={`shrink-0 inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all ${
                     isActive
                       ? 'bg-white text-zinc-950 font-semibold border-white shadow-sm'
                       : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white bg-zinc-950/40'
@@ -181,13 +200,13 @@ export default async function DiscoverPage({ searchParams }: Props) {
           </div>
 
           {/* Tag Pills */}
-          <div className="flex flex-wrap gap-2 items-center">
+          <div className="filter-row">
             <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
               <FunnelSimple size={14} /> Kategori:
             </span>
             <a 
               href={`/discover?${new URLSearchParams({ ...(q && { q }), ...(platform && { platform }), ...(version && { version }), sort }).toString()}`}
-              className={`inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${!tag ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
+              className={`shrink-0 inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${!tag ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
             >
               Semua
             </a>
@@ -195,7 +214,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
               <a 
                 key={t} 
                 href={`/discover?${new URLSearchParams({ ...(q && { q }), ...(platform && { platform }), ...(version && { version }), tag: t, sort }).toString()}`}
-                className={`inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${tag?.toLowerCase() === t.toLowerCase() ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
+                className={`shrink-0 inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${tag?.toLowerCase() === t.toLowerCase() ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
               >
                 {t}
               </a>
@@ -204,7 +223,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
 
           {/* Version Pills: only shown once pinged servers have reported a version */}
           {VERSIONS.length > 0 && (
-            <div className="flex flex-wrap gap-2 items-center">
+            <div className="filter-row">
               <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Versi:</span>
               {["", ...VERSIONS].map((v) => {
                 const isActive = version === v;
@@ -220,7 +239,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
                     key={v || "all"}
                     href={href}
                     aria-current={isActive ? "true" : undefined}
-                    className={`inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${isActive ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
+                    className={`shrink-0 inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${isActive ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
                   >
                     {v || "Semua"}
                   </a>
@@ -231,14 +250,26 @@ export default async function DiscoverPage({ searchParams }: Props) {
         </div>
 
         {/* Results */}
+        <span id="hasil" tabIndex={-1} className="sr-only">Hasil pencarian</span>
         {serialized.length === 0 ? (
-          <div className="py-24 text-center text-zinc-400 font-mono border border-zinc-800/80 rounded-xl bg-zinc-950/40">
-            Tidak ada server yang ditemukan{q ? ` untuk "${q}"` : ''}. Coba kata kunci lain.
+          <div className="py-20 px-6 text-center border border-zinc-800/80 rounded-xl bg-zinc-950/80 flex flex-col items-center gap-3">
+            <MagnifyingGlass size={32} className="text-zinc-500" aria-hidden />
+            <p className="text-zinc-200 font-body">
+              Tidak ada server yang cocok{q ? ` dengan "${q}"` : ""}.
+            </p>
+            <p className="text-sm text-zinc-400">Coba kata lain, atau longgarkan filternya.</p>
+            {hasFilters && (
+              <a href="/discover" className="mt-1 inline-flex items-center min-h-[44px] px-5 rounded-md bg-white text-zinc-950 text-sm font-semibold hover:bg-zinc-200 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                Hapus semua filter
+              </a>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {serialized.map((server) => (
-              <ServerCard key={server.slug} {...server as any} />
+            {serialized.map((server, i) => (
+              <div key={server.slug} data-reveal style={{ "--reveal-i": i % 4 } as React.CSSProperties}>
+                <ServerCard {...server} />
+              </div>
             ))}
           </div>
         )}

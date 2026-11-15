@@ -93,6 +93,7 @@ export const metadata: Metadata = {
 };
 
 import { BackgroundController } from "@/components/layout/BackgroundController";
+import { RevealController } from "@/components/layout/RevealController";
 import { Footer } from "@/components/layout/Footer";
 import { WebsiteJsonLd } from "@/components/seo/JsonLdSchema";
 import { LanguageProvider } from "@/context/LanguageContext";
@@ -130,7 +131,9 @@ export default async function RootLayout({
             {children}
           </div>
           <Footer />
-          <Toaster theme="dark" position="bottom-right" />
+          {/* mobileOffset keeps toasts above the server page's sticky Copy IP / Vote bar. */}
+          <Toaster theme="dark" position="bottom-right" mobileOffset={{ bottom: 88 }} />
+          <RevealController />
         </LanguageProvider>
       </body>
     </html>

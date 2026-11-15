@@ -156,6 +156,108 @@
   }
 }
 
+/* ── Identity motif: live dot + IP chip ─────────────────────────────────────
+   The address is what a player actually takes away from a server list, so it is
+   rendered the way they will type it: mono, with a prompt caret. Cyan is reserved
+   for "live": the dot and the caret, nothing decorative. */
+.live-dot {
+  position: relative;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #52525b;
+  flex-shrink: 0;
+}
+.live-dot.is-online {
+  background: var(--color-eter-cyan);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18);
+}
+/* Pulse only where a single status is the focal point (server header), never on
+   every card: 16 endless animations keep weak GPUs busy while scrolling. */
+.live-dot.is-online.pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-eter-cyan);
+  animation: live-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes live-ping {
+  75%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+.ip-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #e4e4e7;
+  transition: border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ip-chip-caret {
+  color: var(--color-eter-cyan);
+  font-weight: 600;
+}
+.server-card:hover .ip-chip,
+.server-card:focus-visible .ip-chip {
+  border-color: rgba(34, 211, 238, 0.45);
+}
+
+/* Filter pills: one swipeable row per group on phones (wrapping produced 4-5 rows of
+   pills before the first result); wraps normally from sm up. */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-inline: -1.5rem;
+  padding-inline: 1.5rem;
+  scroll-padding-inline: 1.5rem;
+  mask-image: linear-gradient(to right, transparent 0, #000 1.5rem, #000 calc(100% - 2rem), transparent 100%);
+}
+.filter-row::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.filter-row > span:first-child {
+  flex-shrink: 0;
+}
+.scrollbar-none {
+  scrollbar-width: none;
+}
+@media (min-width: 640px) {
+  .filter-row {
+    flex-wrap: wrap;
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+    mask-image: none;
+  }
+}
+
+/* ── Scroll reveal ───────────────────────────────────────────────────────────
+   Purpose: sections below the fold arrive as you reach them, so a long list reads
+   as content appearing rather than a static wall. Opacity + transform only (no
+   layout). Content is visible by default; the hidden start state applies only once
+   the client has opted in (html.reveal-on), which it skips for reduced motion and
+   low-end phones. */
+html.reveal-on [data-reveal]:not(.is-revealed) {
+  opacity: 0;
+  transform: translateY(14px);
+}
+html.reveal-on [data-reveal] {
+  transition: opacity 500ms cubic-bezier(0.2, 0.7, 0.2, 1), transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: calc(var(--reveal-i, 0) * 70ms);
+}
+
 /* TipTap Editor Styling */
 .tiptap p.is-editor-empty:first-child::before {
   color: #71717a; /* zinc-500 */

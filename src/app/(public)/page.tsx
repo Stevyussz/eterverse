@@ -13,7 +13,12 @@ function ServerGrid({ servers, empty }: { servers: ServerCardData[]; empty: stri
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full">
       {servers.length > 0 ? (
-        servers.map((server) => <ServerCard key={server.slug} {...server} />)
+        servers.map((server, i) => (
+          // Stagger within a row of four so a row lands as one gesture, not one-by-one forever.
+          <div key={server.slug} data-reveal style={{ "--reveal-i": i % 4 } as React.CSSProperties}>
+            <ServerCard {...server} />
+          </div>
+        ))
       ) : (
         <div className="col-span-full py-20 text-center text-zinc-400 font-mono">{empty}</div>
       )}
@@ -23,7 +28,7 @@ function ServerGrid({ servers, empty }: { servers: ServerCardData[]; empty: stri
 
 function SectionHeader({ title, href, linkLabel }: { title: string; href?: string; linkLabel?: string }) {
   return (
-    <div className="flex items-end justify-between gap-4 border-b border-zinc-800/80 pb-4">
+    <div data-reveal className="flex items-end justify-between gap-4 border-b border-zinc-800/80 pb-4">
       <h2 className="text-2xl font-display font-semibold text-white">{title}</h2>
       {href && (
         <Link
@@ -56,9 +61,26 @@ export default async function Home() {
     <main className="relative min-h-screen flex flex-col items-center pt-28 md:pt-36 pb-24 px-4 sm:px-6 lg:px-24 overflow-x-clip">
 
       <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto space-y-4 w-full mb-10">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold tracking-tight text-white">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold tracking-tight text-white text-balance">
           Temukan Server Minecraft Impianmu.
         </h1>
+
+        {/* Live pulse of the directory, straight from the last status checks. */}
+        {data && data.totalApproved > 0 && (
+          <p className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-md border border-white/10 bg-black/70 px-3 py-1.5 font-mono text-xs text-zinc-300">
+            <span className={`live-dot ${data.onlineServers > 0 ? "is-online pulse" : ""}`} aria-hidden />
+            {data.onlineServers > 0 ? (
+              <>
+                <span className="text-white">{data.onlineServers.toLocaleString("id-ID")} server online</span>
+                <span aria-hidden className="text-zinc-500">·</span>
+                <span>{data.playersOnline.toLocaleString("id-ID")} pemain sedang main</span>
+              </>
+            ) : (
+              <span>{data.totalApproved.toLocaleString("id-ID")} server terdaftar, status dicek otomatis</span>
+            )}
+          </p>
+        )}
+
         <AiMatchmaker />
       </div>
 
@@ -100,7 +122,7 @@ export default async function Home() {
         )}
 
         {/* Owner acquisition: every listed server brings its own players back here. */}
-        <section className="relative overflow-hidden rounded-xl border border-amber-500/25 bg-zinc-950/90 px-6 py-10 sm:px-10 sm:py-12 flex flex-col md:flex-row md:items-center gap-8">
+        <section data-reveal className="relative overflow-hidden rounded-xl border border-amber-500/25 bg-zinc-950/90 px-6 py-10 sm:px-10 sm:py-12 flex flex-col md:flex-row md:items-center gap-8">
           <div className="flex-1 flex flex-col gap-3">
             <p className="text-xs font-mono text-amber-300">Untuk owner server</p>
             <h2 className="text-2xl sm:text-3xl font-display font-semibold text-white leading-tight">

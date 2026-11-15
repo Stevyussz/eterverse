@@ -69,7 +69,7 @@ export function AiMatchmaker() {
             disabled={isLoading}
             maxLength={200}
             enterKeyHint="search"
-            placeholder="Contoh: survival santai dengan sistem ekonomi"
+            placeholder="Ceritakan server yang kamu cari"
             className="bg-transparent border-none outline-none w-full text-white placeholder:text-zinc-500 font-body text-base sm:text-lg disabled:opacity-50"
           />
           <button

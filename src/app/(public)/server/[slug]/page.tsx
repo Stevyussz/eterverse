@@ -13,6 +13,7 @@ import { MobileStickyActionBar } from "@/components/server/MobileStickyActionBar
 import { ServerChannelTabs } from "@/components/server/ServerChannelTabs";
 import { ShareServerButton } from "@/components/server/ShareServerButton";
 import { UptimePanel } from "@/components/server/UptimePanel";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { getUptimeSummary, refreshIfStale } from "@/lib/server-status";
 import { after } from "next/server";
 import {
@@ -101,7 +102,14 @@ export default async function ServerProfilePage(props: Props) {
   // Everything passed below reaches client components and the HTML payload. The owner's
   // private WhatsApp (separate from the public socialLinks.whatsapp) was leaking there.
   const { ownerWhatsApp: _ownerWhatsApp, votifier, rejectionReason: _rejectionReason, ...publicFields } = doc;
-  const serverData: any = { ...publicFields, _id: doc._id.toString(), ownerId: doc.ownerId?.toString() };
+  const serverData: any = {
+    ...publicFields,
+    _id: doc._id.toString(),
+    ownerId: doc.ownerId?.toString(),
+    // Older documents predate the platform field; the schema default is CROSSPLAY, and the
+    // header, card and tabs disagreed about it (Java vs Java + Bedrock) until this was set.
+    platform: doc.platform || "CROSSPLAY",
+  };
   const rewardsEnabled = !!votifier?.enabled;
 
   // Fetch user's existing rating if logged in
@@ -122,7 +130,6 @@ export default async function ServerProfilePage(props: Props) {
   }
 
   const defaultBanner = "/dashboard-bg.webp";
-  const defaultLogo = "/icon-placeholder.png";
 
   const ytId = getYoutubeId(serverData.videoUrl);
   const isOnline = !!serverData.liveStatus?.isOnline;
@@ -159,9 +166,10 @@ export default async function ServerProfilePage(props: Props) {
             WebkitMaskImage: "radial-gradient(ellipse 96% 85% at 50% 35%, black 45%, transparent 95%)",
           }}
         >
-          <img 
-            src={serverData.bannerUrl || defaultBanner} 
-            alt={`${serverData.name} Banner`} 
+          <SafeImage
+            src={serverData.bannerUrl}
+            fallbackSrc={defaultBanner}
+            alt=""
             className="w-full h-full object-cover opacity-75 scale-[1.02] filter saturate-[1.15] transition-transform duration-700"
             style={{
               maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 65%, transparent 100%)",
@@ -187,15 +195,19 @@ export default async function ServerProfilePage(props: Props) {
               {/* Logo & Main Info */}
               <div className="flex items-end gap-4 sm:gap-6">
                 <div className="relative w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-2xl bg-black border-2 border-zinc-800 shadow-2xl overflow-hidden shrink-0">
-                  <img 
-                    src={serverData.logoUrl || defaultLogo} 
-                    alt={`${serverData.name} Logo`} 
+                  <SafeImage
+                    src={serverData.logoUrl}
+                    fallbackName={serverData.name}
+                    alt={`Logo ${serverData.name}`}
                     className="w-full h-full object-cover"
                   />
-                  {/* Live Online Dot Overlay */}
-                  <div className="absolute bottom-2 right-2 flex items-center justify-center">
-                    <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ring-2 ring-zinc-950 ${isOnline ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                  </div>
+                  {/* The one pulsing status on the page: this header is its focal point. */}
+                  {!isRealm && (
+                    <div className="absolute bottom-2 right-2 flex items-center justify-center rounded-full bg-zinc-950 p-1">
+                      <span className={`live-dot ${isOnline ? "is-online pulse" : ""}`} />
+                      <span className="sr-only">{isOnline ? "Online" : "Offline"}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1 pb-1">
@@ -204,24 +216,24 @@ export default async function ServerProfilePage(props: Props) {
                       {serverData.name}
                     </h1>
                     {isRealm ? (
-                      <div className="bg-purple-500/15 border border-purple-500/35 text-purple-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0 shadow-[0_0_12px_rgba(168,85,247,0.2)]">
+                      <div className="bg-purple-500/15 border border-purple-500/35 text-purple-300 font-mono text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
                         <Crown weight="fill" size={12} /> Realm
                       </div>
                     ) : serverData.platform === "CROSSPLAY" ? (
-                      <div className="bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
+                      <div className="bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 font-mono text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
                         Java + Bedrock
                       </div>
                     ) : serverData.platform === "BEDROCK" ? (
-                      <div className="bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
+                      <div className="bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 font-mono text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
                         Bedrock (MCPE)
                       </div>
                     ) : (
-                      <div className="bg-blue-500/15 border border-blue-500/35 text-blue-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
+                      <div className="bg-blue-500/15 border border-blue-500/35 text-blue-300 font-mono text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
                         Java Edition
                       </div>
                     )}
                     {serverData.isEterShopPartner && (
-                      <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
+                      <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
                         <Trophy weight="fill" size={12} /> Partner
                       </div>
                     )}

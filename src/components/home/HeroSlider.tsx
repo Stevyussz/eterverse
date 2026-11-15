@@ -4,13 +4,11 @@ import React, { useCallback, useState, useEffect, useRef } from "react";
 import { isLowEndDevice } from "@/lib/scroll-perf";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ServerCard } from "@/components/server/ServerCard";
+import { plainExcerpt } from "@/lib/text";
 import { CaretLeft, CaretRight, Star, ArrowRight } from "@phosphor-icons/react";
 import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
 import Link from "next/link";
 
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { useLanguage } from "@/context/LanguageContext";
 
 export function HeroSlider({
@@ -113,34 +111,49 @@ export function HeroSlider({
                 
                 {/* Info Side */}
                 <div className="w-full md:w-1/2 p-7 sm:p-10 md:p-14 flex flex-col justify-center min-h-[420px] md:min-h-[480px] relative z-20">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1 mb-5 w-max bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] font-mono font-semibold tracking-wider uppercase rounded-full">
-                    <Star weight="fill" size={14} className="text-amber-400" />
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 mb-5 w-max bg-amber-950/80 border border-amber-500/30 text-amber-200 text-xs font-mono rounded-md">
+                    <Star weight="fill" size={13} className="text-amber-400" aria-hidden />
                     {t(mode === "partner" ? "home.partnerServer" : "home.mostVotedServer")}
                   </div>
-                  
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-[1.1] mb-4 tracking-tight">
+
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-[1.05] mb-4 tracking-tight text-balance">
                     {server.name}
                   </h2>
-                  
-                  <div className="text-zinc-400 font-body font-light text-base sm:text-lg mb-6 max-w-md line-clamp-2 sm:line-clamp-3 leading-relaxed prose prose-invert prose-p:my-0 prose-strong:text-white prose-strong:font-semibold prose-em:text-zinc-300 prose-headings:text-white prose-headings:text-base">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {server.description}
-                    </ReactMarkdown>
+
+                  {/* Plain excerpt: raw markdown showed divider lines and repeated the name as a heading. */}
+                  <p className="text-zinc-300 font-body text-base sm:text-lg mb-6 max-w-md line-clamp-3 leading-relaxed">
+                    {plainExcerpt(server.description, 170, server.name)}
+                  </p>
+
+                  {/* What a player decides on: is it up, how busy, and the address. */}
+                  <div className="flex flex-col gap-3 mb-6 max-w-md">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-300">
+                      {server.serverType !== "REALM" && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className={`live-dot ${server.isOnline ? "is-online" : ""}`} aria-hidden />
+                          {server.isOnline ? `${(server.onlinePlayers || 0).toLocaleString("id-ID")} pemain online` : "Sedang offline"}
+                        </span>
+                      )}
+                      <span>{(server.votes || 0).toLocaleString("id-ID")} vote</span>
+                      {server.rating > 0 && <span>Rating {Number(server.rating).toFixed(1)}</span>}
+                    </div>
+                    {server.address && (
+                      <div className="ip-chip w-fit max-w-full">
+                        <span className="ip-chip-caret" aria-hidden>&gt;</span>
+                        <span className="truncate">{server.address}</span>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Mobile & Desktop Quick CTA */}
-                  <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center gap-4">
                     <Link
                       href={`/server/${server.slug}`}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-white text-zinc-950 font-medium rounded-lg text-sm hover:bg-zinc-200 transition-all duration-200 active:scale-[0.98] shadow-sm"
+                      className="group/cta inline-flex items-center gap-2 min-h-[48px] px-6 bg-white text-zinc-950 font-semibold rounded-md text-sm hover:bg-zinc-200 transition-colors duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                     >
-                      {t("home.exploreServer")} <ArrowRight size={16} weight="bold" />
+                      {t("home.exploreServer")}
+                      {/* DESIGN.md CTA: the arrow nudges on hover to signal "go to page". */}
+                      <ArrowRight size={16} weight="bold" className="transition-transform duration-300 group-hover/cta:translate-x-1" aria-hidden />
                     </Link>
-                  </div>
-                  
-                  {/* Embedded Mini ServerCard for desktop context */}
-                  <div className="hidden lg:block w-52 transform origin-left scale-90 opacity-90 hover:opacity-100 hover:scale-95 transition-all duration-smooth">
-                     <ServerCard {...server} />
                   </div>
                 </div>
                 

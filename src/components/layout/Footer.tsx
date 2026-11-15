@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Cube, DiscordLogo, EnvelopeSimple, ShieldCheck, Sparkle } from "@phosphor-icons/react";
+import { Cube, EnvelopeSimple, Sparkle } from "@phosphor-icons/react";
 import { useLanguage } from "@/context/LanguageContext";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
@@ -96,7 +96,7 @@ export function Footer() {
               <li>
                 <Link href="/dashboard/server/new" className="hover:text-white transition-colors flex items-center gap-1.5">
                   <span>{t("footer.submitServer")}</span>
-                  <span className="text-[9px] font-mono bg-white/10 px-1.5 py-0.2 rounded text-zinc-300">{t("footer.free")}</span>
+                  <span className="text-[10px] font-mono bg-white/10 px-1.5 py-0.5 rounded text-zinc-300">{t("footer.free")}</span>
                 </Link>
               </li>
               <li>
@@ -138,23 +138,8 @@ export function Footer() {
                   <span>{t("footer.contact")}</span>
                 </a>
               </li>
-              <li>
-                <a
-                  href="https://discord.gg"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors flex items-center gap-1.5"
-                >
-                  <DiscordLogo size={14} weight="fill" className="text-[#5865F2]" />
-                  <span>{t("footer.discord")}</span>
-                </a>
-              </li>
-              <li>
-                <span className="text-zinc-500 text-xs flex items-center gap-1">
-                  <ShieldCheck size={14} />
-                  {t("footer.safe")}
-                </span>
-              </li>
+              {/* Discord link returns once a real invite URL exists: "https://discord.gg" alone
+                  was a dead link. The "verified safe platform" line had nothing behind it. */}
             </ul>
           </div>
 

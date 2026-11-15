@@ -60,7 +60,8 @@ export function ServerChannelTabs({
       key: "trailer",
       label: t("server.trailer"),
       icon: <FilmStrip size={18} weight={activeTab === "trailer" ? "fill" : "regular"} />,
-      badge: server.videoUrl ? "HD" : undefined,
+      // No "HD" badge: video resolution is never checked, so it was an unbacked claim.
+      badge: undefined,
     },
     {
       key: "gallery",
