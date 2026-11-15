@@ -1,13 +1,6 @@
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://eterverse.vercel.app";
 
-// JSON.stringify does not escape "<", so an owner description containing "</script><script>"
-// would execute on every visitor's browser. Unicode-escaping < > & keeps the JSON valid and inert.
-function toSafeJsonLd(data: unknown): string {
-  return JSON.stringify(data)
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/&/g, "\\u0026");
-}
+import { toSafeJsonLd } from "@/lib/json-ld";
 
 export function JsonLdSchema({ server, ratingCount = 0 }: { server: any; ratingCount?: number }) {
   const defaultBanner = `${SITE_URL}/og-image.jpg`;

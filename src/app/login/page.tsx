@@ -6,38 +6,12 @@ type Props = {
   searchParams: Promise<{ verifyRequest?: string; callbackUrl?: string }>;
 };
 
-const SITE_ORIGINS = [process.env.NEXT_PUBLIC_SITE_URL, process.env.AUTH_URL, process.env.NEXTAUTH_URL]
-  .filter(Boolean)
-  .map((u) => {
-    try {
-      return new URL(u as string).origin;
-    } catch {
-      return null;
-    }
-  })
-  .filter(Boolean) as string[];
-
-// Internal destinations only: "//evil.com" and "/\evil.com" would be open redirects. The
-// auth middleware sends absolute same-site URLs (https://eterverse.../dashboard/server/new),
-// which are reduced to their path so owners land on the page they asked for.
-function safeCallback(raw?: string): string {
-  if (!raw) return "/dashboard";
-  if (/^https?:\/\//i.test(raw)) {
-    try {
-      const url = new URL(raw);
-      return SITE_ORIGINS.includes(url.origin) ? url.pathname + url.search : "/dashboard";
-    } catch {
-      return "/dashboard";
-    }
-  }
-  if (!raw.startsWith("/") || raw.startsWith("//") || raw.startsWith("/\\")) return "/dashboard";
-  return raw;
-}
+import { safeCallback, siteOriginsFromEnv } from "@/lib/safe-callback";
 
 export default async function LoginPage(props: Props) {
   const session = await auth();
   const searchParams = await props.searchParams;
-  const callbackUrl = safeCallback(searchParams?.callbackUrl);
+  const callbackUrl = safeCallback(searchParams?.callbackUrl, siteOriginsFromEnv());
   const isPlayerLogin = callbackUrl.startsWith("/server/");
 
   if (session) {
