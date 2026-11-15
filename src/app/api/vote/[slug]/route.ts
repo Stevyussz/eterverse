@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { headers } from 'next/headers';
 import { auth } from '@/auth';
 import connectToDatabase from '@/lib/db';
@@ -56,22 +56,21 @@ export async function POST(req: Request, { params }: Params) {
       { new: true }
     ).select('metrics.votes');
 
-    // The vote already counts; a reward failure must not turn it into an error for the player.
-    let reward: 'sent' | 'failed' | 'skipped' = 'skipped';
+    // The reward is sent after the response: an offline Minecraft server used to hold the
+    // player's vote request open for up to 4s. The outcome is logged for the owner's dashboard.
+    let reward: 'queued' | 'skipped' = 'skipped';
     const v = server.votifier;
     if (v?.enabled && v.host && v.publicKey && username) {
-      const result = await sendVotifierVote({
-        host: v.host,
-        port: v.port || 8192,
-        publicKey: v.publicKey,
-        username,
-        address: ip,
+      reward = 'queued';
+      const target = { host: v.host, port: v.port || 8192, publicKey: v.publicKey };
+      const serverId = server._id;
+      after(async () => {
+        const result = await sendVotifierVote({ ...target, username, address: ip });
+        await Server.updateOne(
+          { _id: serverId },
+          { $set: { 'votifier.lastResult': result.ok ? 'ok' : result.reason, 'votifier.lastSentAt': new Date() } }
+        ).catch(() => {});
       });
-      reward = result.ok ? 'sent' : 'failed';
-      await Server.updateOne(
-        { _id: server._id },
-        { $set: { 'votifier.lastResult': result.ok ? 'ok' : result.reason, 'votifier.lastSentAt': new Date() } }
-      ).catch(() => {});
     }
 
     return NextResponse.json({ success: true, votes: updated?.metrics?.votes ?? 0, reward });

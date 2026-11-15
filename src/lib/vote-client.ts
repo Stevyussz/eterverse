@@ -35,13 +35,9 @@ export async function submitVote(slug: string, username?: string): Promise<VoteO
     const data = await res.json().catch(() => ({}));
 
     if (res.ok) {
-      if (data.reward === "sent") {
-        toast.success("Vote masuk dan hadiah dikirim ke server.", {
-          description: `Masuk ke server sebagai ${username} untuk mengambil hadiahnya.`,
-        });
-      } else if (data.reward === "failed") {
-        toast.success("Vote masuk.", {
-          description: "Hadiah in-game belum terkirim karena server tidak merespons. Kabari owner-nya.",
+      if (data.reward === "queued") {
+        toast.success("Vote masuk. Hadiah sedang dikirim ke server.", {
+          description: `Masuk ke server sebagai ${username}. Kalau hadiah tidak muncul, kabari owner-nya.`,
         });
       } else {
         toast.success("Vote masuk. Terima kasih sudah mendukung server ini.");
