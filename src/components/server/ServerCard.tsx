@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { Users, Star, CaretUp, Trophy, Crown } from "@phosphor-icons/react";
 import Link from "next/link";
 import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
+import { isLowEndDevice, isPageScrolling, isTouchDevice, subscribeScroll } from "@/lib/scroll-perf";
 
 interface ServerCardProps {
   name: string;
@@ -38,53 +39,50 @@ export function ServerCard({
   const [isHovered, setIsHovered] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Clean up hover timeout on unmount and setup focal-zone observer on touch devices
+  // Touch devices: TikTok-style focal-zone autoplay, driven by one shared scroll listener.
   useEffect(() => {
     const currentCard = cardRef.current;
     if (!currentCard) return;
 
-    const isTouch = window.matchMedia("(pointer: coarse)").matches;
-    if (!isTouch) {
-      return () => {
-        if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-      };
-    }
-
-    // On touch devices: do NOT load/play heavy media while user is actively scrolling/swiping!
-    let isScrolling = false;
-    let scrollDebounceTimer: NodeJS.Timeout | null = null;
-
-    const handleScroll = () => {
-      isScrolling = true;
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
-      setIsHovered(false);
-      if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
-      scrollDebounceTimer = setTimeout(() => {
-        isScrolling = false;
-      }, 250);
+    const clearHoverTimer = () => {
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    // Desktop uses mouse hover; low-end phones keep the poster only (no iframe/video decode).
+    if (!isTouchDevice() || isLowEndDevice()) {
+      return clearHoverTimer;
+    }
 
-    // Focal-Zone IntersectionObserver:
-    // Only triggers when the user has settled on a specific card for at least 650ms after stopping scroll
+    let inFocalZone = false;
+
+    const schedulePlay = () => {
+      clearHoverTimer();
+      hoverTimeoutRef.current = setTimeout(() => {
+        if (inFocalZone && !isPageScrolling()) setIsHovered(true);
+      }, 650);
+    };
+
+    const unsubscribe = subscribeScroll(
+      () => {
+        clearHoverTimer();
+        setIsHovered(false);
+      },
+      () => {
+        // Previously a card that stayed in the zone during a scroll never resumed playing.
+        if (inFocalZone) schedulePlay();
+      }
+    );
+
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-            hoverTimeoutRef.current = setTimeout(() => {
-              if (!isScrolling) {
-                setIsHovered(true);
-              }
-            }, 650);
-          } else {
-            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-            setIsHovered(false);
-          }
-        });
+      ([entry]) => {
+        inFocalZone = entry.isIntersecting;
+        if (inFocalZone) {
+          schedulePlay();
+        } else {
+          clearHoverTimer();
+          setIsHovered(false);
+        }
       },
       {
         rootMargin: "-20% 0px -20% 0px",
@@ -95,16 +93,15 @@ export function ServerCard({
     observer.observe(currentCard);
 
     return () => {
-      observer.unobserve(currentCard);
-      window.removeEventListener("scroll", handleScroll);
-      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-      if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
+      observer.disconnect();
+      unsubscribe();
+      clearHoverTimer();
     };
   }, []);
 
   // Desktop mouse hover
   const handleMouseEnter = () => {
-    if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) return;
+    if (isTouchDevice()) return;
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     hoverTimeoutRef.current = setTimeout(() => {
       setIsHovered(true);
@@ -122,7 +119,7 @@ export function ServerCard({
     <Link 
       href={`/server/${slug}`}
       ref={cardRef}
-      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-xl overflow-hidden border border-zinc-800/90 bg-zinc-950 hover:border-zinc-600 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/60 [contain:paint] transform-gpu"
+      className="group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-xl overflow-hidden border border-zinc-800/90 bg-zinc-950 hover:border-zinc-600 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/60 [contain:paint] card-cv"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -143,32 +140,32 @@ export function ServerCard({
           {isEterShopPartner && (
             <div className="flex items-center gap-1.5 bg-amber-950/80 sm:bg-amber-500/15 sm:backdrop-blur-md border border-amber-500/30 px-2.5 py-1 rounded-full h-fit">
               <Trophy weight="fill" className="text-amber-400" size={12} />
-              <span className="text-[9px] font-mono font-semibold text-amber-300 tracking-wider uppercase">Partner</span>
+              <span className="text-[10px] font-mono font-semibold text-amber-300 tracking-wider uppercase">Partner</span>
             </div>
           )}
           {serverType === 'REALM' ? (
             <div className="flex items-center gap-1.5 bg-purple-950/80 sm:bg-purple-500/20 sm:backdrop-blur-md border border-purple-500/40 px-2.5 py-1 rounded-full h-fit shadow-[0_0_10px_rgba(168,85,247,0.25)]">
               <Crown weight="fill" className="text-purple-300" size={12} />
-              <span className="text-[9px] font-mono font-semibold text-purple-200 tracking-wider uppercase">Realm</span>
+              <span className="text-[10px] font-mono font-semibold text-purple-200 tracking-wider uppercase">Realm</span>
             </div>
           ) : platform === 'CROSSPLAY' ? (
             <div className="flex items-center gap-1 bg-cyan-950/80 sm:bg-cyan-500/15 sm:backdrop-blur-md border border-cyan-500/35 px-2 py-0.5 rounded-full h-fit">
-              <span className="text-[8px] sm:text-[9px] font-mono font-semibold text-cyan-300 tracking-wider uppercase">Java + Bedrock</span>
+              <span className="text-[10px] font-mono font-semibold text-cyan-300 tracking-wider uppercase">Java + Bedrock</span>
             </div>
           ) : platform === 'BEDROCK' ? (
             <div className="flex items-center gap-1 bg-emerald-950/80 sm:bg-emerald-500/15 sm:backdrop-blur-md border border-emerald-500/35 px-2 py-0.5 rounded-full h-fit">
-              <span className="text-[8px] sm:text-[9px] font-mono font-semibold text-emerald-300 tracking-wider uppercase">Bedrock</span>
+              <span className="text-[10px] font-mono font-semibold text-emerald-300 tracking-wider uppercase">Bedrock</span>
             </div>
           ) : (
             <div className="flex items-center gap-1 bg-blue-950/80 sm:bg-blue-500/15 sm:backdrop-blur-md border border-blue-500/35 px-2 py-0.5 rounded-full h-fit">
-              <span className="text-[8px] sm:text-[9px] font-mono font-semibold text-blue-300 tracking-wider uppercase">Java</span>
+              <span className="text-[10px] font-mono font-semibold text-blue-300 tracking-wider uppercase">Java</span>
             </div>
           )}
         </div>
 
         <div className="ml-auto flex flex-col gap-1.5 items-end">
            {safeTags.slice(0, 2).map((tag) => (
-             <span key={tag} className="bg-zinc-900/90 sm:bg-black/70 sm:backdrop-blur-md border border-white/10 text-[8px] sm:text-[9px] font-mono font-medium text-zinc-300 px-2 py-0.5 uppercase tracking-wider rounded-md">
+             <span key={tag} className="bg-zinc-900/90 sm:bg-black/70 sm:backdrop-blur-md border border-white/10 text-[10px] font-mono font-medium text-zinc-300 px-2 py-0.5 uppercase tracking-wider rounded-md">
                {tag}
              </span>
            ))}

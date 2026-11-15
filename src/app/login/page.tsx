@@ -3,15 +3,45 @@ import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 type Props = {
-  searchParams: Promise<{ verifyRequest?: string }>;
+  searchParams: Promise<{ verifyRequest?: string; callbackUrl?: string }>;
 };
+
+const SITE_ORIGINS = [process.env.NEXT_PUBLIC_SITE_URL, process.env.AUTH_URL, process.env.NEXTAUTH_URL]
+  .filter(Boolean)
+  .map((u) => {
+    try {
+      return new URL(u as string).origin;
+    } catch {
+      return null;
+    }
+  })
+  .filter(Boolean) as string[];
+
+// Internal destinations only: "//evil.com" and "/\evil.com" would be open redirects. The
+// auth middleware sends absolute same-site URLs (https://eterverse.../dashboard/server/new),
+// which are reduced to their path so owners land on the page they asked for.
+function safeCallback(raw?: string): string {
+  if (!raw) return "/dashboard";
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      const url = new URL(raw);
+      return SITE_ORIGINS.includes(url.origin) ? url.pathname + url.search : "/dashboard";
+    } catch {
+      return "/dashboard";
+    }
+  }
+  if (!raw.startsWith("/") || raw.startsWith("//") || raw.startsWith("/\\")) return "/dashboard";
+  return raw;
+}
 
 export default async function LoginPage(props: Props) {
   const session = await auth();
   const searchParams = await props.searchParams;
+  const callbackUrl = safeCallback(searchParams?.callbackUrl);
+  const isPlayerLogin = callbackUrl.startsWith("/server/");
 
   if (session) {
-    redirect("/dashboard");
+    redirect(callbackUrl);
   }
 
   const isVerifyRequest = searchParams?.verifyRequest === "true" || searchParams?.verifyRequest === "";
@@ -19,7 +49,7 @@ export default async function LoginPage(props: Props) {
   return (
     <main className="min-h-screen flex items-center justify-center relative px-6 z-10 pt-20 pb-20">
       
-      <div className="w-full max-w-md bg-[#050505]/90 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl flex flex-col gap-8 relative overflow-hidden">
+      <div className="w-full max-w-md bg-[#050505]/95 sm:bg-[#050505]/90 sm:backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl flex flex-col gap-8 relative overflow-hidden">
         
         {!isVerifyRequest && (
           <div className="flex flex-col items-center text-center gap-2 relative z-10">
@@ -27,16 +57,18 @@ export default async function LoginPage(props: Props) {
               Selamat Datang Kembali
             </h1>
             <p className="text-zinc-400 font-body text-sm">
-              Masuk untuk mengelola server dan memantau analitik EterVerse.
+              {isPlayerLogin
+                ? "Masuk untuk vote dan memberi rating server. Satu akun, satu vote per hari."
+                : "Masuk untuk mengelola server dan memantau analitik EterVerse."}
             </p>
           </div>
         )}
 
         {/* Animated Client Component Form */}
-        <LoginForm isVerifyRequest={isVerifyRequest} />
+        <LoginForm isVerifyRequest={isVerifyRequest} callbackUrl={callbackUrl} />
         
         {!isVerifyRequest && (
-          <p className="text-center text-xs text-zinc-500 relative z-10 mt-2 leading-relaxed">
+          <p className="text-center text-xs text-zinc-400 relative z-10 mt-2 leading-relaxed">
             Dengan masuk, Anda menyetujui Ketentuan Layanan dan Kebijakan Privasi kami.
           </p>
         )}

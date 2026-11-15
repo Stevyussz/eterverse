@@ -8,7 +8,7 @@ import {
   ListPlus, 
   Code, 
   Lightning,
-  Sparkle,
+  Gift,
   CalendarDots,
   Info,
   SignOut,
@@ -84,9 +84,8 @@ export function DashboardSidebar({ user }: SidebarProps) {
             <SidebarLink href="/dashboard/tools/widget" icon={<Code size={20} />} label="Alat Widget Status" pathname={pathname} onClick={closeSidebar} />
             <SidebarLink 
               href="/dashboard/tools/votifier" 
-              icon={<Sparkle size={20} weight="fill" className="text-cyan-400" />} 
-              label="EterReward™" 
-              badge="SOON"
+              icon={<Gift size={20} />}
+              label="Hadiah Vote"
               pathname={pathname} 
               onClick={closeSidebar} 
             />

@@ -15,7 +15,8 @@ import {
   Globe,
   FilmStrip,
   Sparkle,
-  Lightning
+  Lightning,
+  Play
 } from "@phosphor-icons/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -41,6 +42,7 @@ export function ServerChannelTabs({
   ytId,
 }: ServerChannelTabsProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
+  const [teaserLoaded, setTeaserLoaded] = useState(false);
   const { t } = useLanguage();
 
   const isOnline = !!server.liveStatus?.isOnline;
@@ -49,7 +51,8 @@ export function ServerChannelTabs({
   const rating = server.metrics?.rating || 0;
   const votes = server.metrics?.votes || 0;
   const gallery = server.galleryUrls || [];
-  const defaultBanner = "/dashboard-bg.png";
+  // webp is 258KB vs 713KB for the png it replaces
+  const defaultBanner = "/dashboard-bg.webp";
 
   const tabs: { key: TabKey; label: string; icon: React.ReactNode; badge?: string | number }[] = [
     { key: "overview", label: t("server.overview"), icon: <House size={18} weight={activeTab === "overview" ? "fill" : "regular"} /> },
@@ -305,15 +308,36 @@ export function ServerChannelTabs({
                 </div>
                 
                 <div className="aspect-video w-full rounded-xl overflow-hidden bg-black border border-zinc-800 relative">
-                  {ytId ? (
+                  {ytId && teaserLoaded ? (
                     <iframe
-                      src={`https://www.youtube.com/embed/${ytId}?autoplay=0&rel=0`}
+                      src={`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`}
                       className="w-full h-full object-cover"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       style={{ border: 0 }}
                       title="Server Preview"
                     />
+                  ) : ytId ? (
+                    // Thumbnail until tapped: the YouTube player is ~1MB of JS on page load.
+                    <button
+                      type="button"
+                      onClick={() => setTeaserLoaded(true)}
+                      aria-label={`${t("server.officialTrailer")}: ${server.name}`}
+                      className="group/play absolute inset-0 w-full h-full focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white"
+                    >
+                      <img
+                        src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover/play:opacity-100 transition-opacity"
+                      />
+                      <span className="absolute inset-0 flex items-center justify-center">
+                        <span className="w-16 h-16 rounded-full bg-black/75 border border-white/20 flex items-center justify-center text-white group-hover/play:bg-black transition-colors">
+                          <Play weight="fill" size={28} />
+                        </span>
+                      </span>
+                    </button>
                   ) : (
                     <video
                       src={server.videoUrl}
@@ -382,7 +406,6 @@ export function ServerChannelTabs({
                 <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex flex-col">
                     <span className="text-sm font-semibold text-zinc-200">{server.name} {t("server.officialTrailer")}</span>
-                    <span className="text-xs font-mono text-zinc-500">HD 1080p</span>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <DirectPlayButton 

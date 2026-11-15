@@ -39,6 +39,14 @@ export interface IServer extends Document {
   };
   ownerId?: mongoose.Types.ObjectId;
   ownerWhatsApp: string;
+  votifier?: {
+    enabled: boolean;
+    host?: string;
+    port?: number;
+    publicKey?: string;
+    lastResult?: string;
+    lastSentAt?: Date;
+  };
   createdAt: Date;
 }
 
@@ -84,6 +92,16 @@ const ServerSchema = new Schema<IServer>({
   },
   ownerId: { type: Schema.Types.ObjectId, ref: 'User' },
   ownerWhatsApp: { type: String, required: true },
+  // In-game vote rewards. Only `enabled` is public (the vote button needs it to ask for a
+  // Minecraft name); connection details load with an explicit +select in the dashboard and vote API.
+  votifier: {
+    enabled: { type: Boolean, default: false },
+    host: { type: String, default: "", select: false },
+    port: { type: Number, default: 8192, select: false },
+    publicKey: { type: String, default: "", select: false },
+    lastResult: { type: String, default: "", select: false },
+    lastSentAt: { type: Date, select: false },
+  },
   createdAt: { type: Date, default: Date.now },
 });
 

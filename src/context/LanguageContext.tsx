@@ -23,8 +23,11 @@ export const translations = {
     en: "Curated directory of the finest Minecraft servers (Java & Bedrock). Track real-time player counts, vote for your favorites, and join new communities."
   },
   "home.featuredServer": { id: "SERVER REKOMENDASI", en: "FEATURED SERVER" },
+  // Paid placement must read as paid; the fallback slot is ranked purely by votes.
+  "home.partnerServer": { id: "PARTNER ETERSHOP", en: "ETERSHOP PARTNER" },
+  "home.mostVotedServer": { id: "VOTE TERBANYAK", en: "MOST VOTED" },
   "home.exploreServer": { id: "Jelajahi Server", en: "Explore Server" },
-  "home.trendingNow": { id: "Sedang Tren Pekan Ini", en: "Trending This Week" },
+  "home.trendingNow": { id: "Vote Terbanyak", en: "Most Voted" },
   "home.topRated": { id: "Server Rating Tertinggi", en: "Top Rated Servers" },
   "home.newlyAdded": { id: "Server Baru Ditambahkan", en: "Recently Added" },
   "home.viewAll": { id: "Lihat Semua Server →", en: "View All Servers →" },

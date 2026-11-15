@@ -1,9 +1,19 @@
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://eterverse.vercel.app";
 
-export function JsonLdSchema({ server }: { server: any }) {
-  const ratingValue = Number(server.metrics?.rating || 5).toFixed(1);
-  const reviewCount = Math.max(1, Number(server.metrics?.votes || 1));
+// JSON.stringify does not escape "<", so an owner description containing "</script><script>"
+// would execute on every visitor's browser. Unicode-escaping < > & keeps the JSON valid and inert.
+function toSafeJsonLd(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+}
+
+export function JsonLdSchema({ server, ratingCount = 0 }: { server: any; ratingCount?: number }) {
   const defaultBanner = `${SITE_URL}/og-image.jpg`;
+  // Google treats invented ratings as spammy structured data (manual action risk). Only
+  // real ratings are published: the old fallback claimed 5.0 and counted votes as reviews.
+  const hasRatings = ratingCount > 0 && Number(server.metrics?.rating) > 0;
 
   const schema = {
     "@context": "https://schema.org",
@@ -18,13 +28,15 @@ export function JsonLdSchema({ server }: { server: any }) {
     screenshot: server.galleryUrls?.length > 0 ? server.galleryUrls : [server.bannerUrl || defaultBanner],
     description: server.description || `Server Minecraft ${server.name}. Main sekarang dengan IP ${server.ipAddress}.`,
     url: `${SITE_URL}/server/${server.slug}`,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: ratingValue,
-      bestRating: "5",
-      worstRating: "1",
-      ratingCount: reviewCount,
-    },
+    ...(hasRatings && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: Number(server.metrics.rating).toFixed(1),
+        bestRating: "5",
+        worstRating: "1",
+        ratingCount,
+      },
+    }),
     offers: {
       "@type": "Offer",
       price: "0",
@@ -41,7 +53,7 @@ export function JsonLdSchema({ server }: { server: any }) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: toSafeJsonLd(schema) }}
     />
   );
 }
@@ -66,7 +78,7 @@ export function WebsiteJsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: toSafeJsonLd(schema) }}
     />
   );
 }

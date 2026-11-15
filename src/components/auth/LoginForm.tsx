@@ -5,10 +5,17 @@ import { DiscordLogo, EnvelopeSimple, PaperPlaneRight } from "@phosphor-icons/re
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 
-export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boolean }) {
+export function LoginForm({
+  isVerifyRequest = false,
+  callbackUrl = "/dashboard",
+}: {
+  isVerifyRequest?: boolean;
+  callbackUrl?: string;
+}) {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showVerify, setShowVerify] = useState(isVerifyRequest);
+  const [emailError, setEmailError] = useState("");
 
   if (showVerify) {
     return (
@@ -47,7 +54,7 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
       
       <button
         type="button"
-        onClick={() => signIn("discord", { callbackUrl: "/dashboard" })}
+        onClick={() => signIn("discord", { callbackUrl })}
         className="w-full flex items-center justify-center gap-3 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium py-3.5 px-4 rounded-lg transition-colors duration-200"
       >
         <DiscordLogo size={22} weight="fill" />
@@ -64,12 +71,18 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
         onSubmit={async (e) => {
           e.preventDefault();
           setIsSubmitting(true);
-          const res = await signIn("resend", { email, callbackUrl: "/dashboard", redirect: false });
-          if (res?.ok && !res?.error) {
-            setShowVerify(true);
-          } else {
-            setIsSubmitting(false);
+          setEmailError("");
+          try {
+            const res = await signIn("resend", { email, callbackUrl, redirect: false });
+            if (res?.ok && !res?.error) {
+              setShowVerify(true);
+              return;
+            }
+            setEmailError("Tautan gagal dikirim. Cek alamat email, atau masuk dengan Discord.");
+          } catch {
+            setEmailError("Koneksi bermasalah. Coba lagi sebentar lagi.");
           }
+          setIsSubmitting(false);
         }}
         className="flex flex-col gap-4"
       >
@@ -82,6 +95,8 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            aria-label="Alamat email"
+            autoComplete="email"
             placeholder="kamu@contoh.com"
             className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-3 pl-10 pr-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all duration-200"
           />
@@ -93,6 +108,11 @@ export function LoginForm({ isVerifyRequest = false }: { isVerifyRequest?: boole
         >
           {isSubmitting ? "Mengirim..." : "Kirim Tautan Masuk"}
         </button>
+        {emailError && (
+          <p role="alert" className="text-sm text-rose-400 text-center">
+            {emailError}
+          </p>
+        )}
       </form>
 
     </motion.div>

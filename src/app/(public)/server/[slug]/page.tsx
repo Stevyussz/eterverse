@@ -11,6 +11,7 @@ import { VoteButton } from "@/components/server/VoteButton";
 import { ImpressionTracker } from "@/components/server/ImpressionTracker";
 import { MobileStickyActionBar } from "@/components/server/MobileStickyActionBar";
 import { ServerChannelTabs } from "@/components/server/ServerChannelTabs";
+import { ShareServerButton } from "@/components/server/ShareServerButton";
 import {
   Users,
   Trophy,
@@ -30,20 +31,21 @@ type Props = {
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params;
   await connectToDatabase();
-  const server = await Server.findOne({ slug: params.slug }).lean();
+  const server = await Server.findOne({ slug: params.slug, moderationStatus: 'APPROVED' }).lean();
 
   if (!server) {
-    return { title: "Server Tidak Ditemukan | EterVerse" };
+    return { title: "Server Tidak Ditemukan | EterVerse", robots: { index: false } };
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://eterverse.vercel.app";
   const ogImage = server.bannerUrl || server.logoUrl || `${baseUrl}/og-image.jpg`;
   const onlineCount = server.liveStatus?.currentPlayers || 0;
-  const rating = server.metrics?.rating ? server.metrics.rating.toFixed(1) : "5.0";
+  // No invented "5.0" for unrated servers: the rating appears only once players have rated.
+  const ratingText = server.metrics?.rating ? ` Rating ${server.metrics.rating.toFixed(1)}/5.` : "";
 
   return {
     title: `${server.name} - Server Minecraft Indonesia | IP & Status`,
-    description: `Main di ${server.name} sekarang! IP: ${server.ipAddress}. Status: ${server.liveStatus?.isOnline ? 'Online' : 'Offline'} (${onlineCount} pemain online). Rating: ⭐ ${rating}/5.0. Temukan info lengkap dan vote di EterVerse.`,
+    description: `Main di ${server.name} sekarang! IP: ${server.ipAddress}. Status: ${server.liveStatus?.isOnline ? 'Online' : 'Offline'} (${onlineCount} pemain online).${ratingText} Temukan info lengkap dan vote di EterVerse.`,
     keywords: [
       server.name,
       `${server.name} minecraft`,
@@ -60,7 +62,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       url: `${baseUrl}/server/${server.slug}`,
       siteName: "EterVerse",
       title: `${server.name} - Server Minecraft Indonesia`,
-      description: `IP: ${server.ipAddress} | ${onlineCount} pemain online | Rating ⭐ ${rating}/5.0. Gabung dan main sekarang!`,
+      description: `IP: ${server.ipAddress} | ${onlineCount} pemain online.${ratingText} Gabung dan main sekarang!`,
       images: [
         {
           url: ogImage,
@@ -73,7 +75,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: `${server.name} - Server Minecraft Indonesia`,
-      description: `IP: ${server.ipAddress} | ${onlineCount} pemain online | Rating ⭐ ${rating}/5.0.`,
+      description: `IP: ${server.ipAddress} | ${onlineCount} pemain online.${ratingText}`,
       images: [ogImage],
     },
   };
@@ -84,20 +86,30 @@ export default async function ServerProfilePage(props: Props) {
   const session = await auth();
 
   await connectToDatabase();
-  let serverData: any = await Server.findOne({ slug: params.slug }).lean();
+  const doc: any = await Server.findOne({ slug: params.slug }).lean();
 
-  if (!serverData) {
+  // Pending, rejected and banned servers were publicly reachable by slug.
+  // The owner can still preview their own listing while it waits for review.
+  const isOwner = !!session?.user?.id && doc?.ownerId?.toString() === session.user.id;
+  if (!doc || (doc.moderationStatus !== 'APPROVED' && !isOwner)) {
     notFound();
   }
+
+  // Everything passed below reaches client components and the HTML payload. The owner's
+  // private WhatsApp (separate from the public socialLinks.whatsapp) was leaking there.
+  const { ownerWhatsApp: _ownerWhatsApp, votifier, rejectionReason: _rejectionReason, ...publicFields } = doc;
+  const serverData: any = { ...publicFields, _id: doc._id.toString(), ownerId: doc.ownerId?.toString() };
+  const rewardsEnabled = !!votifier?.enabled;
 
   // Fetch user's existing rating if logged in
   let userRating = 0;
   if (session?.user?.id) {
-    const existing = await Rating.findOne({ serverId: serverData._id, userId: session.user.id }).lean();
+    const existing = await Rating.findOne({ serverId: doc._id, userId: session.user.id }).lean();
     userRating = existing?.stars ?? 0;
   }
+  const ratingCount = await Rating.countDocuments({ serverId: doc._id });
 
-  const defaultBanner = "/dashboard-bg.png";
+  const defaultBanner = "/dashboard-bg.webp";
   const defaultLogo = "/icon-placeholder.png";
 
   const ytId = getYoutubeId(serverData.videoUrl);
@@ -114,8 +126,16 @@ export default async function ServerProfilePage(props: Props) {
 
   return (
     <>
-      <JsonLdSchema server={serverData} />
-      <ImpressionTracker slug={serverData.slug} />
+      {serverData.moderationStatus === 'APPROVED' ? (
+        <>
+          <JsonLdSchema server={serverData} ratingCount={ratingCount} />
+          <ImpressionTracker slug={serverData.slug} />
+        </>
+      ) : (
+        <div role="status" className="fixed top-20 inset-x-0 z-40 mx-auto w-fit max-w-[calc(100%-2rem)] rounded-md border border-amber-500/40 bg-zinc-950 px-4 py-2 text-xs font-mono text-amber-300">
+          Pratinjau owner: server ini belum tampil untuk publik ({String(serverData.moderationStatus).toLowerCase()}).
+        </div>
+      )}
       
       {/* Cinematic Server Banner with 100% Organic Transparent Ambient Blend */}
       <div className="relative w-full h-[280px] sm:h-[380px] md:h-[460px] bg-transparent overflow-hidden select-none pointer-events-none">
@@ -231,7 +251,12 @@ export default async function ServerProfilePage(props: Props) {
 
               {/* Action Buttons (Desktop & Tablet) */}
               <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-end flex-wrap">
-                <VoteButton slug={serverData.slug} initialVotes={votes} />
+                <VoteButton
+                  slug={serverData.slug}
+                  initialVotes={votes}
+                  serverName={serverData.name}
+                  rewardsEnabled={rewardsEnabled}
+                />
                 {(isRealm || serverData.platform !== "JAVA") && (
                   <DirectPlayButton 
                     serverName={serverData.name}
@@ -241,11 +266,20 @@ export default async function ServerProfilePage(props: Props) {
                     realmCode={serverData.realmCode}
                   />
                 )}
-                <CopyIPButton 
+                <CopyIPButton
                   ipAddress={serverData.ipAddress}
                   port={serverData.port}
                   isRealm={isRealm}
                   realmCode={serverData.realmCode}
+                />
+                <ShareServerButton
+                  serverName={serverData.name}
+                  slug={serverData.slug}
+                  address={
+                    isRealm
+                      ? `realms.gg/${String(serverData.realmCode || "").replace(/^https?:\/\/realms\.gg\//, "")}`
+                      : `${serverData.ipAddress}${serverData.port && serverData.port !== 25565 ? `:${serverData.port}` : ""}`
+                  }
                 />
               </div>
 
@@ -327,6 +361,7 @@ export default async function ServerProfilePage(props: Props) {
         currentPlayers={currentPlayers}
         slug={serverData.slug}
         initialVotes={votes}
+        rewardsEnabled={rewardsEnabled}
       />
     </>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
+import { isLowEndDevice } from "@/lib/scroll-perf";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ServerCard } from "@/components/server/ServerCard";
@@ -12,10 +13,61 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useLanguage } from "@/context/LanguageContext";
 
-export function HeroSlider({ servers }: { servers: any[] }) {
+export function HeroSlider({
+  servers,
+  mode = "partner",
+}: {
+  servers: any[];
+  mode?: "partner" | "mostVoted";
+}) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { t } = useLanguage();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const [mediaAllowed, setMediaAllowed] = useState(false);
+
+  // The YouTube player only mounts once the main thread is idle after hydration, never on
+  // low-end phones, and unmounts once the hero is scrolled out of view.
+  useEffect(() => {
+    if (isLowEndDevice()) return;
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(() => setMediaAllowed(true), { timeout: 2500 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const timer = setTimeout(() => setMediaAllowed(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+      threshold: 0.25,
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Rotating slides off-screen still remounts iframes and repaints; pause while hidden.
+  // Only resume what we paused: with a single slide the plugin skips init, and calling
+  // play() on it throws (undefined delay) and takes the whole page down.
+  const pausedByViewportRef = useRef(false);
+  useEffect(() => {
+    const autoplay = emblaApi?.plugins()?.autoplay;
+    if (!autoplay) return;
+    if (!inView && autoplay.isPlaying()) {
+      autoplay.stop();
+      pausedByViewportRef.current = true;
+    } else if (inView && pausedByViewportRef.current) {
+      pausedByViewportRef.current = false;
+      autoplay.play();
+    }
+  }, [emblaApi, inView]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -49,10 +101,10 @@ export function HeroSlider({ servers }: { servers: any[] }) {
   );
 
   return (
-    <div className="relative w-full max-w-6xl mx-auto group mt-8">
-      
+    <div ref={rootRef} className="relative w-full max-w-6xl mx-auto group mt-8">
+
       {/* Slider Viewport */}
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#050505]/80 backdrop-blur-xl shadow-2xl" ref={emblaRef}>
+      <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#050505]/95 sm:bg-[#050505]/80 sm:backdrop-blur-xl shadow-2xl" ref={emblaRef}>
         <div className="flex">
           {servers.map((server, idx) => {
             const isActive = idx === selectedIndex;
@@ -63,7 +115,7 @@ export function HeroSlider({ servers }: { servers: any[] }) {
                 <div className="w-full md:w-1/2 p-7 sm:p-10 md:p-14 flex flex-col justify-center min-h-[420px] md:min-h-[480px] relative z-20">
                   <div className="inline-flex items-center gap-2 px-3.5 py-1 mb-5 w-max bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] font-mono font-semibold tracking-wider uppercase rounded-full">
                     <Star weight="fill" size={14} className="text-amber-400" />
-                    {t("home.featuredServer")}
+                    {t(mode === "partner" ? "home.partnerServer" : "home.mostVotedServer")}
                   </div>
                   
                   <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-[1.1] mb-4 tracking-tight">
@@ -99,7 +151,9 @@ export function HeroSlider({ servers }: { servers: any[] }) {
                   <BackgroundVideo
                     videoUrl={server.videoUrl}
                     fallbackImage={server.bannerUrl}
-                    autoPlay={isActive}
+                    // isHovered defaults to true, which made every slide's native video play at once
+                    isHovered={false}
+                    autoPlay={isActive && inView && mediaAllowed}
                     className="absolute inset-0 w-full h-full object-cover opacity-75"
                   />
                 </div>
@@ -111,18 +165,22 @@ export function HeroSlider({ servers }: { servers: any[] }) {
 
       {/* Pagination Dots */}
       {servers.length > 1 && (
-        <div className="flex items-center justify-center gap-2.5 mt-4 z-20">
-          {servers.map((_, idx) => (
+        <div className="flex items-center justify-center mt-2 z-20">
+          {servers.map((server, idx) => (
+            // 44px hit area around the 8px dot: the bare dot was nearly impossible to tap.
             <button
               key={idx}
               onClick={() => scrollTo(idx)}
-              aria-label={`Go to slide ${idx + 1}`}
-              className={`h-2 rounded-full transition-all duration-200 ${
-                idx === selectedIndex
-                  ? "w-7 bg-white"
-                  : "w-2 bg-white/20 hover:bg-white/40"
-              }`}
-            />
+              aria-label={`Slide ${idx + 1}: ${server.name}`}
+              aria-current={idx === selectedIndex ? "true" : undefined}
+              className="h-11 px-1.5 flex items-center justify-center group/dot focus-visible:outline-2 focus-visible:outline-white rounded-md"
+            >
+              <span
+                className={`block h-2 rounded-full transition-[width,background-color] duration-200 ${
+                  idx === selectedIndex ? "w-7 bg-white" : "w-2 bg-white/30 group-hover/dot:bg-white/50"
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}
@@ -131,7 +189,7 @@ export function HeroSlider({ servers }: { servers: any[] }) {
       <button 
         onClick={scrollPrev}
         aria-label="Previous Slide"
-        className="absolute left-2 md:-left-6 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full bg-black/60 border border-white/10 text-zinc-300 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-smooth hover:bg-zinc-900 hover:text-white hover:scale-105 z-30 shadow-xl"
+        className={`${servers.length > 1 ? "hidden md:flex" : "hidden"} absolute md:-left-6 top-1/2 -translate-y-1/2 w-11 h-11 items-center justify-center rounded-full bg-black/60 border border-white/10 text-zinc-300 backdrop-blur-md opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-white transition-all duration-smooth hover:bg-zinc-900 hover:text-white hover:scale-105 z-30 shadow-xl`}
       >
         <CaretLeft size={22} weight="bold" />
       </button>
@@ -139,7 +197,7 @@ export function HeroSlider({ servers }: { servers: any[] }) {
       <button 
         onClick={scrollNext}
         aria-label="Next Slide"
-        className="absolute right-2 md:-right-6 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full bg-black/60 border border-white/10 text-zinc-300 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-smooth hover:bg-zinc-900 hover:text-white hover:scale-105 z-30 shadow-xl"
+        className={`${servers.length > 1 ? "hidden md:flex" : "hidden"} absolute md:-right-6 top-1/2 -translate-y-1/2 w-11 h-11 items-center justify-center rounded-full bg-black/60 border border-white/10 text-zinc-300 backdrop-blur-md opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-white transition-all duration-smooth hover:bg-zinc-900 hover:text-white hover:scale-105 z-30 shadow-xl`}
       >
         <CaretRight size={22} weight="bold" />
       </button>

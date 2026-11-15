@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Check, Copy, Users, CaretUp, GameController, Crown } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
+import { submitVote } from "@/lib/vote-client";
+import { VoteUsernameDialog } from "@/components/server/VoteUsernameDialog";
 
 interface MobileStickyActionBarProps {
   serverName: string;
@@ -17,6 +19,7 @@ interface MobileStickyActionBarProps {
   currentPlayers?: number;
   slug: string;
   initialVotes?: number;
+  rewardsEnabled?: boolean;
 }
 
 export function MobileStickyActionBar({
@@ -31,7 +34,9 @@ export function MobileStickyActionBar({
   currentPlayers = 0,
   slug,
   initialVotes = 0,
+  rewardsEnabled = false,
 }: MobileStickyActionBarProps) {
+  const [askName, setAskName] = useState(false);
   const [copied, setCopied] = useState(false);
   const [votes, setVotes] = useState(initialVotes);
   const [voted, setVoted] = useState(false);
@@ -66,25 +71,23 @@ export function MobileStickyActionBar({
     }
   };
 
-  const handleQuickVote = async () => {
+  const handleQuickVote = () => {
     if (voted || voting) return;
+    if (rewardsEnabled) setAskName(true);
+    else sendVote();
+  };
+
+  const sendVote = async (username?: string) => {
+    setAskName(false);
     setVoting(true);
-    try {
-      const res = await fetch(`/api/vote/${slug}`, { method: "POST" });
-      const data = await res.json();
-      if (res.ok) {
-        setVotes(data.votes);
-        setVoted(true);
-        toast.success("Vote berhasil ditambahkan! 🌟");
-      } else if (data.error === "already_voted") {
-        setVoted(true);
-        toast.info("Anda sudah vote server ini dalam 24 jam terakhir.");
-      }
-    } catch {
-      toast.error("Gagal melakukan vote.");
-    } finally {
-      setVoting(false);
+    const outcome = await submitVote(slug, username);
+    if (outcome.kind === "voted") {
+      setVotes(outcome.votes);
+      setVoted(true);
+    } else if (outcome.kind === "already") {
+      setVoted(true);
     }
+    setVoting(false);
   };
 
   return (
@@ -130,8 +133,8 @@ export function MobileStickyActionBar({
         <button
           onClick={handleQuickVote}
           disabled={voting || voted}
-          aria-label="Vote Server"
-          className={`h-9 px-2.5 rounded-lg border text-xs font-mono font-semibold flex items-center gap-1 transition-all ${
+          aria-label={rewardsEnabled ? "Vote server dan dapat hadiah in-game" : "Vote server"}
+          className={`h-11 min-w-[44px] px-2.5 rounded-lg border text-xs font-mono font-semibold flex items-center gap-1 transition-all ${
             voted
               ? "bg-white/10 border-white/20 text-white"
               : "bg-zinc-900/60 border-zinc-800 text-zinc-300 hover:bg-zinc-800 active:scale-95"
@@ -148,7 +151,7 @@ export function MobileStickyActionBar({
             href={directLink}
             target={isRealm ? "_blank" : undefined}
             rel={isRealm ? "noopener noreferrer" : undefined}
-            className={`h-9 px-2.5 sm:px-3 rounded-lg font-mono font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all text-white border ${
+            className={`h-11 px-2.5 sm:px-3 rounded-lg font-mono font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all text-white border ${
               isRealm
                 ? "bg-purple-600 hover:bg-purple-500 border-purple-400/40"
                 : "bg-emerald-600 hover:bg-emerald-500 border-emerald-400/40"
@@ -156,14 +159,15 @@ export function MobileStickyActionBar({
             title={isRealm ? "Masuk Realm" : "Main Langsung di Minecraft"}
           >
             <GameController size={15} weight="fill" />
-            <span className="hidden xs:inline">{isRealm ? "Realm" : "Main"}</span>
+            <span className="hidden min-[380px]:inline">{isRealm ? "Realm" : "Main"}</span>
           </a>
         )}
 
         {/* Copy IP / Realm Code CTA */}
         <button
           onClick={handleCopy}
-          className={`h-9 px-3 rounded-lg font-mono font-medium text-xs transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95 ${
+          aria-label={isRealm ? "Salin kode Realm" : `Salin IP ${fullAddress}`}
+          className={`h-11 px-3 rounded-lg font-mono font-medium text-xs transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95 ${
             copied
               ? "bg-emerald-600 text-white"
               : "bg-white text-zinc-950 hover:bg-zinc-200"
@@ -177,13 +181,17 @@ export function MobileStickyActionBar({
             </>
           ) : (
             <>
-              <Copy size={14} />
-              <span className="hidden xs:inline">{isRealm ? (lang === "id" ? "Kode" : "Code") : t("server.copyIp")}</span>
+              <Copy size={14} aria-hidden />
+              {/* `xs:` is not a Tailwind v4 breakpoint, so this label was hidden on every phone. */}
+              <span>{isRealm ? (lang === "id" ? "Kode" : "Code") : t("server.copyIp")}</span>
             </>
           )}
         </button>
       </div>
 
+      {askName && (
+        <VoteUsernameDialog serverName={serverName} onSubmit={sendVote} onClose={() => setAskName(false)} />
+      )}
     </div>
   );
 }

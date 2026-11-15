@@ -23,7 +23,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative z-20 border-t border-zinc-800/80 bg-[#09090b]/75 backdrop-blur-xl text-zinc-400 font-body text-sm overflow-hidden pb-28 lg:pb-12 pt-16">
+    <footer className="relative z-20 border-t border-zinc-800/80 bg-[#09090b]/95 sm:bg-[#09090b]/75 sm:backdrop-blur-xl text-zinc-400 font-body text-sm overflow-hidden pb-28 lg:pb-12 pt-16">
       
       {/* Subtle top hair-line light highlight */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[1px] bg-gradient-to-r from-transparent via-zinc-700/50 to-transparent" />

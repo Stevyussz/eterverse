@@ -10,7 +10,8 @@ export async function GET(request: Request, props: { params: Promise<{ slug: str
     const slug = params.slug;
 
     await connectToDatabase();
-    const server = await Server.findOne({ slug }).lean();
+    // Banned servers must not keep advertising through an embedded EterVerse widget.
+    const server = await Server.findOne({ slug, moderationStatus: 'APPROVED' }).lean();
 
     if (!server) {
       return new ImageResponse(
