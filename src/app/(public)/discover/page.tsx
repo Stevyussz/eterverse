@@ -5,6 +5,7 @@ import { ServerCard } from "@/components/server/ServerCard";
 import { MagnifyingGlass, FunnelSimple } from "@phosphor-icons/react/dist/ssr";
 import { escapeRegex, safeSearchTerm } from "@/lib/text";
 import { CARD_FIELDS, toCard } from "@/lib/server-queries";
+import { majorVersions } from "@/lib/mc-status";
 
 export const dynamic = 'force-dynamic';
 
@@ -43,13 +44,15 @@ export const metadata: Metadata = {
 
 const ALL_TAGS = ["Survival", "SMP", "Lifesteal", "Economy", "Creative", "PvP", "RPG", "Skyblock", "Factions", "Mini-Games"];
 
-type Props = { searchParams: Promise<{ q?: string; tag?: string; sort?: string; platform?: string }> };
+type Props = { searchParams: Promise<{ q?: string; tag?: string; sort?: string; platform?: string; version?: string }> };
 
 export default async function DiscoverPage({ searchParams }: Props) {
   const params = await searchParams;
   const q = safeSearchTerm(params.q);
   const tag = safeSearchTerm(params.tag, 30);
   const { sort = "votes", platform } = params;
+  // Only "1.NN" is accepted; it is matched against the version the server itself reports.
+  const version = /^1\.\d{1,2}$/.test(params.version || "") ? params.version! : "";
 
   await connectToDatabase();
 
@@ -64,6 +67,10 @@ export default async function DiscoverPage({ searchParams }: Props) {
   }
   if (tag) {
     query.tags = { $in: [new RegExp(`^${escapeRegex(tag)}$`, 'i')] };
+  }
+  if (version) {
+    // "1.2" must not match "1.21": require a non-digit (or end) after the minor number.
+    query['liveStatus.version'] = { $regex: `(^|[^0-9.])${escapeRegex(version)}(\\.|[^0-9]|$)` };
   }
   if (platform === 'REALM') {
     query.serverType = 'REALM';
@@ -82,6 +89,12 @@ export default async function DiscoverPage({ searchParams }: Props) {
   const sortOption = sortMap[sort] || sortMap.votes;
   const servers = await Server.find(query).sort(sortOption as any).limit(48).select(CARD_FIELDS).lean();
   const serialized = servers.map(toCard);
+
+  // Version pills come from what listed servers actually report, newest first.
+  const reported: string[] = await Server.distinct('liveStatus.version', { moderationStatus: 'APPROVED' });
+  const VERSIONS = Array.from(new Set(reported.filter(Boolean).flatMap(majorVersions)))
+    .sort((a, b) => Number(b.split('.')[1]) - Number(a.split('.')[1]))
+    .slice(0, 8);
 
   const PLATFORMS = [
     { id: "", label: "Semua Platform" },
@@ -105,6 +118,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
         <form method="GET" className="flex flex-col md:flex-row gap-3">
           {platform && <input type="hidden" name="platform" value={platform} />}
           {tag && <input type="hidden" name="tag" value={tag} />}
+          {version && <input type="hidden" name="version" value={version} />}
           <div className="relative flex-1">
             <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
             <input
@@ -145,6 +159,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
               const nextParams = new URLSearchParams({
                 ...(q && { q }),
                 ...(tag && { tag }),
+                ...(version && { version }),
                 ...(sort && { sort }),
                 ...(p.id && { platform: p.id })
               });
@@ -171,7 +186,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
               <FunnelSimple size={14} /> Kategori:
             </span>
             <a 
-              href={`/discover?${new URLSearchParams({ ...(q && { q }), ...(platform && { platform }), sort }).toString()}`} 
+              href={`/discover?${new URLSearchParams({ ...(q && { q }), ...(platform && { platform }), ...(version && { version }), sort }).toString()}`}
               className={`inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${!tag ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
             >
               Semua
@@ -179,13 +194,40 @@ export default async function DiscoverPage({ searchParams }: Props) {
             {ALL_TAGS.map(t => (
               <a 
                 key={t} 
-                href={`/discover?${new URLSearchParams({ ...(q && { q }), ...(platform && { platform }), tag: t, sort }).toString()}`} 
+                href={`/discover?${new URLSearchParams({ ...(q && { q }), ...(platform && { platform }), ...(version && { version }), tag: t, sort }).toString()}`}
                 className={`inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${tag?.toLowerCase() === t.toLowerCase() ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
               >
                 {t}
               </a>
             ))}
           </div>
+
+          {/* Version Pills: only shown once pinged servers have reported a version */}
+          {VERSIONS.length > 0 && (
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Versi:</span>
+              {["", ...VERSIONS].map((v) => {
+                const isActive = version === v;
+                const href = `/discover?${new URLSearchParams({
+                  ...(q && { q }),
+                  ...(platform && { platform }),
+                  ...(tag && { tag }),
+                  ...(v && { version: v }),
+                  sort,
+                }).toString()}`;
+                return (
+                  <a
+                    key={v || "all"}
+                    href={href}
+                    aria-current={isActive ? "true" : undefined}
+                    className={`inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${isActive ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
+                  >
+                    {v || "Semua"}
+                  </a>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Results */}

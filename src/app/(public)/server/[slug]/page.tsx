@@ -12,6 +12,9 @@ import { ImpressionTracker } from "@/components/server/ImpressionTracker";
 import { MobileStickyActionBar } from "@/components/server/MobileStickyActionBar";
 import { ServerChannelTabs } from "@/components/server/ServerChannelTabs";
 import { ShareServerButton } from "@/components/server/ShareServerButton";
+import { UptimePanel } from "@/components/server/UptimePanel";
+import { getUptimeSummary, refreshIfStale } from "@/lib/server-status";
+import { after } from "next/server";
 import {
   Users,
   Trophy,
@@ -109,6 +112,15 @@ export default async function ServerProfilePage(props: Props) {
   }
   const ratingCount = await Rating.countDocuments({ serverId: doc._id });
 
+  // A missing history must never break the page; the panel just stays hidden.
+  const uptime = doc.serverType === "REALM" ? null : await getUptimeSummary(serverData._id).catch(() => null);
+
+  // Status used to come only from a once-a-day cron. Refresh in the background after the
+  // response when it is older than 5 minutes; the next visitor sees the fresh numbers.
+  if (doc.moderationStatus === "APPROVED") {
+    after(() => refreshIfStale(serverData._id).catch((err) => console.error("status refresh failed:", err)));
+  }
+
   const defaultBanner = "/dashboard-bg.webp";
   const defaultLogo = "/icon-placeholder.png";
 
@@ -197,15 +209,15 @@ export default async function ServerProfilePage(props: Props) {
                       </div>
                     ) : serverData.platform === "CROSSPLAY" ? (
                       <div className="bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
-                        ⚡ Java + Bedrock
+                        Java + Bedrock
                       </div>
                     ) : serverData.platform === "BEDROCK" ? (
                       <div className="bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
-                        📱 Bedrock (MCPE)
+                        Bedrock (MCPE)
                       </div>
                     ) : (
                       <div className="bg-blue-500/15 border border-blue-500/35 text-blue-300 font-mono text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shrink-0">
-                        ☕ Java Edition
+                        Java Edition
                       </div>
                     )}
                     {serverData.isEterShopPartner && (
@@ -336,6 +348,8 @@ export default async function ServerProfilePage(props: Props) {
             )}
 
           </div>
+
+          {!isRealm && <UptimePanel summary={uptime} version={serverData.liveStatus?.version} />}
 
           {/* YouTube-Style Categorized Tabs */}
           <ServerChannelTabs

@@ -1,6 +1,6 @@
 import net from "node:net";
-import dns from "node:dns/promises";
 import crypto from "node:crypto";
+import { resolvePublicHost } from "@/lib/net-guard";
 
 // Votifier v1 (RSA) sender. NuVotifier still accepts v1, and every reward plugin
 // (VotingPlugin, SuperbVote, GAListener) listens to it, so one protocol covers them all.
@@ -35,31 +35,6 @@ export function normalizePublicKey(raw: string): string | null {
   }
 }
 
-function isPrivateAddress(ip: string): boolean {
-  if (net.isIPv4(ip)) {
-    const [a, b] = ip.split(".").map(Number);
-    return (
-      a === 0 || a === 10 || a === 127 ||
-      (a === 100 && b >= 64 && b <= 127) || // CGNAT
-      (a === 169 && b === 254) ||           // link-local, cloud metadata
-      (a === 172 && b >= 16 && b <= 31) ||
-      (a === 192 && b === 168) ||
-      a >= 224
-    );
-  }
-  const v6 = ip.toLowerCase();
-  if (v6.startsWith("::ffff:")) return isPrivateAddress(v6.slice(7));
-  return v6 === "::1" || v6 === "::" || v6.startsWith("fc") || v6.startsWith("fd") || v6.startsWith("fe80");
-}
-
-// Owners type the host, so without this the vote endpoint could be aimed at internal services.
-async function resolvePublicHost(host: string): Promise<string | null> {
-  if (net.isIP(host)) return isPrivateAddress(host) ? null : host;
-  const records = await dns.lookup(host, { all: true });
-  if (!records.length || records.some((r) => isPrivateAddress(r.address))) return null;
-  return records[0].address;
-}
-
 export async function sendVotifierVote(opts: {
   host: string;
   port: number;
@@ -72,7 +47,7 @@ export async function sendVotifierVote(opts: {
 
   let target: string | null;
   try {
-    target = await resolvePublicHost(opts.host.trim());
+    target = await resolvePublicHost(opts.host);
   } catch {
     return { ok: false, reason: "dns" };
   }

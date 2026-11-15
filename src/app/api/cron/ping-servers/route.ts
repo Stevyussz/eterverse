@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
+import { checkAndStore } from '@/lib/server-status';
 import { Server } from '@/models/Server';
-import util from 'minecraft-server-util';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
+
+// Pings at a time: mcstatus.io is a shared public API, and a burst of every server at once
+// would also blow past maxDuration on a large directory.
+const CONCURRENCY = 8;
 
 export async function GET(req: Request) {
   // Vercel Cron attaches Authorization: Bearer <CRON_SECRET>
@@ -15,57 +19,29 @@ export async function GET(req: Request) {
 
   try {
     await connectToDatabase();
-    
-    // Fetch approved dedicated servers (exclude Realms, as Realms are cloud-managed and don't expose TCP sockets)
-    const servers = await Server.find({
-      moderationStatus: 'APPROVED',
-      serverType: { $ne: 'REALM' }
-    }).select('_id ipAddress port').lean();
-    
+
+    // Realms are cloud-managed and expose no status endpoint.
+    const servers = await Server.find({ moderationStatus: 'APPROVED', serverType: { $ne: 'REALM' } })
+      .select('_id ipAddress port platform serverType')
+      .sort({ 'liveStatus.lastChecked': 1 }) // stalest first, in case the run is cut short
+      .lean();
+
     if (!servers.length) {
       return NextResponse.json({ message: 'No servers to ping' });
     }
 
-    const updates = await Promise.all(servers.map(async (srv: any) => {
-      try {
-        const isBedrock = srv.port === 19132;
-        const result = isBedrock
-          ? await util.statusBedrock(srv.ipAddress, srv.port, { timeout: 3500 })
-          : await util.status(srv.ipAddress, srv.port || 25565, { timeout: 3500 });
-
-        return {
-          id: srv._id,
-          status: {
-            isOnline: true,
-            currentPlayers: result.players.online,
-            maxPlayers: result.players.max,
-            lastChecked: new Date(),
-          }
-        };
-      } catch (err) {
-        return {
-          id: srv._id,
-          status: {
-            isOnline: false,
-            currentPlayers: 0,
-            maxPlayers: 0,
-            lastChecked: new Date(),
-          }
-        };
+    let online = 0;
+    let failed = 0;
+    for (let i = 0; i < servers.length; i += CONCURRENCY) {
+      const batch = servers.slice(i, i + CONCURRENCY);
+      const results = await Promise.allSettled(batch.map((s: any) => checkAndStore(s)));
+      for (const r of results) {
+        if (r.status === 'rejected') failed++;
+        else if (r.value?.online) online++;
       }
-    }));
+    }
 
-    // Bulk write updates to MongoDB
-    const bulkOps = updates.map(update => ({
-      updateOne: {
-        filter: { _id: update.id },
-        update: { $set: { liveStatus: update.status } }
-      }
-    }));
-
-    await Server.bulkWrite(bulkOps);
-
-    return NextResponse.json({ success: true, updatedCount: updates.length });
+    return NextResponse.json({ success: true, checked: servers.length, online, failed });
   } catch (error) {
     console.error('Cron ping error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

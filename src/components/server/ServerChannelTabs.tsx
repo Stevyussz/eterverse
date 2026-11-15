@@ -196,7 +196,7 @@ export function ServerChannelTabs({
                   <div className="flex flex-col justify-between gap-3 p-4 bg-zinc-950/60 border border-zinc-800/80 rounded-xl">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-mono text-blue-300 uppercase tracking-wider mb-1">
-                        ☕ Java Edition (PC)
+                        Java Edition (PC)
                       </span>
                       <span className="text-base sm:text-lg font-mono font-bold text-white tracking-tight break-all">
                         {server.ipAddress}
@@ -217,7 +217,7 @@ export function ServerChannelTabs({
                     <div className="flex flex-col">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-mono text-emerald-300 uppercase tracking-wider mb-1">
-                          📱 Bedrock / MCPE (HP & PC)
+                          Bedrock / MCPE (HP & PC)
                         </span>
                         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-800/60 text-cyan-300 font-semibold">
                           Port: {server.bedrockPort || 19132}

@@ -35,6 +35,7 @@ export interface IServer extends Document {
     isOnline: boolean;
     currentPlayers: number;
     maxPlayers: number;
+    version?: string;
     lastChecked: Date;
   };
   ownerId?: mongoose.Types.ObjectId;
@@ -88,6 +89,7 @@ const ServerSchema = new Schema<IServer>({
     isOnline: { type: Boolean, default: false },
     currentPlayers: { type: Number, default: 0 },
     maxPlayers: { type: Number, default: 0 },
+    version: { type: String, default: "" }, // as reported by the server ping, e.g. "Paper 1.21.4"
     lastChecked: { type: Date, default: Date.now },
   },
   ownerId: { type: Schema.Types.ObjectId, ref: 'User' },
