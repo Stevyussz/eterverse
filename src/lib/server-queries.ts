@@ -1,4 +1,4 @@
-import { unstable_cache } from "next/cache";
+import { unstable_cache, revalidateTag } from "next/cache";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 
@@ -45,6 +45,15 @@ export function toCard(s: any): ServerCardData {
     rating: s.metrics?.rating || 0,
     tags: Array.isArray(s.tags) ? s.tags : [],
   };
+}
+
+/**
+ * Call from every server action that approves, bans, edits or deletes a server, so the
+ * cached homepage drops it immediately instead of after the 60s window. expire: 0 makes the
+ * next visit refetch rather than serve the stale list (a banned server must vanish).
+ */
+export function invalidateServerLists() {
+  revalidateTag("servers", { expire: 0 });
 }
 
 export interface HomeData {

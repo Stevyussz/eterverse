@@ -3,6 +3,7 @@ import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import { redirect, notFound } from "next/navigation";
 import { ServerEditForm } from "./ServerEditForm";
+import { invalidateServerLists } from "@/lib/server-queries";
 import mongoose from "mongoose";
 
 type Props = { params: Promise<{ id: string }> };
@@ -41,7 +42,7 @@ export default async function EditServerPage({ params }: Props) {
 
     let ipAddress = (formData.get("ipAddress") as string) || "";
     let port = parseInt(formData.get("port") as string) || 25565;
-    let bedrockPort = parseInt(formData.get("bedrockPort") as string) || existing.bedrockPort || 19132;
+    const bedrockPort = parseInt(formData.get("bedrockPort") as string) || existing.bedrockPort || 19132;
 
     if (serverType === 'REALM') {
       ipAddress = realmCode ? `realms.gg/${realmCode}` : (existing.ipAddress || "realms.gg");
@@ -90,6 +91,8 @@ export default async function EditServerPage({ params }: Props) {
       moderationStatus: 'PENDING',
     });
 
+    // Back to PENDING means it must leave the cached public lists now.
+    invalidateServerLists();
     redirect("/dashboard");
   }
 

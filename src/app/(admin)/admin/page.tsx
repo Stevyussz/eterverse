@@ -3,6 +3,8 @@ import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import { CheckCircle, XCircle, Shield, ArrowSquareOut, WhatsappLogo, Trash, Star, PencilSimple, Sparkle } from "@phosphor-icons/react/dist/ssr";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/admin-guard";
+import { invalidateServerLists } from "@/lib/server-queries";
 import Link from "next/link";
 
 export default async function AdminModerationPage() {
@@ -14,52 +16,64 @@ export default async function AdminModerationPage() {
 
   async function approveServer(formData: FormData) {
     "use server";
+    await requireAdmin();
     const serverId = formData.get("serverId") as string;
     await connectToDatabase();
     await Server.findByIdAndUpdate(serverId, { moderationStatus: 'APPROVED', rejectionReason: "" });
     revalidatePath("/admin");
+    invalidateServerLists();
   }
 
   async function rejectServer(formData: FormData) {
     "use server";
+    await requireAdmin();
     const serverId = formData.get("serverId") as string;
     const rejectionReason = formData.get("rejectionReason") as string || "Tidak memenuhi standar kualifikasi EterVerse.";
     await connectToDatabase();
     await Server.findByIdAndUpdate(serverId, { moderationStatus: 'REJECTED', rejectionReason });
     revalidatePath("/admin");
+    invalidateServerLists();
   }
 
   async function banServer(formData: FormData) {
     "use server";
+    await requireAdmin();
     const serverId = formData.get("serverId") as string;
     await connectToDatabase();
     await Server.findByIdAndUpdate(serverId, { moderationStatus: 'BANNED' });
     revalidatePath("/admin");
+    invalidateServerLists();
   }
 
   async function unbanServer(formData: FormData) {
     "use server";
+    await requireAdmin();
     const serverId = formData.get("serverId") as string;
     await connectToDatabase();
     await Server.findByIdAndUpdate(serverId, { moderationStatus: 'APPROVED', rejectionReason: "" });
     revalidatePath("/admin");
+    invalidateServerLists();
   }
 
   async function deleteServer(formData: FormData) {
     "use server";
+    await requireAdmin();
     const serverId = formData.get("serverId") as string;
     await connectToDatabase();
     await Server.findByIdAndDelete(serverId);
     revalidatePath("/admin");
+    invalidateServerLists();
   }
 
   async function togglePartner(formData: FormData) {
     "use server";
+    await requireAdmin();
     const serverId = formData.get("serverId") as string;
     const isPartner = formData.get("isPartner") === "true";
     await connectToDatabase();
     await Server.findByIdAndUpdate(serverId, { isEterShopPartner: !isPartner });
     revalidatePath("/admin");
+    invalidateServerLists();
     revalidatePath("/"); // Revalidate homepage as it affects hero slider
   }
 

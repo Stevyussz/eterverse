@@ -4,6 +4,7 @@ import { Server } from "@/models/Server";
 import Link from "next/link";
 import { ChartLineUp, Users, CursorClick, Clock, CheckCircle, Eye, PencilSimple, WarningCircle, Sparkle, ArrowRight, CalendarDots, Info } from "@phosphor-icons/react/dist/ssr";
 import { revalidatePath } from "next/cache";
+import { invalidateServerLists } from "@/lib/server-queries";
 import { DeleteServerButton } from "@/components/dashboard/DeleteServerButton";
 
 export default async function DashboardOverview() {
@@ -31,6 +32,7 @@ export default async function DashboardOverview() {
     // Only delete if the user owns it
     await Server.findOneAndDelete({ _id: serverId, ownerId: session.user.id });
     revalidatePath("/dashboard");
+    invalidateServerLists();
   }
 
   return (

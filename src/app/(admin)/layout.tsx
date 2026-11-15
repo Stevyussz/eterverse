@@ -1,15 +1,15 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { isAdminEmail } from "@/lib/admin-guard";
 import { ShieldCheck, Database, SignOut } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
-  // Basic admin protection check
-  const adminEmails = process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS.split(",") : [];
-  if (adminEmails.length > 0 && (!session?.user?.email || !adminEmails.includes(session.user.email))) {
-    redirect("/dashboard"); // Redirect non-admins to normal dashboard
+  // Fail closed: the old check let everyone in whenever ADMIN_EMAILS was unset or empty.
+  if (!isAdminEmail(session?.user?.email)) {
+    redirect("/dashboard");
   }
 
   return (

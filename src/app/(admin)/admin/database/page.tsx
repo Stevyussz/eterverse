@@ -2,6 +2,8 @@ import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import { Trophy, Prohibit, Trash } from "@phosphor-icons/react/dist/ssr";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/admin-guard";
+import { invalidateServerLists } from "@/lib/server-queries";
 
 export default async function AdminDatabasePage() {
   await connectToDatabase();
@@ -10,30 +12,36 @@ export default async function AdminDatabasePage() {
 
   async function togglePartner(formData: FormData) {
     "use server";
+    await requireAdmin();
     const serverId = formData.get("serverId") as string;
     const currentStatus = formData.get("currentStatus") === "true";
     await connectToDatabase();
     await Server.findByIdAndUpdate(serverId, { isEterShopPartner: !currentStatus });
     revalidatePath("/admin/database");
     revalidatePath("/");
+    invalidateServerLists();
   }
 
   async function banServer(formData: FormData) {
     "use server";
+    await requireAdmin();
     const serverId = formData.get("serverId") as string;
     await connectToDatabase();
     await Server.findByIdAndUpdate(serverId, { moderationStatus: 'BANNED' });
     revalidatePath("/admin/database");
     revalidatePath("/");
+    invalidateServerLists();
   }
 
   async function deleteServer(formData: FormData) {
     "use server";
+    await requireAdmin();
     const serverId = formData.get("serverId") as string;
     await connectToDatabase();
     await Server.findByIdAndDelete(serverId);
     revalidatePath("/admin/database");
     revalidatePath("/");
+    invalidateServerLists();
   }
 
   return (
