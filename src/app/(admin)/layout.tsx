@@ -1,8 +1,9 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { isAdminEmail } from "@/lib/admin-guard";
-import { ShieldCheck, Database, SignOut } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
+import { ShieldCheck, ArrowLeft } from "@phosphor-icons/react/dist/ssr";
+import { isAdminEmail } from "@/lib/admin-guard";
+import { AdminNav } from "@/components/layout/AdminNav";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -13,49 +14,36 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex min-h-screen pt-20 relative z-10">
-      
-      {/* Admin Sidebar */}
-      <aside className="w-64 fixed inset-y-0 left-0 pt-24 pb-8 px-6 bg-[#090000]/90 backdrop-blur-md border-r border-eter-red/10 flex flex-col justify-between">
+    <div className="min-h-screen pt-20 relative z-10">
+      {/* Phones: tab bar under the site navbar. The fixed 256px sidebar used to squeeze
+          the admin pages to a sliver on mobile. */}
+      <div className="md:hidden sticky top-[68px] z-30 bg-[#09090b] border-b border-zinc-800">
+        <AdminNav variant="tabs" />
+      </div>
+
+      <aside className="hidden md:flex w-64 fixed inset-y-0 left-0 pt-24 pb-8 px-5 bg-[#09090b]/95 border-r border-zinc-800 flex-col justify-between">
         <div className="flex flex-col gap-8">
           <div className="flex items-center gap-3 px-2">
-            <div className="w-10 h-10 rounded-sm border-l-2 border-l-eter-red border-y border-r border-y-white/10 border-r-white/10 flex items-center justify-center bg-eter-red/10">
-               <ShieldCheck size={24} className="text-eter-red" weight="fill" />
+            <div className="w-10 h-10 rounded-lg border border-rose-500/30 bg-rose-500/10 flex items-center justify-center">
+              <ShieldCheck size={22} className="text-rose-300" weight="fill" aria-hidden />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-display font-medium text-eter-starlight truncate w-32">Admin Panel</span>
-              <span className="text-[10px] font-mono text-eter-red uppercase tracking-widest">System</span>
+              <span className="text-sm font-display font-semibold text-white">Panel Admin</span>
+              <span className="text-xs text-zinc-400 truncate max-w-[140px]">{session?.user?.email}</span>
             </div>
           </div>
-
-          <nav className="flex flex-col gap-2">
-            <SidebarLink href="/admin" icon={<ShieldCheck size={20} />} label="Moderation Queue" />
-            <SidebarLink href="/admin/database" icon={<Database size={20} />} label="Server Database" />
-          </nav>
+          <AdminNav variant="sidebar" />
         </div>
 
-        <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2.5 rounded-sm text-sm font-medium text-zinc-500 hover:text-eter-starlight transition-colors duration-smooth border border-transparent">
-          Return to Dashboard
+        <Link
+          href="/dashboard"
+          className="min-h-[44px] flex items-center gap-3 px-4 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors focus-visible:outline-2 focus-visible:outline-white"
+        >
+          <ArrowLeft size={18} aria-hidden /> Kembali ke dashboard
         </Link>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 ml-64 p-8 min-h-screen">
-        {children}
-      </main>
-      
+      <main className="md:ml-64 px-6 py-6 md:p-8 min-w-0">{children}</main>
     </div>
-  );
-}
-
-function SidebarLink({ href, icon, label }: { href: string, icon: React.ReactNode, label: string }) {
-  return (
-    <Link 
-      href={href} 
-      className="flex items-center gap-3 px-4 py-2.5 rounded-sm text-sm font-medium transition-colors duration-smooth border border-transparent text-zinc-400 hover:text-eter-starlight hover:bg-white/5 hover:border-white/10"
-    >
-      {icon}
-      {label}
-    </Link>
   );
 }

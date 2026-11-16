@@ -7,7 +7,8 @@ export default async function OwnerLayout({ children }: { children: React.ReactN
 
   // Middleware also protects this, but just to be safe:
   if (!session?.user) {
-    redirect("/api/auth/signin");
+    // Our own login page (the bare next-auth page was unstyled and lost the destination).
+    redirect("/login?callbackUrl=/dashboard");
   }
 
   return (

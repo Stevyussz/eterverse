@@ -2,6 +2,7 @@
 
 import { GameController, ArrowSquareOut } from "@phosphor-icons/react";
 import { useLanguage } from "@/context/LanguageContext";
+import { trackJoinIntent } from "@/lib/track-click";
 
 interface DirectPlayButtonProps {
   serverName: string;
@@ -28,6 +29,7 @@ export function DirectPlayButton({
 
     return (
       <a
+        onClick={trackJoinIntent}
         href={realmUrl}
         target="_blank"
         rel="noopener noreferrer"
@@ -49,6 +51,7 @@ export function DirectPlayButton({
 
   return (
     <a
+      onClick={trackJoinIntent}
       href={directLink}
       className={`font-mono text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 border select-none active:scale-[0.97] shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400/40 shadow-sm hover:shadow-[0_2px_16px_rgba(16,185,129,0.35)] ${className}`}
       title={lang === "id" ? `Buka langsung di Minecraft (${ipAddress}:${effectivePort})` : `Launch directly in Minecraft (${ipAddress}:${effectivePort})`}

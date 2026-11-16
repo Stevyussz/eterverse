@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, Copy } from "@phosphor-icons/react";
 import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "sonner";
+import { trackJoinIntent } from "@/lib/track-click";
 
 interface CopyIPButtonProps {
   ipAddress: string;
@@ -29,6 +30,7 @@ export function CopyIPButton({
     : (port && port !== 25565 ? `${ipAddress}:${port}` : ipAddress);
 
   const handleCopy = async () => {
+    trackJoinIntent();
     try {
       await navigator.clipboard.writeText(fullAddress);
       setCopied(true);

@@ -1,35 +1,28 @@
-import { Lightning, ShieldCheck, Trophy, Sparkle } from "@phosphor-icons/react/dist/ssr";
+import { Lightning, Trophy, Star } from "@phosphor-icons/react/dist/ssr";
 
 export default function EterShopBoostPage() {
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-10 animate-fade-in pb-20 mt-4">
       
       <div className="text-center flex flex-col items-center">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 mb-6 bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] font-mono font-semibold tracking-wider uppercase rounded-full">
-          <Sparkle weight="fill" size={14} className="text-amber-400" />
-          PROGRAM PARTNER PREMIUM
-        </div>
-        <h1 className="text-3xl md:text-5xl font-display font-bold text-white">EterShop Partner</h1>
-        <p className="text-base sm:text-lg text-zinc-400 font-body mt-4 max-w-2xl leading-relaxed">
-          Tingkatkan jumlah pemain servermu. Dapatkan badge eksklusif Partner, prioritas algoritma rekomendasi, dan tampil di rotating banner utama.
+        <h1 className="text-3xl md:text-5xl font-display font-bold text-white">Partner EterShop</h1>
+        {/* Only benefits the code actually delivers. "AI priority" was listed but the
+            matchmaker never ranked partners higher. */}
+        <p className="text-base sm:text-lg text-zinc-300 font-body mt-4 max-w-2xl leading-relaxed">
+          Server partner tampil di banner utama beranda dan memakai badge Partner di setiap kartu dan halaman servernya.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
-        <FeatureCard 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
+        <FeatureCard
           icon={<Trophy size={28} className="text-amber-400" />}
-          title="Badge Partner Emas"
-          desc="Tampilkan status Partner resmi pada kartu server di seluruh platform."
+          title="Badge Partner"
+          desc="Badge emas di kartu server, hasil pencarian, dan halaman servermu. Berlabel jelas sebagai partner."
         />
-        <FeatureCard 
-          icon={<Lightning size={28} className="text-amber-400" />}
-          title="Prioritas AI"
-          desc="Prioritas teratas pada algoritma pencocokan server cerdas."
-        />
-        <FeatureCard 
-          icon={<ShieldCheck size={28} className="text-amber-400" />}
-          title="Slot Hero Slider"
-          desc="Spot rotasi terdepan pada banner halaman utama EterVerse."
+        <FeatureCard
+          icon={<Star size={28} className="text-amber-400" />}
+          title="Slot banner beranda"
+          desc="Servermu masuk rotasi banner paling atas di beranda, lengkap dengan trailer dan IP."
         />
       </div>
 

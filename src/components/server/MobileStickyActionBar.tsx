@@ -5,6 +5,7 @@ import { Check, Copy, Users, CaretUp, GameController, Crown } from "@phosphor-ic
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { submitVote } from "@/lib/vote-client";
+import { trackJoinIntent } from "@/lib/track-click";
 import { VoteUsernameDialog } from "@/components/server/VoteUsernameDialog";
 import { SafeImage } from "@/components/ui/SafeImage";
 
@@ -54,6 +55,7 @@ export function MobileStickyActionBar({
     : `minecraft://?addExternalServer=${encodeURIComponent(serverName)}|${ipAddress}:${port || 19132}`;
 
   const handleCopy = async () => {
+    trackJoinIntent();
     try {
       await navigator.clipboard.writeText(fullAddress);
       setCopied(true);
@@ -146,6 +148,7 @@ export function MobileStickyActionBar({
         {(isRealm || platform !== 'JAVA') && (
           <a
             href={directLink}
+            onClick={trackJoinIntent}
             target={isRealm ? "_blank" : undefined}
             rel={isRealm ? "noopener noreferrer" : undefined}
             className={`h-11 px-2.5 sm:px-3 rounded-lg font-mono font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all text-white border ${

@@ -14,6 +14,7 @@ import { ServerChannelTabs } from "@/components/server/ServerChannelTabs";
 import { ShareServerButton } from "@/components/server/ShareServerButton";
 import { UptimePanel } from "@/components/server/UptimePanel";
 import { SafeImage } from "@/components/ui/SafeImage";
+import { isAdminEmail } from "@/lib/admin-guard";
 import { getUptimeSummary, refreshIfStale } from "@/lib/server-status";
 import { after } from "next/server";
 import {
@@ -95,7 +96,9 @@ export default async function ServerProfilePage(props: Props) {
   // Pending, rejected and banned servers were publicly reachable by slug.
   // The owner can still preview their own listing while it waits for review.
   const isOwner = !!session?.user?.id && doc?.ownerId?.toString() === session.user.id;
-  if (!doc || (doc.moderationStatus !== 'APPROVED' && !isOwner)) {
+  // Admins need the same preview to judge a submission from the moderation queue.
+  const canPreview = isOwner || isAdminEmail(session?.user?.email);
+  if (!doc || (doc.moderationStatus !== 'APPROVED' && !canPreview)) {
     notFound();
   }
 
@@ -152,7 +155,8 @@ export default async function ServerProfilePage(props: Props) {
         </>
       ) : (
         <div role="status" className="fixed top-20 inset-x-0 z-40 mx-auto w-fit max-w-[calc(100%-2rem)] rounded-md border border-amber-500/40 bg-zinc-950 px-4 py-2 text-xs font-mono text-amber-300">
-          Pratinjau owner: server ini belum tampil untuk publik ({String(serverData.moderationStatus).toLowerCase()}).
+          Pratinjau {isOwner ? "owner" : "admin"}: server ini belum tampil untuk publik (
+          {serverData.moderationStatus === "PENDING" ? "menunggu review" : serverData.moderationStatus === "BANNED" ? "dibekukan" : "ditolak"}).
         </div>
       )}
       

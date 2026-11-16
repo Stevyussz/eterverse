@@ -1,269 +1,310 @@
-import { auth } from "@/auth";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
-import { CheckCircle, XCircle, Shield, ArrowSquareOut, WhatsappLogo, Trash, Star, PencilSimple, Sparkle } from "@phosphor-icons/react/dist/ssr";
-import { revalidatePath } from "next/cache";
-import { requireAdmin } from "@/lib/admin-guard";
-import { invalidateServerLists } from "@/lib/server-queries";
 import Link from "next/link";
+import {
+  CheckCircle,
+  XCircle,
+  Prohibit,
+  ArrowSquareOut,
+  WhatsappLogo,
+  Trash,
+  Star,
+  ArrowsClockwise,
+  FilmStrip,
+  ArrowCounterClockwise,
+} from "@phosphor-icons/react/dist/ssr";
+import { displayAddress } from "@/lib/server-queries";
+import { plainExcerpt } from "@/lib/text";
+import { SafeImage } from "@/components/ui/SafeImage";
+import { ConfirmActionButton } from "@/components/dashboard/ConfirmActionButton";
+import { SubmitButton } from "@/components/dashboard/SubmitButton";
+import {
+  approveServer,
+  rejectServer,
+  banServer,
+  unbanServer,
+  deleteServer,
+  togglePartner,
+  pingServerNow,
+} from "./actions";
+
+const BTN = "inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-md text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-white";
+
+function timeAgo(date?: Date | string) {
+  if (!date) return "";
+  const diff = Date.now() - new Date(date).getTime();
+  const m = Math.round(diff / 60000);
+  if (m < 60) return `${Math.max(1, m)} menit lalu`;
+  const h = Math.round(m / 60);
+  if (h < 48) return `${h} jam lalu`;
+  return `${Math.round(h / 24)} hari lalu`;
+}
+
+function waLink(raw?: string) {
+  const digits = (raw || "").replace(/\D/g, "");
+  if (!digits) return null;
+  // Indonesian numbers are often typed as 08xx; wa.me needs the country code.
+  return `https://wa.me/${digits.startsWith("0") ? `62${digits.slice(1)}` : digits}`;
+}
 
 export default async function AdminModerationPage() {
   await connectToDatabase();
-  
-  const pendingServers = await Server.find({ moderationStatus: 'PENDING' }).lean();
-  const approvedServers = await Server.find({ moderationStatus: 'APPROVED' }).lean();
-  const rejectedServers = await Server.find({ moderationStatus: { $in: ['REJECTED', 'BANNED'] as any } }).lean();
 
-  async function approveServer(formData: FormData) {
-    "use server";
-    await requireAdmin();
-    const serverId = formData.get("serverId") as string;
-    await connectToDatabase();
-    await Server.findByIdAndUpdate(serverId, { moderationStatus: 'APPROVED', rejectionReason: "" });
-    revalidatePath("/admin");
-    invalidateServerLists();
-  }
-
-  async function rejectServer(formData: FormData) {
-    "use server";
-    await requireAdmin();
-    const serverId = formData.get("serverId") as string;
-    const rejectionReason = formData.get("rejectionReason") as string || "Tidak memenuhi standar kualifikasi EterVerse.";
-    await connectToDatabase();
-    await Server.findByIdAndUpdate(serverId, { moderationStatus: 'REJECTED', rejectionReason });
-    revalidatePath("/admin");
-    invalidateServerLists();
-  }
-
-  async function banServer(formData: FormData) {
-    "use server";
-    await requireAdmin();
-    const serverId = formData.get("serverId") as string;
-    await connectToDatabase();
-    await Server.findByIdAndUpdate(serverId, { moderationStatus: 'BANNED' });
-    revalidatePath("/admin");
-    invalidateServerLists();
-  }
-
-  async function unbanServer(formData: FormData) {
-    "use server";
-    await requireAdmin();
-    const serverId = formData.get("serverId") as string;
-    await connectToDatabase();
-    await Server.findByIdAndUpdate(serverId, { moderationStatus: 'APPROVED', rejectionReason: "" });
-    revalidatePath("/admin");
-    invalidateServerLists();
-  }
-
-  async function deleteServer(formData: FormData) {
-    "use server";
-    await requireAdmin();
-    const serverId = formData.get("serverId") as string;
-    await connectToDatabase();
-    await Server.findByIdAndDelete(serverId);
-    revalidatePath("/admin");
-    invalidateServerLists();
-  }
-
-  async function togglePartner(formData: FormData) {
-    "use server";
-    await requireAdmin();
-    const serverId = formData.get("serverId") as string;
-    const isPartner = formData.get("isPartner") === "true";
-    await connectToDatabase();
-    await Server.findByIdAndUpdate(serverId, { isEterShopPartner: !isPartner });
-    revalidatePath("/admin");
-    invalidateServerLists();
-    revalidatePath("/"); // Revalidate homepage as it affects hero slider
-  }
-
-  const renderServerRow = (server: any, actions: React.ReactNode) => (
-    <div key={server._id} className={`bg-[#09090b]/80 border-l-2 border-y border-r border-white/10 p-5 sm:p-6 flex flex-col md:flex-row justify-between gap-6 rounded-sm shadow-sm ${server.isEterShopPartner ? 'border-l-eter-gold' : 'border-l-eter-cyan'}`}>
-      <div className="flex flex-col gap-2 flex-1 min-w-0">
-        <div className="flex items-center gap-3 flex-wrap">
-          <h3 className="text-xl font-display font-semibold text-eter-starlight">{server.name}</h3>
-          
-          <div className="flex gap-2 items-center">
-            <span className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border ${
-              server.moderationStatus === 'APPROVED' ? 'text-green-400 border-green-500/30 bg-green-500/10' :
-              server.moderationStatus === 'REJECTED' ? 'text-red-400 border-red-500/30 bg-red-500/10' :
-              server.moderationStatus === 'BANNED' ? 'text-orange-400 border-orange-500/30 bg-orange-500/10' :
-              'text-zinc-400 border-white/20 bg-white/5'
-            }`}>{server.moderationStatus}</span>
-            
-            {server.isEterShopPartner && (
-              <span className="text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border text-eter-gold border-eter-gold/30 bg-eter-gold/10 flex items-center gap-1">
-                <Star weight="fill" /> Partner
-              </span>
-            )}
-          </div>
-        </div>
-        <span className="text-sm font-mono text-eter-cyan break-all">{server.ipAddress}</span>
-        <p className="text-sm text-zinc-400 mt-1 line-clamp-2">{server.description}</p>
-      </div>
-
-      <div className="flex flex-col gap-2 justify-start border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6 shrink-0 w-full md:w-48">
-        <div className="grid grid-cols-2 gap-2 mb-2">
-          {server.slug && (
-            <Link href={`/server/${server.slug}`} target="_blank" className="flex items-center gap-1.5 bg-white/5 text-zinc-400 border border-white/10 hover:bg-white/10 px-2 py-1.5 rounded-sm text-[11px] font-medium transition-colors w-full justify-center">
-              <ArrowSquareOut size={14} /> View
-            </Link>
-          )}
-          {server.ownerWhatsApp && (
-            <a href={`https://wa.me/${server.ownerWhatsApp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 px-2 py-1.5 rounded-sm text-[11px] font-medium transition-colors w-full justify-center">
-              <WhatsappLogo size={14} weight="fill" /> Chat
-            </a>
-          )}
-        </div>
-        {actions}
-      </div>
-    </div>
-  );
+  const [pending, approved, blocked] = await Promise.all([
+    Server.find({ moderationStatus: "PENDING" }).sort({ createdAt: 1 }).lean(),
+    Server.find({ moderationStatus: "APPROVED" }).sort({ "metrics.votes": -1 }).lean(),
+    Server.find({ moderationStatus: { $in: ["REJECTED", "BANNED"] as any } }).sort({ createdAt: -1 }).lean(),
+  ]);
+  const onlineNow = approved.filter((s: any) => s.liveStatus?.isOnline).length;
 
   return (
-    <div className="max-w-6xl mx-auto flex flex-col gap-10 animate-fade-in pb-20">
-      
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {[
-          { label: "Pending", value: pendingServers.length, color: "text-yellow-400" },
-          { label: "Approved", value: approvedServers.length, color: "text-green-400" },
-          { label: "Rejected / Banned", value: rejectedServers.length, color: "text-red-400" },
-        ].map(s => (
-          <div key={s.label} className="bg-[#09090b]/80 border border-white/10 rounded-sm p-4 text-center shadow-md">
-            <p className={`text-3xl font-display font-bold ${s.color}`}>{s.value}</p>
-            <p className="text-xs font-mono text-zinc-500 mt-1 uppercase tracking-widest">{s.label}</p>
-          </div>
-        ))}
-      </div>
+    <div className="max-w-5xl mx-auto flex flex-col gap-10 animate-fade-in pb-20">
+      <header className="flex flex-col gap-1">
+        <h1 className="text-2xl md:text-3xl font-display font-semibold text-white">Moderasi</h1>
+        <p className="text-sm text-zinc-400">Tinjau server baru, kelola partner, dan tangani pelanggaran.</p>
+      </header>
 
-      {/* EterReward Feature Roadmap for Admin */}
-      <div className="bg-gradient-to-r from-cyan-950/30 via-[#09090b] to-[#09090b] border border-cyan-500/30 p-5 rounded-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-md bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
-            <Sparkle size={20} weight="fill" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
-                Fitur Eksklusif • Segera Hadir
-              </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-semibold uppercase">
-                EterReward™
-              </span>
-            </div>
-            <p className="text-sm font-semibold text-white mt-0.5">EterReward™: In-Game Real-Time Sync Engine</p>
-            <p className="text-xs text-zinc-400 font-body">Protokol TCP socket &amp; RSA 2048-bit encryption untuk reward pemain in-game.</p>
-          </div>
-        </div>
-        <Link 
-          href="/dashboard/tools/votifier" 
-          className="text-xs font-mono text-cyan-300 border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 px-3 py-2 rounded-sm flex items-center gap-1.5 shrink-0 transition-colors whitespace-nowrap"
-        >
-          <span>Buka Panduan &amp; Syarat</span>
-          <ArrowSquareOut size={13} />
-        </Link>
-      </div>
+      <dl className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Stat label="Antrean review" value={pending.length} highlight={pending.length > 0} />
+        <Stat label="Tayang" value={approved.length} />
+        <Stat label="Online sekarang" value={onlineNow} />
+        <Stat label="Ditolak / dibekukan" value={blocked.length} />
+      </dl>
 
-      {/* Pending Queue */}
-      <section className="flex flex-col gap-4">
-        <header>
-          <h1 className="text-2xl font-display font-semibold text-eter-starlight">Moderation Queue</h1>
-          <p className="text-zinc-500 font-body mt-1 text-sm">Review and approve new server submissions.</p>
-        </header>
-
-        {pendingServers.length === 0 ? (
-          <div className="p-12 border border-white/5 border-l-2 border-l-eter-cyan bg-[#050505]/60 text-center text-zinc-400 rounded-sm text-sm">
-            ✓ No pending servers. Queue is clear.
+      {/* Queue first: it is the only list that needs a decision. Oldest submission on top. */}
+      <section className="flex flex-col gap-4" aria-labelledby="queue">
+        <h2 id="queue" className="text-lg font-display font-semibold text-white">
+          Antrean review <span className="text-zinc-400 font-normal">({pending.length})</span>
+        </h2>
+        {pending.length === 0 ? (
+          <div className="p-10 border border-zinc-800 bg-zinc-950/80 text-center rounded-xl text-sm text-zinc-300">
+            Antrean kosong. Server baru akan muncul di sini.
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
-            {pendingServers.map((server: any) => renderServerRow(server, (
-              <>
-                <form action={approveServer}>
-                  <input type="hidden" name="serverId" value={server._id.toString()} />
-                  <button type="submit" className="flex items-center gap-2 bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 px-3 py-2 rounded-sm text-xs font-semibold transition-colors w-full justify-center">
-                    <CheckCircle size={16} /> Approve
-                  </button>
-                </form>
-                <form action={rejectServer} className="flex flex-col gap-2 w-full mt-1">
-                  <input type="hidden" name="serverId" value={server._id.toString()} />
-                  <input type="text" name="rejectionReason" placeholder="Alasan penolakan (opsional)..." className="bg-black/50 border border-white/10 rounded-sm px-3 py-1.5 text-xs text-eter-starlight focus:border-eter-red focus:outline-none transition-colors w-full" />
-                  <button type="submit" className="flex items-center gap-2 bg-eter-red/10 text-eter-red border border-eter-red/20 hover:bg-eter-red/20 px-3 py-2 rounded-sm text-xs font-semibold transition-colors w-full justify-center">
-                    <XCircle size={16} /> Reject
-                  </button>
-                </form>
-                <form action={deleteServer} className="mt-1">
-                  <input type="hidden" name="serverId" value={server._id.toString()} />
-                  <button type="submit" className="flex items-center gap-2 bg-zinc-800/50 text-zinc-400 hover:text-red-400 border border-white/5 hover:border-red-500/30 px-3 py-2 rounded-sm text-xs font-semibold transition-colors w-full justify-center">
-                    <Trash size={16} /> Hard Delete
-                  </button>
-                </form>
-              </>
-            )))}
-          </div>
+          pending.map((s: any) => <ReviewCard key={s._id.toString()} server={s} />)
         )}
       </section>
 
-      {/* Approved Servers */}
-      {approvedServers.length > 0 && (
-        <section className="flex flex-col gap-4">
-          <header>
-            <h2 className="text-xl font-display font-semibold text-eter-starlight">Approved Servers</h2>
-            <p className="text-zinc-500 font-body mt-1 text-sm">Live servers. Manage partnerships or issue bans.</p>
-          </header>
-          <div className="flex flex-col gap-4">
-            {approvedServers.map((server: any) => renderServerRow(server, (
-              <div className="flex flex-col gap-2">
+      <section className="flex flex-col gap-3" aria-labelledby="live">
+        <h2 id="live" className="text-lg font-display font-semibold text-white">
+          Tayang <span className="text-zinc-400 font-normal">({approved.length})</span>
+        </h2>
+        {approved.length === 0 ? (
+          <p className="text-sm text-zinc-400">Belum ada server yang tayang.</p>
+        ) : (
+          <ul className="flex flex-col divide-y divide-zinc-800 border border-zinc-800 rounded-xl bg-zinc-950/80">
+            {approved.map((s: any) => (
+              <CompactRow key={s._id.toString()} server={s}>
                 <form action={togglePartner}>
-                  <input type="hidden" name="serverId" value={server._id.toString()} />
-                  <input type="hidden" name="isPartner" value={server.isEterShopPartner ? "true" : "false"} />
-                  <button type="submit" className={`flex items-center gap-2 border px-3 py-2 rounded-sm text-xs font-semibold transition-colors w-full justify-center ${server.isEterShopPartner ? 'bg-zinc-800/50 text-zinc-400 hover:text-white border-white/10' : 'bg-eter-gold/10 text-eter-gold hover:bg-eter-gold/20 border-eter-gold/30'}`}>
-                    <Star size={16} weight={server.isEterShopPartner ? "regular" : "fill"} /> 
-                    {server.isEterShopPartner ? 'Revoke Partner' : 'Make Partner'}
-                  </button>
+                  <input type="hidden" name="serverId" value={s._id.toString()} />
+                  <SubmitButton
+                    className={`${BTN} ${s.isEterShopPartner ? "text-amber-200 bg-amber-500/15 hover:bg-amber-500/25" : "text-zinc-300 hover:bg-white/5"}`}
+                  >
+                    <Star size={16} weight={s.isEterShopPartner ? "fill" : "regular"} aria-hidden />
+                    {s.isEterShopPartner ? "Partner" : "Jadikan partner"}
+                  </SubmitButton>
                 </form>
-                <form action={banServer}>
-                  <input type="hidden" name="serverId" value={server._id.toString()} />
-                  <button type="submit" className="flex items-center gap-2 bg-orange-500/10 text-orange-400 border border-orange-500/20 hover:bg-orange-500/20 px-3 py-2 rounded-sm text-xs font-semibold transition-colors w-full justify-center">
-                    <Shield size={16} /> Ban Server
-                  </button>
-                </form>
-              </div>
-            )))}
-          </div>
-        </section>
-      )}
+                <ConfirmActionButton
+                  action={banServer}
+                  fields={{ serverId: s._id.toString() }}
+                  tone="warning"
+                  title={`Bekukan ${s.name}?`}
+                  body="Server hilang dari semua daftar publik dan halamannya jadi 404. Owner melihat alasannya di dashboard. Bisa dibatalkan kapan saja."
+                  reasonField={{ name: "reason", label: "Alasan (dilihat owner)", placeholder: "Contoh: IP mengarah ke server lain" }}
+                  confirmLabel="Bekukan server"
+                  label={<><Prohibit size={16} aria-hidden /> Bekukan</>}
+                  className={`${BTN} text-orange-300 hover:bg-orange-500/10`}
+                />
+              </CompactRow>
+            ))}
+          </ul>
+        )}
+      </section>
 
-      {/* Rejected / Banned Servers */}
-      {rejectedServers.length > 0 && (
-        <section className="flex flex-col gap-4">
-          <header>
-            <h2 className="text-xl font-display font-semibold text-eter-starlight">Rejected & Banned</h2>
-            <p className="text-zinc-500 font-body mt-1 text-sm">Servers that have been blocked. You can unban them or delete them permanently.</p>
-          </header>
-          <div className="flex flex-col gap-4">
-            {rejectedServers.map((server: any) => renderServerRow(server, (
-              <div className="flex flex-col gap-2">
+      {blocked.length > 0 && (
+        <section className="flex flex-col gap-3" aria-labelledby="blocked">
+          <h2 id="blocked" className="text-lg font-display font-semibold text-white">
+            Ditolak & dibekukan <span className="text-zinc-400 font-normal">({blocked.length})</span>
+          </h2>
+          <ul className="flex flex-col divide-y divide-zinc-800 border border-zinc-800 rounded-xl bg-zinc-950/80">
+            {blocked.map((s: any) => (
+              <CompactRow key={s._id.toString()} server={s} note={s.rejectionReason}>
                 <form action={unbanServer}>
-                  <input type="hidden" name="serverId" value={server._id.toString()} />
-                  <button type="submit" className="flex items-center gap-2 bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 px-3 py-2 rounded-sm text-xs font-semibold transition-colors w-full justify-center">
-                    <CheckCircle size={16} /> Unban / Approve
-                  </button>
+                  <input type="hidden" name="serverId" value={s._id.toString()} />
+                  <SubmitButton className={`${BTN} text-emerald-300 hover:bg-emerald-500/10`}>
+                    <ArrowCounterClockwise size={16} aria-hidden /> Tayangkan
+                  </SubmitButton>
                 </form>
-                <form action={deleteServer}>
-                  <input type="hidden" name="serverId" value={server._id.toString()} />
-                  <button type="submit" className="flex items-center gap-2 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 px-3 py-2 rounded-sm text-xs font-semibold transition-colors w-full justify-center">
-                    <Trash size={16} /> Hard Delete
-                  </button>
-                </form>
-              </div>
-            )))}
-          </div>
+                <HardDelete server={s} />
+              </CompactRow>
+            ))}
+          </ul>
         </section>
       )}
-
     </div>
   );
 }
 
+function Stat({ label, value, highlight = false }: { label: string; value: number; highlight?: boolean }) {
+  return (
+    <div className={`rounded-xl border p-4 bg-zinc-950/80 ${highlight ? "border-amber-500/40" : "border-zinc-800"}`}>
+      <dt className="text-xs text-zinc-400">{label}</dt>
+      <dd className={`text-2xl font-display font-semibold ${highlight ? "text-amber-200" : "text-white"}`}>{value}</dd>
+    </div>
+  );
+}
+
+function HardDelete({ server }: { server: any }) {
+  return (
+    <ConfirmActionButton
+      action={deleteServer}
+      fields={{ serverId: server._id.toString() }}
+      tone="danger"
+      title={`Hapus permanen ${server.name}?`}
+      body="Data server, vote, dan riwayatnya dihapus dari database. Ini tidak bisa dibatalkan."
+      requireText={server.name}
+      confirmLabel="Hapus permanen"
+      label={<><Trash size={16} aria-hidden /> Hapus</>}
+      className={`${BTN} text-zinc-400 hover:text-rose-300 hover:bg-rose-500/10`}
+    />
+  );
+}
+
+function StatusLine({ server }: { server: any }) {
+  if (server.serverType === "REALM") return <span className="text-purple-200">Realm</span>;
+  const checked = server.liveStatus?.lastChecked;
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className={`live-dot ${server.liveStatus?.isOnline ? "is-online" : ""}`} aria-hidden />
+      {server.liveStatus?.isOnline ? `Online, ${server.liveStatus.currentPlayers || 0} pemain` : "Offline"}
+      {checked && <span className="text-zinc-400">· dicek {timeAgo(checked)}</span>}
+      {server.liveStatus?.version && <span className="text-zinc-400">· {server.liveStatus.version}</span>}
+    </span>
+  );
+}
+
+function ReviewCard({ server }: { server: any }) {
+  const id = server._id.toString();
+  const wa = waLink(server.ownerWhatsApp);
+  const address = displayAddress(server);
+
+  return (
+    <article className="border border-zinc-800 rounded-xl bg-zinc-950/80 overflow-hidden">
+      <div className="grid md:grid-cols-[220px_1fr]">
+        <div className="relative aspect-video md:aspect-auto md:min-h-full bg-zinc-900">
+          <SafeImage src={server.bannerUrl} fallbackName={server.name} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute left-3 bottom-3 w-12 h-12 rounded-lg overflow-hidden border border-zinc-700 bg-black">
+            <SafeImage src={server.logoUrl} fallbackName={server.name} alt={`Logo ${server.name}`} className="w-full h-full object-cover text-xs" />
+          </div>
+        </div>
+
+        <div className="p-4 sm:p-5 flex flex-col gap-3 min-w-0">
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div className="min-w-0">
+              <h3 className="font-display text-lg font-semibold text-white">{server.name}</h3>
+              <p className="text-xs text-zinc-400">
+                {server.serverType === "REALM" ? "Realm" : server.platform || "CROSSPLAY"} · dikirim {timeAgo(server.createdAt)}
+              </p>
+            </div>
+            {address && (
+              <span className="ip-chip max-w-full">
+                <span className="ip-chip-caret" aria-hidden>&gt;</span>
+                <span className="truncate">{address}</span>
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between gap-3 flex-wrap text-xs font-mono text-zinc-300">
+            <StatusLine server={server} />
+            {server.serverType !== "REALM" && (
+              <form action={pingServerNow}>
+                <input type="hidden" name="serverId" value={id} />
+                <SubmitButton pendingLabel="Mengecek..." className={`${BTN} text-zinc-200 border border-zinc-700 hover:border-zinc-500`}>
+                  <ArrowsClockwise size={16} aria-hidden /> Ping sekarang
+                </SubmitButton>
+              </form>
+            )}
+          </div>
+
+          <p className="text-sm text-zinc-300 leading-relaxed line-clamp-3">{plainExcerpt(server.description, 320, server.name)}</p>
+
+          {server.tags?.length > 0 && (
+            <p className="text-xs font-mono text-zinc-400">{server.tags.join(" · ")}</p>
+          )}
+
+          <div className="flex flex-wrap gap-1">
+            {server.videoUrl && (
+              <a href={server.videoUrl} target="_blank" rel="noopener noreferrer" className={`${BTN} text-zinc-300 hover:bg-white/5`}>
+                <FilmStrip size={16} aria-hidden /> Tonton trailer
+              </a>
+            )}
+            <Link href={`/server/${server.slug}`} target="_blank" className={`${BTN} text-zinc-300 hover:bg-white/5`}>
+              <ArrowSquareOut size={16} aria-hidden /> Pratinjau halaman
+            </Link>
+            {wa && (
+              <a href={wa} target="_blank" rel="noopener noreferrer" className={`${BTN} text-emerald-300 hover:bg-emerald-500/10`}>
+                <WhatsappLogo size={16} weight="fill" aria-hidden /> Chat owner
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-zinc-800 px-3 py-2 flex flex-wrap items-center gap-2">
+        <form action={approveServer}>
+          <input type="hidden" name="serverId" value={id} />
+          <SubmitButton pendingLabel="Menayangkan..." className={`${BTN} bg-emerald-500 text-zinc-950 font-semibold hover:bg-emerald-400`}>
+            <CheckCircle size={16} weight="bold" aria-hidden /> Setujui & tayangkan
+          </SubmitButton>
+        </form>
+        <ConfirmActionButton
+          action={rejectServer}
+          fields={{ serverId: id }}
+          tone="danger"
+          title={`Tolak ${server.name}?`}
+          body="Owner melihat alasan ini di dashboard dan bisa memperbaiki lalu mengirim ulang."
+          reasonField={{ name: "reason", label: "Alasan penolakan", placeholder: "Contoh: trailer bukan gameplay server ini" }}
+          confirmLabel="Tolak listing"
+          label={<><XCircle size={16} aria-hidden /> Tolak</>}
+          className={`${BTN} text-rose-300 hover:bg-rose-500/10`}
+        />
+        <span className="ml-auto">
+          <HardDelete server={server} />
+        </span>
+      </div>
+    </article>
+  );
+}
+
+function CompactRow({ server, note, children }: { server: any; note?: string; children: React.ReactNode }) {
+  const wa = waLink(server.ownerWhatsApp);
+  return (
+    <li className="p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="flex-1 min-w-0 flex flex-col gap-1">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link href={`/server/${server.slug}`} target="_blank" className="font-display font-semibold text-white hover:underline underline-offset-4 truncate">
+            {server.name}
+          </Link>
+          {server.moderationStatus !== "APPROVED" && (
+            <span className="text-xs font-mono px-2 py-0.5 rounded-md border border-zinc-700 text-zinc-300">
+              {server.moderationStatus === "BANNED" ? "Dibekukan" : "Ditolak"}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3 flex-wrap text-xs font-mono text-zinc-300">
+          <StatusLine server={server} />
+          <span className="text-zinc-400">{server.metrics?.votes || 0} vote · {server.metrics?.impressions || 0} dilihat</span>
+        </div>
+        {note && <p className="text-xs text-zinc-400">Alasan: {note}</p>}
+      </div>
+      <div className="flex items-center gap-1 flex-wrap">
+        {wa && (
+          <a href={wa} target="_blank" rel="noopener noreferrer" aria-label={`Chat owner ${server.name}`} className={`${BTN} text-emerald-300 hover:bg-emerald-500/10`}>
+            <WhatsappLogo size={16} weight="fill" aria-hidden />
+          </a>
+        )}
+        {children}
+      </div>
+    </li>
+  );
+}

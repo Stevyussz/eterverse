@@ -2,31 +2,90 @@ import { auth } from "@/auth";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import Link from "next/link";
-import { ChartLineUp, Users, CursorClick, Clock, CheckCircle, Eye, PencilSimple, WarningCircle, Sparkle, ArrowRight, CalendarDots, Info } from "@phosphor-icons/react/dist/ssr";
+import mongoose from "mongoose";
+import {
+  Eye,
+  CursorClick,
+  CaretUp,
+  PencilSimple,
+  WarningCircle,
+  ArrowSquareOut,
+  Gift,
+  Code,
+  CheckCircle,
+  Circle,
+  Plus,
+  Prohibit,
+} from "@phosphor-icons/react/dist/ssr";
 import { revalidatePath } from "next/cache";
-import { invalidateServerLists } from "@/lib/server-queries";
+import { displayAddress, invalidateServerLists } from "@/lib/server-queries";
+import { getUptimeSummary } from "@/lib/server-status";
 import { DeleteServerButton } from "@/components/dashboard/DeleteServerButton";
+
+const STATUS: Record<string, { label: string; className: string }> = {
+  APPROVED: { label: "Tayang", className: "text-emerald-300 border-emerald-500/30 bg-emerald-500/10" },
+  PENDING: { label: "Menunggu review", className: "text-amber-200 border-amber-500/30 bg-amber-500/10" },
+  REJECTED: { label: "Ditolak", className: "text-rose-300 border-rose-500/30 bg-rose-500/10" },
+  BANNED: { label: "Dibekukan", className: "text-orange-300 border-orange-500/30 bg-orange-500/10" },
+};
+
+interface ChecklistItem {
+  done: boolean;
+  label: string;
+  href: string;
+}
+
+// What still stands between this listing and players finding it. Each item links to the
+// exact place it gets fixed, instead of a generic "complete your profile" nag.
+function checklistFor(s: any): ChecklistItem[] {
+  const id = s._id.toString();
+  const edit = `/dashboard/server/${id}/edit`;
+  const isRealm = s.serverType === "REALM";
+  const items: ChecklistItem[] = [
+    { done: !!s.videoUrl, label: "Trailer video", href: edit },
+    { done: !!s.logoUrl, label: "Logo server", href: edit },
+    { done: !!s.bannerUrl, label: "Banner", href: edit },
+    { done: (s.tags?.length || 0) >= 2, label: "Minimal 2 tag mode game", href: edit },
+    { done: !!s.socialLinks?.discord, label: "Link Discord komunitas", href: edit },
+  ];
+  if (!isRealm) {
+    items.push({ done: !!s.votifier?.enabled, label: "Hadiah vote (Votifier)", href: "/dashboard/tools/votifier" });
+    items.push({ done: !!s.liveStatus?.isOnline, label: "Server online saat terakhir dicek", href: "/dashboard/info" });
+  }
+  return items;
+}
 
 export default async function DashboardOverview() {
   const session = await auth();
-  
-  await connectToDatabase();
   const ownerIdentifier = session?.user?.id;
-  const myServers = await Server.find({ ownerId: ownerIdentifier }).lean();
 
-  const hasServers = myServers.length > 0;
+  await connectToDatabase();
+  const myServers: any[] = await Server.find({ ownerId: ownerIdentifier }).sort({ createdAt: -1 }).lean();
 
-  // Aggregate real metrics from DB
-  const totalImpressions = myServers.reduce((acc, s) => acc + (s.metrics?.impressions || 0), 0);
-  const totalClicks = myServers.reduce((acc, s) => acc + (s.metrics?.clicks || 0), 0);
-  const approvedCount = myServers.filter(s => s.moderationStatus === 'APPROVED').length;
-  const pendingCount = myServers.filter(s => s.moderationStatus === 'PENDING').length;
+  const uptimes = await Promise.all(
+    myServers.map((s) =>
+      s.serverType === "REALM" || s.moderationStatus !== "APPROVED"
+        ? Promise.resolve(null)
+        : getUptimeSummary(s._id.toString()).catch(() => null)
+    )
+  );
+
+  const totals = myServers.reduce(
+    (acc, s) => ({
+      views: acc.views + (s.metrics?.impressions || 0),
+      clicks: acc.clicks + (s.metrics?.clicks || 0),
+      votes: acc.votes + (s.metrics?.votes || 0),
+      online: acc.online + (s.liveStatus?.isOnline ? s.liveStatus?.currentPlayers || 0 : 0),
+    }),
+    { views: 0, clicks: 0, votes: 0, online: 0 }
+  );
+  const conversion = totals.views > 0 ? Math.round((totals.clicks / totals.views) * 1000) / 10 : null;
 
   async function deleteMyServer(formData: FormData) {
     "use server";
     const serverId = formData.get("serverId") as string;
     const session = await auth();
-    if (!session?.user?.id) throw new Error("Unauthorized");
+    if (!session?.user?.id || !mongoose.Types.ObjectId.isValid(serverId)) return;
 
     await connectToDatabase();
     // Only delete if the user owns it
@@ -35,187 +94,232 @@ export default async function DashboardOverview() {
     invalidateServerLists();
   }
 
+  const firstName = (session?.user?.name || "").split(" ")[0];
+
   return (
-    <div className="max-w-6xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
-      
-      <header className="flex items-center justify-between flex-wrap gap-4">
+    <div className="max-w-5xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
+      <header className="flex items-end justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-display font-semibold text-white">Ringkasan Dashboard</h1>
-          <p className="text-zinc-500 font-body mt-1 text-sm">Kelola server Minecraft milikmu dan pantau perkembangannya.</p>
+          <h1 className="text-2xl md:text-3xl font-display font-semibold text-white">
+            {firstName ? `Halo, ${firstName}` : "Dashboard"}
+          </h1>
+          <p className="text-zinc-400 font-body mt-1 text-sm">
+            {myServers.length > 0
+              ? "Pantau server kamu dan lengkapi yang masih kurang."
+              : "Daftarkan server pertamamu untuk mulai tampil di EterVerse."}
+          </p>
         </div>
-        
-        <Link href="/dashboard/server/new" className="bg-white text-zinc-950 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-zinc-200 transition-colors shrink-0 shadow-sm">
-          + Daftarkan Server
-        </Link>
+        {/* One server per account: the button only exists while the account has none. */}
+        {myServers.length === 0 && (
+          <Link
+            href="/dashboard/server/new"
+            className="inline-flex items-center gap-2 min-h-[44px] bg-white text-zinc-950 px-4 rounded-md font-semibold text-sm hover:bg-zinc-200 transition-colors shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            <Plus size={16} weight="bold" aria-hidden /> Daftarkan Server
+          </Link>
+        )}
       </header>
 
-      {/* Coming Soon: EterReward Teaser Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-950/40 via-zinc-950 to-zinc-950 border border-cyan-500/30 p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-lg">
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0 mt-0.5">
-            <Sparkle size={22} weight="fill" />
-          </div>
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
-                Fitur Eksklusif Segera Hadir
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-semibold">
-                EterReward™
-              </span>
-            </div>
-            <h3 className="text-base sm:text-lg font-display font-semibold text-white">
-              EterReward™: In-Game Vote Reward Otomatis
-            </h3>
-            <p className="text-xs sm:text-sm text-zinc-400 font-body max-w-2xl">
-              Beri hadiah otomatis (Crate Key, Diamond, Koin) langsung di dalam game setiap kali pemain melakukan vote di EterVerse. Pelajari syarat dan cara menyiapkan servermu lebih awal.
-            </p>
-          </div>
-        </div>
-
-        <Link
-          href="/dashboard/tools/votifier"
-          className="bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 font-mono text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center gap-2 shrink-0 transition-all active:scale-95 whitespace-nowrap"
-        >
-          <span>Pelajari &amp; Cek Syarat</span>
-          <ArrowRight size={14} weight="bold" />
-        </Link>
-      </div>
-
-      {/* Quick Access Highlights (Event Hub & Information Center) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Link
-          href="/dashboard/tools/events"
-          className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-amber-500/40 transition-all flex items-center justify-between gap-3 group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
-              <CalendarDots size={18} weight="fill" />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-white group-hover:text-amber-300 transition-colors">
-                  Kalender Acara &amp; Reset Season
-                </span>
-                <span className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">SOON</span>
-              </div>
-              <span className="text-[11px] text-zinc-400 font-body">Promosikan turnamen PvP, giveaway, &amp; season baru dengan countdown.</span>
-            </div>
-          </div>
-          <ArrowRight size={14} className="text-zinc-500 group-hover:text-amber-300 transition-colors shrink-0" />
-        </Link>
-
-        <Link
-          href="/dashboard/info"
-          className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-indigo-500/40 transition-all flex items-center justify-between gap-3 group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
-              <Info size={18} weight="fill" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-semibold text-white group-hover:text-indigo-300 transition-colors">
-                Pusat Informasi &amp; Panduan Server
-              </span>
-              <span className="text-[11px] text-zinc-400 font-body">Standar moderasi, konfigurasi port, panduan Realms, &amp; FAQ lengkap.</span>
-            </div>
-          </div>
-          <ArrowRight size={14} className="text-zinc-500 group-hover:text-indigo-300 transition-colors shrink-0" />
-        </Link>
-      </div>
-
-      {!hasServers ? (
-        <div className="flex flex-col items-center justify-center p-16 mt-10 bg-zinc-950/60 border border-zinc-800 rounded-2xl shadow-xl text-center">
-          <div className="w-16 h-16 bg-zinc-900 rounded-xl flex items-center justify-center mb-6 border border-zinc-800 text-zinc-300">
-            <ChartLineUp size={32} />
-          </div>
-          <h2 className="text-2xl font-display font-semibold text-white mb-2">Belum Ada Server</h2>
-          <p className="text-zinc-400 font-body mb-8 max-w-md text-sm">
-            Kamu belum menambahkan server ke EterVerse. Daftarkan server pertamamu untuk mulai mendapatkan pemain baru!
+      {myServers.length === 0 ? (
+        <div className="flex flex-col items-center justify-center p-10 sm:p-16 bg-zinc-950/80 border border-zinc-800 rounded-xl text-center gap-4">
+          <h2 className="text-xl font-display font-semibold text-white">Belum ada server</h2>
+          <p className="text-zinc-400 font-body max-w-md text-sm">
+            Siapkan IP server, trailer pendek (video atau link YouTube), dan logo. Setelah dikirim, admin meninjau sebelum server tampil publik.
           </p>
-          <Link href="/dashboard/server/new" className="bg-white text-zinc-950 px-6 py-3 rounded-lg font-semibold hover:bg-zinc-200 transition-colors shadow-sm">
+          <Link
+            href="/dashboard/server/new"
+            className="inline-flex items-center min-h-[48px] bg-white text-zinc-950 px-6 rounded-md font-semibold hover:bg-zinc-200 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
             Daftarkan Server Pertamamu
           </Link>
         </div>
       ) : (
         <>
-          {/* Real Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <MetricCard title="Total Impresi" value={totalImpressions.toLocaleString()} icon={<Eye size={22} className="text-zinc-400" />} />
-            <MetricCard title="Total Klik" value={totalClicks.toLocaleString()} icon={<CursorClick size={22} className="text-zinc-400" />} />
-            <MetricCard title="Server Disetujui" value={approvedCount.toString()} icon={<CheckCircle size={22} className="text-emerald-400" />} />
-            <MetricCard title="Menunggu Review" value={pendingCount.toString()} icon={<Clock size={22} className="text-amber-400" />} />
-          </div>
+          <dl className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Metric label="Halaman dilihat" value={totals.views} icon={<Eye size={18} aria-hidden />} />
+            <Metric
+              label="Salin IP / Main"
+              value={totals.clicks}
+              icon={<CursorClick size={18} aria-hidden />}
+              note={conversion !== null ? `${conversion}% dari pengunjung` : undefined}
+            />
+            <Metric label="Total vote" value={totals.votes} icon={<CaretUp size={18} weight="bold" aria-hidden />} />
+            <Metric label="Pemain online" value={totals.online} icon={<span className={`live-dot ${totals.online > 0 ? "is-online" : ""}`} aria-hidden />} />
+          </dl>
 
-          {/* Server List */}
-          <section className="flex flex-col gap-4">
-            <h2 className="text-lg font-display font-semibold text-white border-b border-zinc-800 pb-3">Daftar Server Kamu</h2>
-            {myServers.map((server: any) => (
-              <div key={server._id.toString()} className="flex flex-col gap-2">
-                <div className="bg-zinc-950/70 border border-zinc-800 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex flex-col gap-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-display font-semibold text-white truncate">{server.name}</span>
-                      <span className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border ${
-                        server.moderationStatus === 'APPROVED' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' :
-                        server.moderationStatus === 'REJECTED' ? 'text-red-400 border-red-500/30 bg-red-500/10' :
-                        server.moderationStatus === 'BANNED' ? 'text-orange-400 border-orange-500/30 bg-orange-500/10' :
-                        'text-amber-400 border-amber-500/30 bg-amber-500/10'
-                      }`}>{server.moderationStatus === 'APPROVED' ? 'DISETUJUI' : server.moderationStatus === 'REJECTED' ? 'DITOLAK' : server.moderationStatus === 'BANNED' ? 'DIBEKUKAN' : 'MENUNGGU'}</span>
-                    </div>
-                    <span className="text-xs font-mono text-zinc-500">{server.ipAddress}</span>
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="hidden sm:flex items-center gap-4 text-xs font-mono text-zinc-400">
-                      <span><Eye size={12} className="inline mr-1" />{server.metrics?.impressions || 0}</span>
-                      <span><CursorClick size={12} className="inline mr-1" />{server.metrics?.clicks || 0}</span>
-                      <span><Users size={12} className="inline mr-1" />{server.liveStatus?.currentPlayers || 0}</span>
-                    </div>
-                    <Link 
-                      href={`/dashboard/server/${server._id.toString()}/edit`}
-                      className="flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-700 bg-zinc-900/60 px-3 py-1.5 rounded-lg transition-colors"
-                    >
-                      <PencilSimple size={14} /> Edit
-                    </Link>
-                    <DeleteServerButton serverId={server._id.toString()} deleteAction={deleteMyServer} />
-                    {server.moderationStatus === 'APPROVED' && (
-                      <Link 
-                        href={`/server/${server.slug}`}
-                        target="_blank"
-                        className="flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-700 bg-zinc-900/60 px-3 py-1.5 rounded-lg transition-colors"
-                      >
-                        <Eye size={14} /> Lihat
-                      </Link>
-                    )}
-                  </div>
-                </div>
-                {server.moderationStatus === 'REJECTED' && server.rejectionReason && (
-                  <div className="bg-red-500/5 border border-red-500/20 px-4 py-3 rounded-sm flex items-start gap-3">
-                    <WarningCircle className="text-red-400 mt-0.5 shrink-0" size={16} weight="fill" />
-                    <div>
-                      <p className="text-xs font-semibold text-red-400 mb-0.5">Penolakan Admin</p>
-                      <p className="text-xs text-red-300/80 leading-relaxed">{server.rejectionReason}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+          <section className="flex flex-col gap-4" aria-labelledby="my-servers">
+            <h2 id="my-servers" className="text-lg font-display font-semibold text-white">
+              {myServers.length > 1 ? (
+                <>Server kamu <span className="text-zinc-400 font-normal">({myServers.length})</span></>
+              ) : (
+                "Server kamu"
+              )}
+            </h2>
+            {myServers.map((server, i) => (
+              <ServerPanel
+                key={server._id.toString()}
+                server={server}
+                uptime={uptimes[i]}
+                deleteAction={deleteMyServer}
+              />
             ))}
           </section>
         </>
       )}
-
     </div>
   );
 }
 
-function MetricCard({ title, value, icon }: { title: string, value: string, icon: React.ReactNode }) {
+function Metric({ label, value, icon, note }: { label: string; value: number; icon: React.ReactNode; note?: string }) {
   return (
-    <div className="bg-zinc-950/70 border border-zinc-800 p-4 shadow-sm rounded-xl flex flex-col justify-between">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest leading-tight">{title}</h3>
-        {icon}
-      </div>
-      <span className="text-2xl font-display font-semibold text-white">{value}</span>
+    <div className="bg-zinc-950/80 border border-zinc-800 p-4 rounded-xl flex flex-col gap-2">
+      <dt className="flex items-center justify-between gap-2 text-xs text-zinc-400">
+        {label}
+        <span className="text-zinc-400">{icon}</span>
+      </dt>
+      <dd className="text-2xl font-display font-semibold text-white">{value.toLocaleString("id-ID")}</dd>
+      {note && <dd className="text-xs font-mono text-zinc-400">{note}</dd>}
     </div>
+  );
+}
+
+function ServerPanel({
+  server,
+  uptime,
+  deleteAction,
+}: {
+  server: any;
+  uptime: Awaited<ReturnType<typeof getUptimeSummary>> | null;
+  deleteAction: (formData: FormData) => Promise<void>;
+}) {
+  const id = server._id.toString();
+  const status = STATUS[server.moderationStatus] ?? STATUS.PENDING;
+  const isRealm = server.serverType === "REALM";
+  const isLive = server.moderationStatus === "APPROVED";
+  const checklist = checklistFor(server);
+  const doneCount = checklist.filter((c) => c.done).length;
+  const address = displayAddress(server);
+
+  return (
+    <article className="bg-zinc-950/80 border border-zinc-800 rounded-xl overflow-hidden">
+      <div className="p-4 sm:p-5 flex flex-col gap-4">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="flex flex-col gap-2 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="font-display text-lg font-semibold text-white truncate">{server.name}</h3>
+              <span className={`text-xs font-mono px-2 py-0.5 rounded-md border ${status.className}`}>{status.label}</span>
+            </div>
+            <div className="flex items-center gap-3 flex-wrap text-xs font-mono text-zinc-300">
+              {!isRealm && (
+                <span className="inline-flex items-center gap-1.5">
+                  <span className={`live-dot ${server.liveStatus?.isOnline ? "is-online" : ""}`} aria-hidden />
+                  {server.liveStatus?.isOnline ? `${server.liveStatus.currentPlayers || 0} online` : "Offline"}
+                </span>
+              )}
+              {address && (
+                <span className="ip-chip max-w-full">
+                  <span className="ip-chip-caret" aria-hidden>&gt;</span>
+                  <span className="truncate">{address}</span>
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Per-server numbers; uptime only exists for live, non-Realm servers. */}
+        <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 text-sm">
+          <Stat label="Dilihat" value={(server.metrics?.impressions || 0).toLocaleString("id-ID")} />
+          <Stat label="Salin IP / Main" value={(server.metrics?.clicks || 0).toLocaleString("id-ID")} />
+          <Stat label="Vote" value={(server.metrics?.votes || 0).toLocaleString("id-ID")} />
+          <Stat
+            label="Uptime 7 hari"
+            value={uptime && uptime.uptimePct !== null ? `${uptime.uptimePct}%` : isRealm ? "Realm" : "Belum ada data"}
+          />
+        </dl>
+
+        {server.moderationStatus === "REJECTED" && (
+          <div role="note" className="bg-rose-500/5 border border-rose-500/25 px-4 py-3 rounded-lg flex items-start gap-3">
+            <WarningCircle className="text-rose-300 mt-0.5 shrink-0" size={18} weight="fill" aria-hidden />
+            <div className="text-sm">
+              <p className="font-semibold text-rose-200">Ditolak admin</p>
+              <p className="text-rose-200/90">{server.rejectionReason || "Tidak ada alasan yang ditulis."} Perbaiki lalu simpan ulang untuk ditinjau lagi.</p>
+            </div>
+          </div>
+        )}
+        {server.moderationStatus === "BANNED" && (
+          <div role="note" className="bg-orange-500/5 border border-orange-500/25 px-4 py-3 rounded-lg flex items-start gap-3 text-sm text-orange-200">
+            <Prohibit className="mt-0.5 shrink-0" size={18} aria-hidden />
+            <span>
+              Server ini dibekukan dan tidak tampil publik.
+              {server.rejectionReason ? ` Alasan: ${server.rejectionReason}` : ""} Hubungi admin lewat Pusat Informasi.
+            </span>
+          </div>
+        )}
+
+        {doneCount < checklist.length && (
+          <details className="group rounded-lg border border-zinc-800 bg-black/40">
+            <summary className="cursor-pointer list-none min-h-[44px] px-4 flex items-center justify-between gap-3 text-sm text-zinc-200 focus-visible:outline-2 focus-visible:outline-white rounded-lg">
+              <span>
+                Lengkapi listing <span className="font-mono text-zinc-400">{doneCount}/{checklist.length}</span>
+              </span>
+              <span className="h-1.5 flex-1 max-w-40 rounded-full bg-zinc-800 overflow-hidden" aria-hidden>
+                <span className="block h-full bg-eter-cyan" style={{ width: `${(doneCount / checklist.length) * 100}%` }} />
+              </span>
+            </summary>
+            <ul className="px-4 pb-3 flex flex-col">
+              {checklist.map((item) => (
+                <li key={item.label}>
+                  {item.done ? (
+                    <span className="flex items-center gap-2 min-h-[36px] text-sm text-zinc-400">
+                      <CheckCircle size={16} weight="fill" className="text-emerald-400" aria-hidden />
+                      <span className="line-through decoration-zinc-600">{item.label}</span>
+                    </span>
+                  ) : (
+                    <Link href={item.href} className="flex items-center gap-2 min-h-[36px] text-sm text-white hover:text-eter-cyan transition-colors focus-visible:outline-2 focus-visible:outline-white rounded">
+                      <Circle size={16} className="text-zinc-500" aria-hidden />
+                      {item.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
+      </div>
+
+      <div className="border-t border-zinc-800 px-3 py-2 flex items-center gap-1 flex-wrap">
+        <PanelAction href={`/dashboard/server/${id}/edit`} icon={<PencilSimple size={16} aria-hidden />} label="Edit" />
+        {isLive && (
+          <PanelAction href={`/server/${server.slug}`} icon={<ArrowSquareOut size={16} aria-hidden />} label="Lihat halaman" external />
+        )}
+        {!isRealm && <PanelAction href="/dashboard/tools/votifier" icon={<Gift size={16} aria-hidden />} label="Hadiah vote" />}
+        {isLive && <PanelAction href="/dashboard/tools/widget" icon={<Code size={16} aria-hidden />} label="Widget" />}
+        <span className="ml-auto">
+          <DeleteServerButton serverId={id} serverName={server.name} deleteAction={deleteAction} />
+        </span>
+      </div>
+    </article>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-xs text-zinc-400">{label}</dt>
+      <dd className="font-mono text-white">{value}</dd>
+    </div>
+  );
+}
+
+function PanelAction({ href, icon, label, external = false }: { href: string; icon: React.ReactNode; label: string; external?: boolean }) {
+  return (
+    <Link
+      href={href}
+      target={external ? "_blank" : undefined}
+      className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-md text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition-colors focus-visible:outline-2 focus-visible:outline-white"
+    >
+      {icon}
+      {label}
+    </Link>
   );
 }
