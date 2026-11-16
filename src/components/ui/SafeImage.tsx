@@ -45,7 +45,9 @@ export function SafeImage({ src, alt, className = "", fallbackName, fallbackSrc,
       .join("");
     return (
       <div role="img" aria-label={alt} className={`flex items-center justify-center bg-zinc-900 font-display font-bold text-zinc-300 ${className}`} style={style}>
-        <span className="text-[clamp(1rem,4vw,2.5rem)]">{initials || "?"}</span>
+        {/* A caller-sized box (text-xs/sm/base in className) keeps its size; otherwise scale
+            with the viewport for the large logo slots. A fixed clamp overflowed 40px avatars. */}
+        <span className={/\btext-(xs|sm|base)\b/.test(className) ? "" : "text-[clamp(1rem,4vw,2.5rem)]"}>{initials || "?"}</span>
       </div>
     );
   }

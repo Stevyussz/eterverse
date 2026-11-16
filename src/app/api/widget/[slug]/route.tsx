@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import connectToDatabase from '@/lib/db';
 import { Server } from '@/models/Server';
+import { StatusIcon } from '@/lib/og-shared';
 
 export const runtime = 'nodejs'; // Use nodejs because mongoose connection fails in pure edge without extra setup
 
@@ -38,33 +39,28 @@ export async function GET(request: Request, props: { params: Promise<{ slug: str
             width: '100%',
             height: '100%',
             backgroundColor: '#050505',
-            border: '2px solid rgba(255,255,255,0.1)',
-            borderLeft: '4px solid #22D3EE',
+            border: '2px solid rgba(255,255,255,0.12)',
+            borderRadius: 10,
             padding: '16px 24px',
             fontFamily: 'sans-serif',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: 12, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 4 }}>EterVerse Live</span>
+              <span style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 4 }}>Status di EterVerse</span>
               <span style={{ fontSize: 24, fontWeight: 'bold', color: '#f8fafc', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '250px' }}>
                 {server.name}
               </span>
             </div>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                width: 12,
-                height: 12,
-                borderRadius: '50%',
-                backgroundColor: isOnline ? '#22c55e' : '#ef4444',
-                boxShadow: isOnline ? '0 0 10px #22c55e' : 'none',
-              }} />
+              <StatusIcon online={!!isOnline} size={22} />
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                 <span style={{ fontSize: 20, fontWeight: 'bold', color: isOnline ? '#22D3EE' : '#a1a1aa' }}>
-                  {isOnline ? `${currentPlayers.toLocaleString()} / ${maxPlayers.toLocaleString()}` : 'OFFLINE'}
+                  {isOnline ? `${currentPlayers.toLocaleString('id-ID')} / ${maxPlayers.toLocaleString('id-ID')}` : 'Offline'}
                 </span>
-                <span style={{ fontSize: 10, color: '#71717a' }}>PLAYERS ONLINE</span>
+                {/* The subtitle used to say "players online" even when the server was offline. */}
+                <span style={{ fontSize: 12, color: '#a1a1aa' }}>{isOnline ? 'pemain online' : 'server tidak merespons'}</span>
               </div>
             </div>
           </div>

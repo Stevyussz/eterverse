@@ -3,6 +3,7 @@ import { ServerCard } from "@/components/server/ServerCard";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { AiMatchmaker } from "@/components/home/AiMatchmaker";
 import { getHomeData, type ServerCardData } from "@/lib/server-queries";
+import { LiveIcon } from "@/components/ui/LiveIcon";
 
 export const dynamic = 'force-dynamic';
 
@@ -68,7 +69,7 @@ export default async function Home() {
         {/* Live pulse of the directory, straight from the last status checks. */}
         {data && data.totalApproved > 0 && (
           <p className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-md border border-white/10 bg-black/70 px-3 py-1.5 font-mono text-xs text-zinc-300">
-            <span className={`live-dot ${data.onlineServers > 0 ? "is-online pulse" : ""}`} aria-hidden />
+            <LiveIcon online={data.onlineServers > 0} />
             {data.onlineServers > 0 ? (
               <>
                 <span className="text-white">{data.onlineServers.toLocaleString("id-ID")} server online</span>

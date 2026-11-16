@@ -12,13 +12,12 @@ export default async function OwnerLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex min-h-screen pt-20 relative z-10">
-      
-      {/* Sidebar Component */}
+    // pt-16 matches the fixed 64px app navbar exactly; there is no second mobile bar anymore.
+    // No z-index here: it would trap the mobile drawer in a stacking context under the navbar.
+    <div className="flex min-h-screen pt-16 relative">
       <DashboardSidebar user={{ name: session.user.name, email: session.user.email, image: session.user.image }} />
 
-      {/* Main Content Area */}
-      <main className="flex-1 md:ml-64 p-6 md:p-8 min-h-screen pt-16 md:pt-8 w-full max-w-full overflow-x-hidden">
+      <main className="flex-1 min-w-0 md:ml-64 px-4 py-6 sm:px-6 md:p-8 min-h-screen overflow-x-hidden">
         {children}
       </main>
       

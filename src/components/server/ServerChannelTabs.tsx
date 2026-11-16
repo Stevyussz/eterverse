@@ -24,6 +24,7 @@ import { StarRating } from "@/components/server/StarRating";
 import { EmbedWidget } from "@/components/server/EmbedWidget";
 import { CopyIPButton } from "@/components/server/CopyIPButton";
 import { DirectPlayButton } from "@/components/server/DirectPlayButton";
+import { LiveIcon } from "@/components/ui/LiveIcon";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface ServerChannelTabsProps {
@@ -134,11 +135,11 @@ export function ServerChannelTabs({
               
               {/* Status */}
               <div className="flex flex-col gap-1 p-3.5 rounded-xl bg-zinc-950/50 border border-zinc-800/60">
-                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">{t("server.serverStatus")}</span>
+                <span className="text-xs text-zinc-400">{t("server.serverStatus")}</span>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className={`w-2 h-2 rounded-full ring-4 ${isOnline ? "bg-emerald-500 ring-emerald-500/20" : "bg-red-500 ring-red-500/20"}`} />
-                  <span className={`text-xs sm:text-sm font-mono font-semibold ${isOnline ? "text-emerald-400" : "text-red-400"}`}>
-                    {isOnline ? "ONLINE" : "OFFLINE"}
+                  <LiveIcon online={isOnline} size={16} />
+                  <span className={`text-xs sm:text-sm font-mono font-semibold ${isOnline ? "text-eter-cyan" : "text-zinc-400"}`}>
+                    {isOnline ? "Online" : "Offline"}
                   </span>
                 </div>
               </div>

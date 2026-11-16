@@ -14,14 +14,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="min-h-screen pt-20 relative z-10">
-      {/* Phones: tab bar under the site navbar. The fixed 256px sidebar used to squeeze
-          the admin pages to a sliver on mobile. */}
-      <div className="md:hidden sticky top-[68px] z-30 bg-[#09090b] border-b border-zinc-800">
+    // pt-16 / top-16 match the fixed 64px app navbar, so the tabs sit flush under it
+    // (top-[68px] against an 80px navbar hid the tabs' top edge behind it).
+    <div className="min-h-screen pt-16 relative z-10">
+      <div className="md:hidden sticky top-16 z-30 bg-[#09090b] border-b border-zinc-800">
         <AdminNav variant="tabs" />
       </div>
 
-      <aside className="hidden md:flex w-64 fixed inset-y-0 left-0 pt-24 pb-8 px-5 bg-[#09090b]/95 border-r border-zinc-800 flex-col justify-between">
+      <aside className="hidden md:flex w-64 fixed top-16 bottom-0 left-0 pt-6 pb-6 px-5 bg-[#09090b] border-r border-zinc-800 flex-col justify-between overflow-y-auto">
         <div className="flex flex-col gap-8">
           <div className="flex items-center gap-3 px-2">
             <div className="w-10 h-10 rounded-lg border border-rose-500/30 bg-rose-500/10 flex items-center justify-center">
@@ -43,7 +43,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </Link>
       </aside>
 
-      <main className="md:ml-64 px-6 py-6 md:p-8 min-w-0">{children}</main>
+      <main className="md:ml-64 px-4 py-6 sm:px-6 md:p-8 min-w-0">{children}</main>
     </div>
   );
 }

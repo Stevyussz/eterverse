@@ -12,10 +12,12 @@ import {
   CalendarDots,
   Info,
   SignOut,
-  List,
   X,
+  Heart,
+  House,
 } from "@phosphor-icons/react";
 import { signOut } from "next-auth/react";
+import { DASHBOARD_MENU_EVENT } from "@/lib/ui-events";
 import { SafeImage } from "@/components/ui/SafeImage";
 
 interface SidebarProps {
@@ -28,6 +30,7 @@ interface SidebarProps {
 
 const NAV = [
   { href: "/dashboard", icon: SquaresFour, label: "Ringkasan" },
+  { href: "/dashboard/favorites", icon: Heart, label: "Favorit" },
   { href: "/dashboard/server/new", icon: ListPlus, label: "Daftarkan Server" },
   { href: "/dashboard/tools/votifier", icon: Gift, label: "Hadiah Vote" },
   { href: "/dashboard/tools/widget", icon: Code, label: "Widget Status" },
@@ -41,6 +44,20 @@ export function DashboardSidebar({ user }: SidebarProps) {
   const displayName = user.name || user.email?.split("@")[0] || "Owner";
 
   const closeSidebar = () => setIsOpen(false);
+
+  // Opened by the navbar's Menu button (a separate tree), see lib/ui-events.
+  useEffect(() => {
+    const open = () => setIsOpen(true);
+    window.addEventListener(DASHBOARD_MENU_EVENT, open);
+    return () => window.removeEventListener(DASHBOARD_MENU_EVENT, open);
+  }, []);
+
+  // Close after navigating, so the drawer never stays over the new page.
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setIsOpen(false);
+  }
 
   // The mobile drawer is a modal surface: Escape closes it and the page behind stops scrolling.
   useEffect(() => {
@@ -57,38 +74,27 @@ export function DashboardSidebar({ user }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile bar: shows where you are, opens the drawer */}
-      <div className="md:hidden fixed top-20 left-0 right-0 h-14 bg-[#09090b] border-b border-zinc-800 z-40 flex items-center px-4">
-        <button
-          onClick={() => setIsOpen(true)}
-          aria-expanded={isOpen}
-          aria-controls="dashboard-nav"
-          className="min-h-[44px] px-2 -ml-2 rounded-md text-zinc-200 hover:text-white flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-white"
-        >
-          <List size={22} aria-hidden />
-          <span className="font-display font-medium text-sm">
-            {NAV.find((n) => (n.href === "/dashboard" ? pathname === n.href : pathname.startsWith(n.href)))?.label ?? "Menu Dashboard"}
-          </span>
-        </button>
-      </div>
+      {isOpen && <div className="md:hidden fixed inset-0 bg-black/75 z-[60]" onClick={closeSidebar} aria-hidden />}
 
-      {isOpen && <div className="md:hidden fixed inset-0 bg-black/75 z-40" onClick={closeSidebar} aria-hidden />}
-
+      {/* Phones: a full-height drawer above the navbar. Desktop: a column under the 64px navbar. */}
       <aside
         id="dashboard-nav"
         aria-label="Navigasi dashboard"
-        className={`fixed inset-y-0 left-0 pt-24 pb-8 px-5 bg-[#09090b] md:bg-[#09090b]/95 border-r border-zinc-800 flex flex-col justify-between z-50 transition-transform duration-300 w-64 ${
+        className={`fixed top-0 bottom-0 md:top-16 left-0 z-[70] md:z-40 w-[min(18rem,85vw)] md:w-64 pt-4 md:pt-6 pb-6 px-4 bg-[#09090b] border-r border-zinc-800 flex flex-col justify-between overflow-y-auto transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="flex flex-col gap-8 mt-12 md:mt-0">
-          <button
-            onClick={closeSidebar}
-            aria-label="Tutup menu"
-            className="md:hidden absolute top-24 right-3 w-11 h-11 flex items-center justify-center rounded-md text-zinc-400 hover:text-white focus-visible:outline-2 focus-visible:outline-white"
-          >
-            <X size={22} />
-          </button>
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center justify-between gap-2 md:hidden">
+            <span className="px-2 font-display font-semibold text-white">Menu</span>
+            <button
+              onClick={closeSidebar}
+              aria-label="Tutup menu"
+              className="w-11 h-11 flex items-center justify-center rounded-md text-zinc-400 hover:text-white focus-visible:outline-2 focus-visible:outline-white"
+            >
+              <X size={22} />
+            </button>
+          </div>
 
           <div className="flex items-center gap-3 px-2">
             {/* Initials fallback: the old avatar sent the owner's name to ui-avatars.com. */}
@@ -100,7 +106,7 @@ export function DashboardSidebar({ user }: SidebarProps) {
             />
             <div className="flex flex-col min-w-0">
               <span className="text-sm font-display font-semibold text-white truncate max-w-[140px]">{displayName}</span>
-              <span className="text-xs text-zinc-400">Pemilik server</span>
+              <span className="text-xs text-zinc-400">Akun EterVerse</span>
             </div>
           </div>
 
@@ -114,6 +120,16 @@ export function DashboardSidebar({ user }: SidebarProps) {
           </nav>
         </div>
 
+        <div className="flex flex-col gap-1 pt-6">
+        {/* The public menu is hidden on dashboard pages, so the way back lives here. */}
+        <Link
+          href="/"
+          onClick={closeSidebar}
+          className="min-h-[44px] flex items-center gap-3 px-4 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors focus-visible:outline-2 focus-visible:outline-white"
+        >
+          <House size={20} aria-hidden />
+          Ke beranda
+        </Link>
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
           className="min-h-[44px] flex items-center gap-3 px-4 rounded-lg text-sm font-medium text-zinc-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors w-full text-left focus-visible:outline-2 focus-visible:outline-white"
@@ -121,6 +137,7 @@ export function DashboardSidebar({ user }: SidebarProps) {
           <SignOut size={20} aria-hidden />
           Keluar
         </button>
+        </div>
       </aside>
     </>
   );

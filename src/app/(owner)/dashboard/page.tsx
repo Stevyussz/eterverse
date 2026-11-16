@@ -21,6 +21,7 @@ import { revalidatePath } from "next/cache";
 import { displayAddress, invalidateServerLists } from "@/lib/server-queries";
 import { getUptimeSummary } from "@/lib/server-status";
 import { DeleteServerButton } from "@/components/dashboard/DeleteServerButton";
+import { LiveIcon } from "@/components/ui/LiveIcon";
 
 const STATUS: Record<string, { label: string; className: string }> = {
   APPROVED: { label: "Tayang", className: "text-emerald-300 border-emerald-500/30 bg-emerald-500/10" },
@@ -144,7 +145,7 @@ export default async function DashboardOverview() {
               note={conversion !== null ? `${conversion}% dari pengunjung` : undefined}
             />
             <Metric label="Total vote" value={totals.votes} icon={<CaretUp size={18} weight="bold" aria-hidden />} />
-            <Metric label="Pemain online" value={totals.online} icon={<span className={`live-dot ${totals.online > 0 ? "is-online" : ""}`} aria-hidden />} />
+            <Metric label="Pemain online" value={totals.online} icon={<LiveIcon online={totals.online > 0} size={18} />} />
           </dl>
 
           <section className="flex flex-col gap-4" aria-labelledby="my-servers">
@@ -212,7 +213,7 @@ function ServerPanel({
             <div className="flex items-center gap-3 flex-wrap text-xs font-mono text-zinc-300">
               {!isRealm && (
                 <span className="inline-flex items-center gap-1.5">
-                  <span className={`live-dot ${server.liveStatus?.isOnline ? "is-online" : ""}`} aria-hidden />
+                  <LiveIcon online={!!server.liveStatus?.isOnline} />
                   {server.liveStatus?.isOnline ? `${server.liveStatus.currentPlayers || 0} online` : "Offline"}
                 </span>
               )}

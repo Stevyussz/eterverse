@@ -8,6 +8,7 @@ export const translations = {
   // Navigation
   "nav.home": { id: "Beranda", en: "Home" },
   "nav.discover": { id: "Jelajah", en: "Discover" },
+  "nav.leaderboard": { id: "Peringkat", en: "Leaderboard" },
   "nav.etershop": { id: "EterShop", en: "EterShop" },
   "nav.submitServer": { id: "Daftarkan Server", en: "Submit Server" },
   "nav.signIn": { id: "Masuk", en: "Sign In" },

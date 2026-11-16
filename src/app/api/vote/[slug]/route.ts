@@ -5,6 +5,7 @@ import connectToDatabase from '@/lib/db';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
 import { Server } from '@/models/Server';
 import { Vote, ensureVoteIndexes } from '@/models/Vote';
+import { VoteMonthly, wibMonth } from '@/models/VoteMonthly';
 import { isValidMinecraftUsername, sendVotifierVote } from '@/lib/votifier';
 
 type Params = { params: Promise<{ slug: string }> };
@@ -55,6 +56,13 @@ export async function POST(req: Request, { params }: Params) {
       { $inc: { 'metrics.votes': 1 } },
       { new: true }
     ).select('metrics.votes');
+
+    // Monthly leaderboard tally; a failure here must not undo or fail the vote itself.
+    await VoteMonthly.updateOne(
+      { serverId: server._id, month: wibMonth() },
+      { $inc: { votes: 1 } },
+      { upsert: true }
+    ).catch((err) => console.error('VoteMonthly tally failed:', err));
 
     // The reward is sent after the response: an offline Minecraft server used to hold the
     // player's vote request open for up to 4s. The outcome is logged for the owner's dashboard.

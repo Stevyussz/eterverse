@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { Users, Star, CaretUp, Trophy, Crown } from "@phosphor-icons/react";
 import Link from "next/link";
 import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
+import { LiveIcon } from "@/components/ui/LiveIcon";
 import { isLowEndDevice, isPageScrolling, isTouchDevice, subscribeScroll } from "@/lib/scroll-perf";
 
 interface ServerCardProps {
@@ -155,7 +156,7 @@ export function ServerCard({
           </span>
         ) : (
           <span className={`inline-flex items-center gap-1.5 rounded-md bg-black/80 border px-2 py-1 text-[11px] font-mono ${isOnline ? "border-cyan-400/40 text-cyan-200" : "border-white/10 text-zinc-400"}`}>
-            <span className={`live-dot ${isOnline ? "is-online" : ""}`} aria-hidden />
+            <LiveIcon online={isOnline} size={13} />
             {isOnline ? `${(onlinePlayers || 0).toLocaleString("id-ID")} online` : "Offline"}
           </span>
         )}

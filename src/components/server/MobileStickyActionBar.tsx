@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Users, CaretUp, GameController, Crown } from "@phosphor-icons/react";
+import { Check, Copy, CaretUp, GameController, Crown } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { submitVote } from "@/lib/vote-client";
 import { trackJoinIntent } from "@/lib/track-click";
 import { VoteUsernameDialog } from "@/components/server/VoteUsernameDialog";
 import { SafeImage } from "@/components/ui/SafeImage";
+import { LiveIcon } from "@/components/ui/LiveIcon";
 
 interface MobileStickyActionBarProps {
   serverName: string;
@@ -100,11 +101,6 @@ export function MobileStickyActionBar({
       <div className="flex items-center gap-2.5 min-w-0 flex-1">
         <div className="relative w-9 h-9 rounded-lg bg-black border border-white/15 overflow-hidden shrink-0">
           <SafeImage src={logoUrl} fallbackName={serverName} alt={`Logo ${serverName}`} className="w-full h-full object-cover text-xs" />
-          <span
-            className={`absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full ring-1 ring-black ${
-              isOnline ? "bg-cyan-400" : "bg-zinc-500"
-            }`}
-          />
         </div>
         
         <div className="flex flex-col min-w-0">
@@ -118,8 +114,8 @@ export function MobileStickyActionBar({
               </span>
             ) : (
               <span className="flex items-center gap-1 truncate">
-                <Users size={11} className="text-zinc-400 shrink-0" weight="fill" />
-                <span>{currentPlayers.toLocaleString()} Online</span>
+                <LiveIcon online={isOnline} size={12} />
+                <span>{isOnline ? `${currentPlayers.toLocaleString("id-ID")} online` : "Offline"}</span>
               </span>
             )}
           </div>

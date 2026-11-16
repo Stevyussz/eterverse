@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Cube, DiscordLogo, List, X, Sparkle, PlusCircle, SignOut } from "@phosphor-icons/react";
+import { Cube, DiscordLogo, List, X, Sparkle, PlusCircle, SignOut, CaretRight } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 import { useLanguage } from "@/context/LanguageContext";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { DASHBOARD_MENU_EVENT } from "@/lib/ui-events";
 
 interface NavbarProps {
   isLoggedIn: boolean;
@@ -46,18 +47,27 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
   const navLinks = [
     { href: "/", label: t("nav.home") },
     { href: "/discover", label: t("nav.discover") },
+    { href: "/leaderboard", label: t("nav.leaderboard") },
     { href: "/etershop", label: t("nav.etershop"), isGold: true },
   ];
 
+  const isDashboard = pathname?.startsWith("/dashboard");
+
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-smooth ${
-        scrolled || mobileOpen
-          ? "bg-[#09090b] sm:bg-[#09090b]/90 sm:backdrop-blur-md border-b border-white/10 py-3.5 shadow-2xl"
-          : "bg-transparent py-5"
+      className={`fixed top-0 w-full z-50 ${
+        isDashboardOrAdmin
+          ? // App pages: one solid bar with a fixed 64px height. The shrinking transparent bar
+            // left a gap (or an overlap) against the dashboard bar and admin tabs below it.
+            "h-16 flex items-center bg-[#09090b] border-b border-white/10"
+          : `transition-all duration-smooth ${
+              scrolled || mobileOpen
+                ? "bg-[#09090b] sm:bg-[#09090b]/90 sm:backdrop-blur-md border-b border-white/10 py-3.5 shadow-2xl"
+                : "bg-transparent py-5"
+            }`
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
         
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group z-50">
@@ -158,19 +168,33 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
             </Link>
           )}
 
-          {/* Mobile Hamburger Toggle Button */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
-            className="md:hidden p-2 rounded-md text-zinc-300 hover:text-white bg-white/5 border border-white/10 transition-colors"
-          >
-            {mobileOpen ? <X size={20} weight="bold" /> : <List size={20} weight="bold" />}
-          </button>
+          {/* Mobile menu button. On dashboard pages it opens the dashboard drawer instead of
+              the public menu, so there is a single menu button rather than two stacked bars.
+              Admin pages have their own tab bar and need no button here. */}
+          {isDashboard ? (
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent(DASHBOARD_MENU_EVENT))}
+              aria-controls="dashboard-nav"
+              className="md:hidden inline-flex items-center gap-2 min-h-[44px] px-3 rounded-md text-sm text-zinc-200 hover:text-white bg-white/5 border border-white/10 transition-colors focus-visible:outline-2 focus-visible:outline-white"
+            >
+              <List size={20} weight="bold" aria-hidden />
+              Menu
+            </button>
+          ) : !isDashboardOrAdmin ? (
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
+              aria-expanded={mobileOpen}
+              className="md:hidden w-11 h-11 flex items-center justify-center rounded-md text-zinc-300 hover:text-white bg-white/5 border border-white/10 transition-colors focus-visible:outline-2 focus-visible:outline-white"
+            >
+              {mobileOpen ? <X size={20} weight="bold" /> : <List size={20} weight="bold" />}
+            </button>
+          ) : null}
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
-      {mobileOpen && (
+      {/* Mobile Drawer Menu (public pages only) */}
+      {mobileOpen && !isDashboardOrAdmin && (
         <div className="md:hidden bg-[#09090b]/95 backdrop-blur-2xl border-b border-zinc-800 px-6 py-6 flex flex-col gap-4 animate-fade-in shadow-2xl">
           {/* Mobile Language Switcher Row */}
           <div className="flex items-center justify-between pb-3 border-b border-zinc-800/80">
@@ -197,7 +221,7 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
                     {link.isGold && <Sparkle size={16} weight="fill" className="text-amber-400" />}
                     {link.label}
                   </span>
-                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                  {isActive && <CaretRight size={14} weight="bold" className="text-white" aria-hidden />}
                 </Link>
               );
             })}

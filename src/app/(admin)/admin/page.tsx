@@ -18,6 +18,7 @@ import { plainExcerpt } from "@/lib/text";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { ConfirmActionButton } from "@/components/dashboard/ConfirmActionButton";
 import { SubmitButton } from "@/components/dashboard/SubmitButton";
+import { LiveIcon } from "@/components/ui/LiveIcon";
 import {
   approveServer,
   rejectServer,
@@ -175,7 +176,7 @@ function StatusLine({ server }: { server: any }) {
   const checked = server.liveStatus?.lastChecked;
   return (
     <span className="inline-flex items-center gap-1.5">
-      <span className={`live-dot ${server.liveStatus?.isOnline ? "is-online" : ""}`} aria-hidden />
+      <LiveIcon online={!!server.liveStatus?.isOnline} />
       {server.liveStatus?.isOnline ? `Online, ${server.liveStatus.currentPlayers || 0} pemain` : "Offline"}
       {checked && <span className="text-zinc-400">· dicek {timeAgo(checked)}</span>}
       {server.liveStatus?.version && <span className="text-zinc-400">· {server.liveStatus.version}</span>}

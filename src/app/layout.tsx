@@ -111,15 +111,9 @@ export default async function RootLayout({
 
   return (
     <html lang="id" className="dark">
-      <head>
-        <meta property="og:image" content={`${SITE_URL}/og-image.jpg`} />
-        <meta property="og:image:secure_url" content={`${SITE_URL}/og-image.jpg`} />
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="EterVerse - Platform Server Minecraft Indonesia" />
-        <link rel="image_src" href={`${SITE_URL}/og-image.jpg`} />
-      </head>
+      {/* No hand-written og:image tags here: they were emitted on every page ahead of the
+          page's own image, so WhatsApp and Discord always showed the generic site card.
+          The default image comes from `metadata.openGraph` above; server pages override it. */}
       <body
         className={`${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} antialiased flex flex-col min-h-screen`}
       >

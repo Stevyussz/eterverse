@@ -5,6 +5,7 @@ import { isLowEndDevice } from "@/lib/scroll-perf";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { plainExcerpt } from "@/lib/text";
+import { LiveIcon } from "@/components/ui/LiveIcon";
 import { CaretLeft, CaretRight, Star, ArrowRight } from "@phosphor-icons/react";
 import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
 import Link from "next/link";
@@ -130,7 +131,7 @@ export function HeroSlider({
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-300">
                       {server.serverType !== "REALM" && (
                         <span className="inline-flex items-center gap-1.5">
-                          <span className={`live-dot ${server.isOnline ? "is-online" : ""}`} aria-hidden />
+                          <LiveIcon online={!!server.isOnline} />
                           {server.isOnline ? `${(server.onlinePlayers || 0).toLocaleString("id-ID")} pemain online` : "Sedang offline"}
                         </span>
                       )}
@@ -188,9 +189,10 @@ export function HeroSlider({
               aria-current={idx === selectedIndex ? "true" : undefined}
               className="h-11 px-1.5 flex items-center justify-center group/dot focus-visible:outline-2 focus-visible:outline-white rounded-md"
             >
+              {/* Segments instead of round dots, so the slide indicator reads as a progress track. */}
               <span
-                className={`block h-2 rounded-full transition-[width,background-color] duration-200 ${
-                  idx === selectedIndex ? "w-7 bg-white" : "w-2 bg-white/30 group-hover/dot:bg-white/50"
+                className={`block h-1 w-6 rounded-sm transition-colors duration-200 ${
+                  idx === selectedIndex ? "bg-white" : "bg-white/25 group-hover/dot:bg-white/50"
                 }`}
               />
             </button>

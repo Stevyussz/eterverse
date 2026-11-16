@@ -14,6 +14,9 @@ import { ServerChannelTabs } from "@/components/server/ServerChannelTabs";
 import { ShareServerButton } from "@/components/server/ShareServerButton";
 import { UptimePanel } from "@/components/server/UptimePanel";
 import { SafeImage } from "@/components/ui/SafeImage";
+import { LiveIcon } from "@/components/ui/LiveIcon";
+import { FavoriteButton } from "@/components/server/FavoriteButton";
+import { Favorite } from "@/models/Favorite";
 import { isAdminEmail } from "@/lib/admin-guard";
 import { getUptimeSummary, refreshIfStale } from "@/lib/server-status";
 import { after } from "next/server";
@@ -43,7 +46,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://eterverse.vercel.app";
-  const ogImage = server.bannerUrl || server.logoUrl || `${baseUrl}/og-image.jpg`;
+  // Generated share card (name, live status, IP). The version changes with each status
+  // check so chat apps that cache by URL pick up a fresh card instead of a stale one.
+  const ogVersion = server.liveStatus?.lastChecked ? new Date(server.liveStatus.lastChecked).getTime().toString(36) : "0";
+  const ogImage = `${baseUrl}/api/og/${encodeURIComponent(server.slug)}?v=${ogVersion}`;
   const onlineCount = server.liveStatus?.currentPlayers || 0;
   // No invented "5.0" for unrated servers: the rating appears only once players have rated.
   const ratingText = server.metrics?.rating ? ` Rating ${server.metrics.rating.toFixed(1)}/5.` : "";
@@ -73,7 +79,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: `${server.name} Minecraft Server Banner`,
+          alt: `${server.name}: status server, IP, dan jumlah pemain`,
         },
       ],
     },
@@ -122,6 +128,9 @@ export default async function ServerProfilePage(props: Props) {
     userRating = existing?.stars ?? 0;
   }
   const ratingCount = await Rating.countDocuments({ serverId: doc._id });
+  const isFavorited = session?.user?.id
+    ? !!(await Favorite.exists({ userId: session.user.id, serverId: doc._id }))
+    : false;
 
   // A missing history must never break the page; the panel just stays hidden.
   const uptime = doc.serverType === "REALM" ? null : await getUptimeSummary(serverData._id).catch(() => null);
@@ -205,10 +214,9 @@ export default async function ServerProfilePage(props: Props) {
                     alt={`Logo ${serverData.name}`}
                     className="w-full h-full object-cover"
                   />
-                  {/* The one pulsing status on the page: this header is its focal point. */}
                   {!isRealm && (
-                    <div className="absolute bottom-2 right-2 flex items-center justify-center rounded-full bg-zinc-950 p-1">
-                      <span className={`live-dot ${isOnline ? "is-online pulse" : ""}`} />
+                    <div className="absolute bottom-1.5 right-1.5 flex items-center justify-center rounded-md bg-zinc-950/90 border border-zinc-800 p-1">
+                      <LiveIcon online={isOnline} size={16} />
                       <span className="sr-only">{isOnline ? "Online" : "Offline"}</span>
                     </div>
                   )}
@@ -300,6 +308,9 @@ export default async function ServerProfilePage(props: Props) {
                   isRealm={isRealm}
                   realmCode={serverData.realmCode}
                 />
+                {serverData.moderationStatus === "APPROVED" && (
+                  <FavoriteButton slug={serverData.slug} initial={isFavorited} />
+                )}
                 <ShareServerButton
                   serverName={serverData.name}
                   slug={serverData.slug}
