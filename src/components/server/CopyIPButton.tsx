@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "sonner";
 import { trackJoinIntent } from "@/lib/track-click";
@@ -51,28 +51,9 @@ export function CopyIPButton({
   };
 
   return (
-    <button
-      onClick={handleCopy}
-      className={`font-mono text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 border select-none active:scale-[0.97] shrink-0 ${
-        copied
-          ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
-          : "bg-zinc-100 text-zinc-950 hover:bg-white border-zinc-200/40 hover:border-zinc-300 shadow-sm hover:shadow-[0_2px_12px_rgba(255,255,255,0.08)]"
-      } ${className}`}
-      title={fullAddress}
-    >
-      {copied ? (
-        <>
-          <Check size={16} weight="bold" className="text-emerald-400 shrink-0" />
-          <span className="font-semibold">{t("server.copied")}</span>
-        </>
-      ) : (
-        <>
-          <Copy size={16} className="text-zinc-700 shrink-0" />
-          <span className="font-medium tracking-tight">
-            {isRealm ? t("server.copyRealm") : t("server.copyIp")}
-          </span>
-        </>
-      )}
+    <button onClick={handleCopy} className={`px-btn px-btn-gold shrink-0 ${className}`} title={fullAddress} aria-live="polite">
+      <PixelIcon name={copied ? "check" : "copy"} size={16} />
+      {copied ? t("server.copied") : isRealm ? t("server.copyRealm") : t("server.copyIp")}
     </button>
   );
 }

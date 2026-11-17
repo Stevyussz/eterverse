@@ -1,40 +1,52 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+/*
+ * EterVerse design tokens. Source of truth: /DESIGN-ETERVERSE.md (family rules: /DESIGN.md).
+ * 60% cream surfaces, 30% prismarine, 10% gold. Neutrals are earth browns.
+ * Every contrast pair used for text is computed in DESIGN-ETERVERSE.md section 3.
+ */
 @theme {
-  /* Colors */
-  --color-eter-abyss: #09090B;
-  --color-eter-surface: rgba(9, 9, 11, 0.75);
-  --color-eter-starlight: #FAFAFA;
-  --color-eter-gold: #EAB308;
-  --color-eter-cyan: #22D3EE;
-  --color-eter-red: #F43F5E;
-  
-  /* Fonts */
-  --font-display: var(--font-outfit), sans-serif;
-  --font-body: var(--font-plus-jakarta), sans-serif;
-  --font-mono: var(--font-jetbrains-mono), monospace;
+  --font-display: var(--font-pixelify), ui-monospace, monospace;
+  --font-pixel: var(--font-pixelify), ui-monospace, monospace;
+  --font-body: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
-  /* Custom Transitions */
-  --transition-property-smooth: all;
-  --transition-timing-function-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-duration-smooth: 300ms;
+  /* 60: surfaces */
+  --color-cream: #F2EAD3;
+  --color-panel: #FFFBF0;
+  --color-panel-2: #F7EFDC;
+  --color-slot: #E6DABD;
+  /* 30: prismarine (the "server" biome) */
+  --color-prism-d: #1D5E57;
+  --color-prism: #2E8077;
+  --color-prism-l: #77C9BC;
+  /* 10: gold */
+  --color-gold: #F2B318;
+  --color-gold-d: #8A5A00;
+  --color-gold-l: #FFF1C2;
+  /* neutrals */
+  --color-ink: #2E2216;
+  --color-ink-2: #5E4A33;
+  --color-ink-3: #7A644A;
+  --color-dirt: #6B4528;
+  --color-dirt-d: #4E3420;
+  /* status: never decoration */
+  --color-online: #2F8F1F;   /* signal bars (graphic, 4.0:1 on panel) */
+  --color-online-d: #226B14; /* "online" text (6.4:1 on panel) */
+  --color-redstone: #B8322A;
+  --color-redstone-l: #FBE3DF;
+  --color-lapis: #1E3F8F;    /* info (prismarine is the biome, so info moves to lapis) */
+  --color-lapis-l: #E3EAFB;
+  /* the "screen" a trailer plays on */
+  --color-screen: #1B1510;
 
-  /* `animate-fade-in` was used across 10+ components but never defined, so nothing animated.
-     Opacity plus a 4px rise: tells the eye new content arrived without moving layout. */
-  --animate-fade-in: fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1) both;
-
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  --animate-fade-in: px-pop 220ms steps(4) both;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+:root {
+  --px: 3px; /* pixel border unit */
 }
 
 @layer base {
@@ -42,212 +54,521 @@
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
-
   @media (pointer: coarse) {
-    html {
-      scroll-behavior: auto; /* Restores instant, lag-free native touch momentum on mobile */
-    }
+    html { scroll-behavior: auto; }
   }
-
   body {
-    background-color: var(--color-eter-abyss);
-    color: var(--color-eter-starlight);
+    background-color: var(--color-cream);
+    color: var(--color-ink);
     font-family: var(--font-body);
-    scrollbar-color: rgba(255, 255, 255, 0.15) var(--color-eter-abyss); 
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    /* manipulation keeps pinch-zoom (pan-y blocked it) and still drops the double-tap delay */
+    /* manipulation keeps pinch-zoom and drops the double-tap delay */
     touch-action: manipulation;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
+  h1, h2, h3, h4 {
+    font-family: var(--font-pixel);
   }
-
   ::selection {
-    background-color: rgba(34, 211, 238, 0.3);
-    color: #FAFAFA;
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+  /* One focus style everywhere: thick gold dashed outline, visible on cream, prismarine and video. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px dashed var(--color-gold-d);
+    outline-offset: 3px;
+  }
+  .on-dark :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible,
+  :where(a, button, input, select, textarea, summary, [tabindex]).on-dark:focus-visible {
+    outline-color: var(--color-gold);
+  }
+  img.pixelated, .pixelated img { image-rendering: pixelated; }
+}
+
+/* ─────────────────────────────────────────────
+   PIXEL COMPONENTS (canonical family names, see DESIGN.md section 4)
+   Notched corners come from four one-sided box-shadows: the corner pixels stay empty.
+   ───────────────────────────────────────────── */
+@layer components {
+  .px-frame {
+    --frame: var(--color-ink);
+    box-shadow:
+      0 calc(-1 * var(--px)) 0 0 var(--frame),
+      0 var(--px) 0 0 var(--frame),
+      calc(-1 * var(--px)) 0 0 0 var(--frame),
+      var(--px) 0 0 0 var(--frame);
+  }
+  .px-panel {
+    --frame: var(--color-ink);
+    --drop: rgb(46 34 22 / 0.22);
+    background: var(--color-panel);
+    color: var(--color-ink);
+    box-shadow:
+      0 calc(-1 * var(--px)) 0 0 var(--frame),
+      0 var(--px) 0 0 var(--frame),
+      calc(-1 * var(--px)) 0 0 0 var(--frame),
+      var(--px) 0 0 0 var(--frame),
+      calc(var(--px) * 2) calc(var(--px) * 3) 0 0 var(--drop);
+  }
+  .px-flat {
+    --frame: var(--color-ink);
+    background: var(--color-panel);
+    color: var(--color-ink);
+    box-shadow:
+      0 calc(-1 * var(--px)) 0 0 var(--frame),
+      0 var(--px) 0 0 var(--frame),
+      calc(-1 * var(--px)) 0 0 0 var(--frame),
+      var(--px) 0 0 0 var(--frame);
+  }
+
+  /* Block button */
+  .px-btn {
+    --face: var(--color-prism-d);
+    --fg: #ffffff;
+    --frame: var(--color-ink);
+    --hi: rgb(255 255 255 / 0.28);
+    --lo: rgb(0 0 0 / 0.3);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.55rem 1.1rem;
+    background: var(--face);
+    color: var(--fg);
+    font-family: var(--font-pixel);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    line-height: 1.1;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    box-shadow:
+      0 calc(-1 * var(--px)) 0 0 var(--frame),
+      0 var(--px) 0 0 var(--frame),
+      calc(-1 * var(--px)) 0 0 0 var(--frame),
+      var(--px) 0 0 0 var(--frame),
+      inset calc(-1 * var(--px)) calc(-1 * var(--px) - 1px) 0 0 var(--lo),
+      inset var(--px) var(--px) 0 0 var(--hi);
+    transition: transform 80ms steps(2), filter 80ms;
+  }
+  .px-btn:hover:not(:disabled):not([aria-disabled="true"]) { filter: brightness(1.08); }
+  .px-btn:active:not(:disabled):not([aria-disabled="true"]) {
+    transform: translateY(2px);
+    box-shadow:
+      0 calc(-1 * var(--px)) 0 0 var(--frame),
+      0 var(--px) 0 0 var(--frame),
+      calc(-1 * var(--px)) 0 0 0 var(--frame),
+      var(--px) 0 0 0 var(--frame),
+      inset var(--px) var(--px) 0 0 var(--lo);
+  }
+  .px-btn:disabled,
+  .px-btn[aria-disabled="true"] {
+    --face: var(--color-slot);
+    --fg: var(--color-ink-2);
+    --frame: var(--color-ink-3);
+    cursor: not-allowed;
+  }
+  .px-btn-gold { --face: var(--color-gold); --fg: var(--color-ink); --hi: rgb(255 255 255 / 0.45); --lo: rgb(120 70 0 / 0.35); }
+  .px-btn-cream { --face: var(--color-panel); --fg: var(--color-ink); --hi: #ffffff; --lo: rgb(46 34 22 / 0.18); }
+  .px-btn-red { --face: var(--color-redstone); --fg: #ffffff; }
+  .px-btn-dirt { --face: var(--color-dirt-d); --fg: var(--color-cream); }
+  .px-btn-discord { --face: #4752C4; --fg: #ffffff; }
+  .px-btn-sm { min-height: 36px; padding: 0.35rem 0.75rem; font-size: 0.875rem; }
+  .px-btn-icon { min-height: 44px; min-width: 44px; padding: 0; }
+  .px-btn-block { display: flex; width: 100%; }
+
+  /* Inventory slot (recessed). Selected = gold frame. */
+  .px-slot {
+    position: relative;
+    background: var(--color-slot);
+    color: var(--color-ink);
+    box-shadow:
+      inset var(--px) var(--px) 0 0 rgb(46 34 22 / 0.28),
+      inset calc(-1 * var(--px)) calc(-1 * var(--px)) 0 0 rgb(255 255 255 / 0.75);
+    transition: background-color 80ms;
+  }
+  button.px-slot:hover:not(:disabled),
+  a.px-slot:hover { background: var(--color-panel-2); }
+  .px-slot[aria-pressed="true"],
+  .px-slot[aria-current="page"],
+  .px-slot[aria-selected="true"],
+  .px-slot.is-selected {
+    background: var(--color-gold-l);
+    box-shadow:
+      0 calc(-1 * var(--px)) 0 0 var(--color-gold-d),
+      0 var(--px) 0 0 var(--color-gold-d),
+      calc(-1 * var(--px)) 0 0 0 var(--color-gold-d),
+      var(--px) 0 0 0 var(--color-gold-d),
+      inset var(--px) var(--px) 0 0 rgb(255 255 255 / 0.8),
+      inset calc(-1 * var(--px)) calc(-1 * var(--px)) 0 0 rgb(138 90 0 / 0.25);
+  }
+  .px-slot:disabled {
+    cursor: not-allowed;
+    opacity: 0.75;
+    background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgb(46 34 22 / 0.08) 6px 9px);
+  }
+
+  /* Input */
+  .px-input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.65rem 0.9rem;
+    background: #ffffff;
+    color: var(--color-ink);
+    font-size: 1rem;
+    box-shadow:
+      0 calc(-1 * var(--px)) 0 0 var(--color-ink),
+      0 var(--px) 0 0 var(--color-ink),
+      calc(-1 * var(--px)) 0 0 0 var(--color-ink),
+      var(--px) 0 0 0 var(--color-ink),
+      inset var(--px) var(--px) 0 0 rgb(46 34 22 / 0.12);
+  }
+  textarea.px-input { min-height: 120px; line-height: 1.6; }
+  select.px-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%232E2216' d='M2 4h8v1H2zM3 5h6v1H3zM4 6h4v1H4zM5 7h2v1H5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.8rem center; background-size: 14px; padding-right: 2.4rem; }
+  .px-input::placeholder { color: var(--color-ink-3); opacity: 1; }
+  .px-input:focus-visible { outline: 3px dashed var(--color-gold-d); outline-offset: 5px; }
+  .px-input[aria-invalid="true"] {
+    box-shadow:
+      0 calc(-1 * var(--px)) 0 0 var(--color-redstone),
+      0 var(--px) 0 0 var(--color-redstone),
+      calc(-1 * var(--px)) 0 0 0 var(--color-redstone),
+      var(--px) 0 0 0 var(--color-redstone);
+  }
+  .px-label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-family: var(--font-pixel);
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+  }
+  .px-help { margin-top: 0.5rem; font-size: 0.8125rem; color: var(--color-ink-2); }
+
+  /* Segmented XP bar */
+  .px-bar {
+    position: relative;
+    height: 18px;
+    background: var(--color-slot);
+    box-shadow:
+      0 calc(-1 * var(--px)) 0 0 var(--color-ink),
+      0 var(--px) 0 0 var(--color-ink),
+      calc(-1 * var(--px)) 0 0 0 var(--color-ink),
+      var(--px) 0 0 0 var(--color-ink),
+      inset 0 var(--px) 0 0 rgb(46 34 22 / 0.2);
+    overflow: hidden;
+  }
+  .px-bar > span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background:
+      linear-gradient(to bottom, rgb(255 255 255 / 0.35) 0 4px, transparent 4px),
+      repeating-linear-gradient(90deg, #6DBA3A 0 14px, #3F8A1F 14px 16px);
+    transition: width 400ms steps(8);
+  }
+  .px-bar-gold > span {
+    background:
+      linear-gradient(to bottom, rgb(255 255 255 / 0.45) 0 4px, transparent 4px),
+      repeating-linear-gradient(90deg, var(--color-gold) 0 14px, var(--color-gold-d) 14px 16px);
+  }
+
+  /* Small label chip */
+  .px-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.5rem;
+    font-family: var(--font-pixel);
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    background: var(--color-panel-2);
+    color: var(--color-ink);
+    white-space: nowrap;
+    box-shadow:
+      0 -2px 0 0 var(--color-ink), 0 2px 0 0 var(--color-ink),
+      -2px 0 0 0 var(--color-ink), 2px 0 0 0 var(--color-ink);
+  }
+  .px-chip-gold { background: var(--color-gold-l); }
+  .px-chip-prism { background: var(--color-prism-l); }
+  .px-chip-dark { background: var(--color-ink); color: var(--color-panel); }
+
+  .px-title {
+    font-family: var(--font-pixel);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.05;
+  }
+  .px-title-shadow { text-shadow: 3px 3px 0 rgb(46 34 22 / 0.18); }
+  .px-title-shadow-dark { text-shadow: 3px 3px 0 rgb(0 0 0 / 0.35); }
+
+  /* Notice boxes: status always carries an icon and text, never colour alone. */
+  .px-note { display: flex; gap: 0.75rem; padding: 0.9rem 1rem; background: var(--color-panel-2); color: var(--color-ink); box-shadow: 0 -2px 0 0 var(--color-ink), 0 2px 0 0 var(--color-ink), -2px 0 0 0 var(--color-ink), 2px 0 0 0 var(--color-ink); }
+  .px-note-error { background: var(--color-redstone-l); }
+  .px-note-info { background: var(--color-lapis-l); }
+  .px-note-gold { background: var(--color-gold-l); }
+
+  /* ── EterVerse motif 1: prismarine header with pixel drips ── */
+  .prism-top {
+    background-color: var(--color-prism-d);
+    position: relative;
+  }
+  .prism-top::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 12px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='12' shape-rendering='crispEdges'%3E%3Cg fill='%231D5E57'%3E%3Cpath d='M0 0h4v4H0zM8 0h4v8H8zM20 0h4v4h-4zM24 0h4v8h-4zM36 0h4v4h-4zM44 0h4v8h-4z'/%3E%3C/g%3E%3Cg fill='%23123F3A'%3E%3Cpath d='M0 4h4v4H0zM4 0h4v4H4zM8 8h4v4H8zM12 0h4v4h-4zM20 4h4v4h-4zM24 8h4v4h-4zM28 0h4v4h-4zM36 4h4v4h-4zM40 0h4v4h-4zM44 8h4v4h-4z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 48px 12px;
+    background-repeat: repeat-x;
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+  /* Prismarine brick texture for big surfaces (hero bands, partner slots). */
+  .prism-bricks {
+    background-color: var(--color-prism-d);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' shape-rendering='crispEdges'%3E%3Crect width='32' height='32' fill='%231D5E57'/%3E%3Cg fill='%23194F49'%3E%3Cpath d='M0 15h32v2H0zM15 0h2v15h-2zM7 17h2v15H7zM23 17h2v15h-2z'/%3E%3C/g%3E%3Cg fill='%23246B63'%3E%3Cpath d='M2 2h3v2H2zM20 6h3v2h-3zM11 21h3v2h-3zM27 25h3v2h-3z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 32px 32px;
+    image-rendering: pixelated;
+  }
+
+  /* Footer ground: grass lip, then dirt with darker specks (family motif) */
+  .ground {
+    position: relative;
+    background-color: var(--color-dirt-d);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' shape-rendering='crispEdges'%3E%3Cg fill='%23432C1A'%3E%3Cpath d='M6 9h3v3H6zM21 3h3v3h-3zM36 15h3v3h-3zM12 27h3v3h-3zM30 33h3v3h-3zM42 39h3v3h-3zM3 42h3v3H3zM24 21h3v3h-3z'/%3E%3C/g%3E%3Cg fill='%235C3D25'%3E%3Cpath d='M15 15h3v3h-3zM39 3h3v3h-3zM3 30h3v3H3zM27 42h3v3h-3zM45 24h3v3h-3z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 48px 48px;
+    image-rendering: pixelated;
+  }
+  .ground::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -8px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='20' shape-rendering='crispEdges'%3E%3Crect width='48' height='8' y='4' fill='%236DBA3A'/%3E%3Cg fill='%236DBA3A'%3E%3Cpath d='M8 0h4v4H8zM28 0h4v4h-4zM16 2h4v2h-4zM40 2h4v2h-4z'/%3E%3C/g%3E%3Crect width='48' height='8' y='12' fill='%234E9A2A'/%3E%3Cg fill='%233F8A1F'%3E%3Cpath d='M0 16h4v4H0zM12 16h4v4h-4zM20 16h4v4h-4zM36 16h4v4h-4zM44 16h4v4h-4z'/%3E%3C/g%3E%3Cg fill='%237CC447'%3E%3Cpath d='M4 4h4v4H4zM20 4h4v4h-4zM36 4h4v4h-4z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 48px 20px;
+    background-repeat: repeat-x;
+    image-rendering: pixelated;
+  }
+
+  /* Sandstone band behind page headers */
+  .sand-band {
+    background-color: #F4E9CF;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' shape-rendering='crispEdges'%3E%3Crect width='32' height='32' fill='%23F4E9CF'/%3E%3Crect y='0' width='32' height='2' fill='%23EADCB6'/%3E%3Crect y='16' width='32' height='2' fill='%23EADCB6'/%3E%3Crect x='6' y='6' width='2' height='2' fill='%23E9DAB2'/%3E%3Crect x='22' y='10' width='2' height='2' fill='%23E9DAB2'/%3E%3Crect x='14' y='22' width='2' height='2' fill='%23E9DAB2'/%3E%3Crect x='28' y='26' width='2' height='2' fill='%23E9DAB2'/%3E%3Crect x='2' y='28' width='2' height='2' fill='%23F8F0DC'/%3E%3Crect x='18' y='4' width='2' height='2' fill='%23F8F0DC'/%3E%3C/svg%3E");
+    background-size: 32px 32px;
+    image-rendering: pixelated;
+    border-bottom: 3px solid var(--color-ink);
+  }
+
+
+  /* Wooden sidebar for the owner and admin panels (family rule: "sidebar kayu").
+     Dark oak planks: cream text on #4E3420 is 9.5:1. */
+  .wood {
+    background-color: var(--color-dirt-d);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='32' shape-rendering='crispEdges'%3E%3Crect width='64' height='32' fill='%234E3420'/%3E%3Cg fill='%233F2A19'%3E%3Cpath d='M0 15h64v2H0zM0 31h64v1H0zM22 0h2v15h-2zM50 17h2v14h-2z'/%3E%3C/g%3E%3Cg fill='%23583B25'%3E%3Cpath d='M4 5h8v1H4zM30 9h10v1H30zM8 22h12v1H8zM36 26h8v1h-8z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 64px 32px;
+    image-rendering: pixelated;
+    color: var(--color-cream);
+  }
+  .wood-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-height: 44px;
+    padding: 0 0.85rem;
+    font-family: var(--font-pixel);
+    font-size: 0.9375rem;
+    color: var(--color-cream);
+  }
+  .wood-link:hover { background: rgb(0 0 0 / 0.22); }
+  .wood-link[aria-current="page"] {
+    background: var(--color-gold-l);
+    color: var(--color-ink);
+    box-shadow:
+      0 -3px 0 0 var(--color-gold-d), 0 3px 0 0 var(--color-gold-d),
+      -3px 0 0 0 var(--color-gold-d), 3px 0 0 0 var(--color-gold-d);
+  }
+
+  /* ── EterVerse motif 2: the trailer "screen" ──
+     A trailer plays on a dark in-world monitor framed in ink. Text over video sits on a
+     solid ink plate (no gradient scrims, no blur). */
+  .px-screen {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-screen);
+    box-shadow:
+      0 calc(-1 * var(--px)) 0 0 var(--color-ink),
+      0 var(--px) 0 0 var(--color-ink),
+      calc(-1 * var(--px)) 0 0 0 var(--color-ink),
+      var(--px) 0 0 0 var(--color-ink);
+  }
+  .px-plate {
+    background: rgb(27 21 16 / 0.88);
+    color: #FFFBF0;
+  }
+
+  /* ── EterVerse motif 3: IP chip, the way a player types it into Multiplayer ── */
+  .ip-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    padding: 0.4rem 0.6rem;
+    background: var(--color-ink);
+    color: #F7EFDC;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    box-shadow: inset 2px 2px 0 0 rgb(0 0 0 / 0.4);
+  }
+  .ip-chip-caret {
+    color: var(--color-gold);
+    font-weight: 700;
+  }
+  .server-card:hover .ip-chip-caret,
+  .server-card:focus-visible .ip-chip-caret { animation: px-blink 1s steps(1) infinite; }
+}
+
+@layer utilities {
+  .font-pixel { font-family: var(--font-pixel); }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .scrollbar-none { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+}
+
+/* Item "bob" on hover: stepped so it reads as pixel motion */
+@keyframes px-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.hover-bob:hover .bob-target,
+.hover-bob:focus-visible .bob-target { animation: px-bob 600ms steps(2) infinite; }
+
+/* Card lift: steps, not a smooth float */
+.px-lift { transition: transform 120ms steps(2); }
+.px-lift:hover { transform: translate(-2px, -2px); }
+
+@keyframes px-pop {
+  0% { transform: translateY(12px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.px-pop { animation: px-pop 220ms steps(4) both; }
+
+@keyframes px-blink { 50% { opacity: 0; } }
+.px-blink { animation: px-blink 1s steps(1) infinite; }
+
+@keyframes px-spin { to { transform: rotate(360deg); } }
+.px-spin { animation: px-spin 0.8s steps(8) infinite; }
+
+@keyframes px-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(4px); }
+}
+.px-shake { animation: px-shake 0.36s steps(5) both; }
+
+@keyframes px-grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.px-grow-x { transform-origin: left; animation: px-grow-x 0.7s steps(10) both; }
+
+/* Signal bars "ping" in one by one when a server is online (once, not a loop) */
+@keyframes px-bar-in { from { opacity: 0.2; } to { opacity: 1; } }
+.signal-live rect { animation: px-bar-in 0.6s steps(1) both; }
+.signal-live rect:nth-child(2) { animation-delay: 0.15s; }
+.signal-live rect:nth-child(3) { animation-delay: 0.3s; }
+.signal-live rect:nth-child(4) { animation-delay: 0.45s; }
+
+/* Vote: emerald pops up from the button */
+@keyframes px-emerald-up {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  30% { transform: translateY(-14px) scale(1.15); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1); opacity: 0; }
+}
+.px-emerald-up { animation: px-emerald-up 0.8s steps(8) both; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-slot); }
+::-webkit-scrollbar-thumb { background: var(--color-ink-3); border: 2px solid var(--color-slot); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-ink-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-/* Custom Scrollbar for Webkit */
-::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
-}
-
-::-webkit-scrollbar-track {
-  background: #09090B;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 9999px;
-  transition: background 0.2s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(34, 211, 238, 0.4);
-}
-
-/* Glow & Aesthetic Utilities */
-.text-glow-cyan {
-  text-shadow: 0 0 16px rgba(34, 211, 238, 0.5);
-}
-
-.text-glow-gold {
-  text-shadow: 0 0 16px rgba(234, 179, 8, 0.5);
-}
-
-.shadow-glow-cyan {
-  box-shadow: 0 0 25px rgba(34, 211, 238, 0.25);
-}
-
-.shadow-glow-gold {
-  box-shadow: 0 0 25px rgba(234, 179, 8, 0.25);
-}
-
-/* Background utama (Gambar wallpaper) */
-.bg-wallpaper {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -2;
-  object-fit: cover;
-  pointer-events: none;
-  contain: strict;
-  will-change: transform;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-/* Vignette gelap di sekeliling layar dan bagian bawah */
-.bg-vignette {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  pointer-events: none;
-  contain: strict;
-  will-change: transform;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  background: 
-    linear-gradient(to top, #09090B 15%, rgba(9,9,11,0.85) 40%, rgba(9,9,11,0.2) 100%),
-    radial-gradient(circle at center, transparent 30%, rgba(9,9,11,0.75) 100%);
-}
-
-/* Per-card render skipping. On a whole grid, a 420px placeholder made the page height
-   jump by ~1500px whenever a section came into view on mobile. `auto` remembers the real size. */
+/* Per-card render skipping. `auto` remembers the real size once rendered. */
 .card-cv {
   content-visibility: auto;
-  contain-intrinsic-size: auto 440px;
+  contain-intrinsic-size: auto 420px;
 }
 
-@media (min-width: 640px) {
-  .card-cv {
-    contain-intrinsic-size: auto 560px;
-  }
-}
-
-/* ── Identity motif: IP chip ────────────────────────────────────────────────
-   The address is what a player actually takes away from a server list, so it is
-   rendered the way they will type it: mono, with a prompt caret. Cyan is reserved
-   for "live": the status icon (LiveIcon) and the caret, nothing decorative. */
-.ip-chip {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-width: 0;
-  padding: 0.35rem 0.6rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.7);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: #e4e4e7;
-  transition: border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.ip-chip-caret {
-  color: var(--color-eter-cyan);
-  font-weight: 600;
-}
-.server-card:hover .ip-chip,
-.server-card:focus-visible .ip-chip {
-  border-color: rgba(34, 211, 238, 0.45);
-}
-
-/* Filter pills: one swipeable row per group on phones (wrapping produced 4-5 rows of
-   pills before the first result); wraps normally from sm up. */
+/* Filter pills: one swipeable row per group on phones; wraps normally from sm up. */
 .filter-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   overflow-x: auto;
   scrollbar-width: none;
-  /* 1rem bleed: safe inside both px-4 (admin, dashboard) and px-6 (discover) containers. */
   margin-inline: -1rem;
-  padding-inline: 1rem;
+  padding: 4px 1rem;
   scroll-padding-inline: 1rem;
-  mask-image: linear-gradient(to right, transparent 0, #000 1rem, #000 calc(100% - 2rem), transparent 100%);
 }
-.filter-row::-webkit-scrollbar,
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
-.filter-row > span:first-child {
-  flex-shrink: 0;
-}
-.scrollbar-none {
-  scrollbar-width: none;
-}
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-row > * { flex-shrink: 0; }
 @media (min-width: 640px) {
-  .filter-row {
-    flex-wrap: wrap;
-    overflow: visible;
-    margin-inline: 0;
-    padding-inline: 0;
-    mask-image: none;
-  }
+  .filter-row { flex-wrap: wrap; overflow: visible; margin-inline: 0; padding-inline: 4px; }
 }
 
-/* ── Scroll reveal ───────────────────────────────────────────────────────────
-   Purpose: sections below the fold arrive as you reach them, so a long list reads
-   as content appearing rather than a static wall. Opacity + transform only (no
-   layout). Content is visible by default; the hidden start state applies only once
-   the client has opted in (html.reveal-on), which it skips for reduced motion and
-   low-end phones. */
+/* ── Scroll reveal: opacity + stepped rise. Off for reduced motion and low-end phones. ── */
 html.reveal-on [data-reveal]:not(.is-revealed) {
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(12px);
 }
 html.reveal-on [data-reveal] {
-  transition: opacity 500ms cubic-bezier(0.2, 0.7, 0.2, 1), transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
-  transition-delay: calc(var(--reveal-i, 0) * 70ms);
+  transition: opacity 320ms steps(4), transform 320ms steps(4);
+  transition-delay: calc(var(--reveal-i, 0) * 60ms);
 }
 
-/* TipTap Editor Styling */
+/* Markdown descriptions on cream */
+.prose-eter {
+  color: var(--color-ink-2);
+}
+.prose-eter :where(h1, h2, h3, h4, strong) { color: var(--color-ink); }
+.prose-eter :where(h1, h2, h3, h4) { font-family: var(--font-pixel); }
+.prose-eter :where(a) { color: var(--color-prism-d); text-decoration: underline; text-underline-offset: 3px; }
+.prose-eter :where(code) { background: var(--color-slot); padding: 0.1rem 0.3rem; color: var(--color-ink); }
+.prose-eter :where(blockquote) { border-left: 4px solid var(--color-gold); color: var(--color-ink-2); }
+
+/* TipTap editor */
 .tiptap p.is-editor-empty:first-child::before {
-  color: #71717a; /* zinc-500 */
+  color: var(--color-ink-3);
   content: attr(data-placeholder);
   float: left;
   height: 0;
   pointer-events: none;
 }
-.tiptap a {
-  color: var(--color-eter-cyan);
-  text-decoration: underline;
-  cursor: pointer;
-}
+.tiptap a { color: var(--color-prism-d); text-decoration: underline; cursor: pointer; }
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+/* Sonner toasts as pixel panels */
+[data-sonner-toaster] [data-sonner-toast].eter-toast {
+  border-radius: 0;
+  border: 0;
+  background: var(--color-panel);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  box-shadow:
+    0 -3px 0 0 var(--color-ink), 0 3px 0 0 var(--color-ink),
+    -3px 0 0 0 var(--color-ink), 3px 0 0 0 var(--color-ink),
+    6px 9px 0 0 rgb(46 34 22 / 0.22);
 }
-
+[data-sonner-toaster] [data-sonner-toast].eter-toast [data-title] { font-family: var(--font-pixel); font-size: 0.95rem; }
+[data-sonner-toaster] [data-sonner-toast].eter-toast [data-description] { color: var(--color-ink-2); }
+[data-sonner-toaster] [data-sonner-toast].eter-toast [data-button] { border-radius: 0; background: var(--color-prism-d); color: #fff; font-family: var(--font-pixel); }

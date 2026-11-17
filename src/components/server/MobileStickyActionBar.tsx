@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, CaretUp, GameController, Crown } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
+import { Sprite } from "@/components/pixel/PixelArt";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { submitVote } from "@/lib/vote-client";
@@ -94,94 +95,63 @@ export function MobileStickyActionBar({
     setVoting(false);
   };
 
+  // A hotbar along the bottom edge: identity on the left, three blocks on the right.
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#09090b] sm:bg-[#09090b]/92 sm:backdrop-blur-xl border-t border-white/10 px-3 sm:px-4 py-2.5 shadow-[0_-10px_30px_rgba(0,0,0,0.7)] flex items-center justify-between gap-2.5 animate-fade-in">
-      
-      {/* Mini Server Identity */}
+    <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-panel border-t-[3px] border-ink px-3 py-2.5 flex items-center justify-between gap-3 px-pop">
       <div className="flex items-center gap-2.5 min-w-0 flex-1">
-        <div className="relative w-9 h-9 rounded-lg bg-black border border-white/15 overflow-hidden shrink-0">
-          <SafeImage src={logoUrl} fallbackName={serverName} alt={`Logo ${serverName}`} className="w-full h-full object-cover text-xs" />
-        </div>
-        
+        <SafeImage src={logoUrl} fallbackName={serverName} alt={`Logo ${serverName}`} className="w-10 h-10 shrink-0 object-cover px-frame text-xs" />
         <div className="flex flex-col min-w-0">
-          <span className="text-xs font-display font-semibold text-eter-starlight truncate leading-tight">
-            {serverName}
-          </span>
-          <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-400">
+          <span className="font-pixel text-sm text-ink truncate leading-tight">{serverName}</span>
+          <span className="flex items-center gap-1.5 text-xs text-ink-2 truncate">
             {isRealm ? (
-              <span className="flex items-center gap-1 text-purple-300">
-                <Crown size={11} weight="fill" /> Realm
-              </span>
+              <><PixelIcon name="crown" size={11} className="text-gold-d" /> Realm</>
             ) : (
-              <span className="flex items-center gap-1 truncate">
-                <LiveIcon online={isOnline} size={12} />
-                <span>{isOnline ? `${currentPlayers.toLocaleString("id-ID")} online` : "Offline"}</span>
-              </span>
+              <>
+                <LiveIcon online={isOnline} size={11} />
+                <span className={isOnline ? "text-online-d" : ""}>
+                  {isOnline ? `${currentPlayers.toLocaleString("id-ID")} online` : "Offline"}
+                </span>
+              </>
             )}
-          </div>
+          </span>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center gap-1.5 shrink-0">
-        {/* Quick Vote Button */}
+      <div className="flex items-center gap-2.5 shrink-0">
         <button
           onClick={handleQuickVote}
           disabled={voting || voted}
           aria-label={rewardsEnabled ? "Vote server dan dapat hadiah in-game" : "Vote server"}
-          className={`h-11 min-w-[44px] px-2.5 rounded-lg border text-xs font-mono font-semibold flex items-center gap-1 transition-all ${
-            voted
-              ? "bg-white/10 border-white/20 text-white"
-              : "bg-zinc-900/60 border-zinc-800 text-zinc-300 hover:bg-zinc-800 active:scale-95"
-          }`}
-          title="Vote Server"
+          className={`px-btn ${voted ? "px-btn-gold" : "px-btn-cream"} !px-2.5 disabled:!cursor-default`}
+          title="Vote server"
         >
-          <CaretUp size={15} weight={voted ? "fill" : "bold"} />
-          <span>{votes}</span>
+          <Sprite name="emerald" size={16} />
+          <span className="tabular text-sm">{votes}</span>
         </button>
 
-        {/* Direct Play / Join Realm Button (Bedrock & Realms only, Java players copy IP) */}
+        {/* Direct Play / Join Realm (Bedrock & Realms only, Java players copy the IP) */}
         {(isRealm || platform !== 'JAVA') && (
           <a
             href={directLink}
             onClick={trackJoinIntent}
             target={isRealm ? "_blank" : undefined}
             rel={isRealm ? "noopener noreferrer" : undefined}
-            className={`h-11 px-2.5 sm:px-3 rounded-lg font-mono font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all text-white border ${
-              isRealm
-                ? "bg-purple-600 hover:bg-purple-500 border-purple-400/40"
-                : "bg-emerald-600 hover:bg-emerald-500 border-emerald-400/40"
-            }`}
-            title={isRealm ? "Masuk Realm" : "Main Langsung di Minecraft"}
+            className="px-btn !px-2.5"
+            title={isRealm ? "Masuk Realm" : "Main langsung di Minecraft"}
           >
-            <GameController size={15} weight="fill" />
-            <span className="hidden min-[380px]:inline">{isRealm ? "Realm" : "Main"}</span>
+            <PixelIcon name="gamepad" size={16} />
+            <span className="hidden min-[380px]:inline text-sm">{isRealm ? "Realm" : "Main"}</span>
           </a>
         )}
 
-        {/* Copy IP / Realm Code CTA */}
         <button
           onClick={handleCopy}
           aria-label={isRealm ? "Salin kode Realm" : `Salin IP ${fullAddress}`}
-          className={`h-11 px-3 rounded-lg font-mono font-medium text-xs transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95 ${
-            copied
-              ? "bg-emerald-600 text-white"
-              : "bg-white text-zinc-950 hover:bg-zinc-200"
-          }`}
-          title={isRealm ? "Salin Kode Realm" : `Salin ${fullAddress}`}
+          className="px-btn px-btn-gold !px-3"
+          title={isRealm ? "Salin kode Realm" : `Salin ${fullAddress}`}
         >
-          {copied ? (
-            <>
-              <Check size={14} weight="bold" />
-              <span className="hidden sm:inline">{t("server.copied")}</span>
-            </>
-          ) : (
-            <>
-              <Copy size={14} aria-hidden />
-              {/* `xs:` is not a Tailwind v4 breakpoint, so this label was hidden on every phone. */}
-              <span>{isRealm ? (lang === "id" ? "Kode" : "Code") : t("server.copyIp")}</span>
-            </>
-          )}
+          <PixelIcon name={copied ? "check" : "copy"} size={14} />
+          <span className="text-sm">{copied ? "OK" : isRealm ? (lang === "id" ? "Kode" : "Code") : t("server.copyIp")}</span>
         </button>
       </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 
 interface StarRatingProps {
   slug: string;
@@ -60,32 +60,29 @@ export function StarRating({ slug, initialRating, isLoggedIn, userRating = 0 }: 
             onMouseEnter={() => setHovered(star)}
             onMouseLeave={() => setHovered(0)}
             disabled={loading}
-            className={`transition-all duration-150 hover:scale-110 ${loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            aria-label={`Beri ${star} bintang`}
+            className={`w-11 h-11 flex items-center justify-center ${loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
           >
-            <Star
+            <PixelIcon
+              name={star <= displayStar ? "star" : "starOutline"}
               size={24}
-              weight={star <= displayStar ? "fill" : "regular"}
-              className={
-                star <= displayStar
-                  ? "text-eter-gold"
-                  : "text-zinc-600"
-              }
+              className={`${star <= displayStar ? "text-gold-d" : "text-ink-3"} ${star === submitted ? "px-pop" : ""}`}
             />
           </button>
         ))}
-        <span className="text-sm font-mono text-zinc-400 ml-2">
+        <span className="text-sm text-ink-2 ml-2 tabular">
           {currentRating.toFixed(1)} / 5.0
         </span>
       </div>
 
       {!isLoggedIn ? (
-        <p className="text-[10px] font-mono text-zinc-600">Masuk untuk memberi rating server ini</p>
+        <p className="text-xs text-ink-2">Masuk untuk memberi rating server ini</p>
       ) : message ? (
-        <p className="text-[10px] font-mono text-eter-cyan animate-fade-in">{message}</p>
+        <p className="text-xs text-prism-d px-pop" role="status">{message}</p>
       ) : submitted ? (
-        <p className="text-[10px] font-mono text-zinc-500">Rating Anda: {submitted} ★</p>
+        <p className="text-xs text-ink-2">Rating kamu: {submitted} bintang</p>
       ) : (
-        <p className="text-[10px] font-mono text-zinc-600">Klik bintang untuk memberi rating</p>
+        <p className="text-xs text-ink-2">Ketuk bintang untuk memberi rating</p>
       )}
     </div>
   );

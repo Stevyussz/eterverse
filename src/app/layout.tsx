@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Pixelify_Sans, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Toaster } from "sonner";
 import { auth } from "@/auth";
 
-const outfit = Outfit({
+const pixelify = Pixelify_Sans({
   subsets: ["latin"],
-  variable: "--font-outfit",
+  variable: "--font-pixelify",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -92,7 +93,6 @@ export const metadata: Metadata = {
   },
 };
 
-import { BackgroundController } from "@/components/layout/BackgroundController";
 import { RevealController } from "@/components/layout/RevealController";
 import { Footer } from "@/components/layout/Footer";
 import { WebsiteJsonLd } from "@/components/seo/JsonLdSchema";
@@ -110,23 +110,27 @@ export default async function RootLayout({
   const isAdmin = session?.user?.email ? adminEmails.includes(session.user.email) : false;
 
   return (
-    <html lang="id" className="dark">
+    <html lang="id" className={`${pixelify.variable} ${plusJakarta.variable} ${jetbrainsMono.variable}`}>
       {/* No hand-written og:image tags here: they were emitted on every page ahead of the
           page's own image, so WhatsApp and Discord always showed the generic site card.
           The default image comes from `metadata.openGraph` above; server pages override it. */}
       <body
-        className={`${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} antialiased flex flex-col min-h-screen`}
+        className="antialiased flex flex-col min-h-screen"
       >
         <LanguageProvider>
           <WebsiteJsonLd />
-          <BackgroundController />
           <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
           <div className="flex-1">
             {children}
           </div>
           <Footer />
           {/* mobileOffset keeps toasts above the server page's sticky Copy IP / Vote bar. */}
-          <Toaster theme="dark" position="bottom-right" mobileOffset={{ bottom: 88 }} />
+          <Toaster
+            theme="light"
+            position="bottom-right"
+            mobileOffset={{ bottom: 88 }}
+            toastOptions={{ className: "eter-toast" }}
+          />
           <RevealController />
         </LanguageProvider>
       </body>

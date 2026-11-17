@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { Sprite } from "@/components/pixel/PixelArt";
 
 type Tone = "danger" | "warning" | "neutral" | "success";
 
@@ -21,10 +22,10 @@ interface Props {
 }
 
 const TONE_BTN: Record<Tone, string> = {
-  danger: "bg-rose-600 hover:bg-rose-500 text-white",
-  warning: "bg-orange-500 hover:bg-orange-400 text-zinc-950",
-  neutral: "bg-white hover:bg-zinc-200 text-zinc-950",
-  success: "bg-emerald-500 hover:bg-emerald-400 text-zinc-950",
+  danger: "px-btn-red",
+  warning: "px-btn-gold",
+  neutral: "px-btn-cream",
+  success: "",
 };
 
 // One confirmation pattern for every consequential admin/owner action. Ban and hard delete
@@ -86,47 +87,47 @@ export function ConfirmActionButton({
         ref={dialogRef}
         onClose={() => setOpen(false)}
         aria-labelledby="confirm-title"
-        className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-zinc-800 bg-zinc-950 p-0 text-white backdrop:bg-black/80"
+        className="m-auto w-[calc(100%-2rem)] max-w-md px-panel p-0 backdrop:bg-[#2E2216]/70"
       >
         {open && (
           <div className="flex flex-col gap-4 p-6">
-            <h2 id="confirm-title" className="font-display text-lg font-semibold">{title}</h2>
-            <p className="text-sm text-zinc-300 leading-relaxed">{body}</p>
+            <h2 id="confirm-title" className="px-title text-xl text-ink flex items-center gap-2">{tone === "danger" && <Sprite name="torch" size={24} />}{title}</h2>
+            <p className="text-sm text-ink-2 leading-relaxed">{body}</p>
 
             {reasonField && (
               <label className="flex flex-col gap-1.5 text-sm">
-                <span className="text-xs font-mono text-zinc-300">{reasonField.label}</span>
+                <span className="px-label !mb-1">{reasonField.label}</span>
                 <textarea
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   rows={3}
                   maxLength={500}
                   placeholder={reasonField.placeholder}
-                  className="rounded-lg border border-zinc-800 bg-black px-3 py-2 text-white placeholder:text-zinc-500 focus:border-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                  className="px-input !min-h-[96px]"
                 />
               </label>
             )}
 
             {requireText && (
               <label className="flex flex-col gap-1.5 text-sm">
-                <span className="text-xs text-zinc-300">
-                  Ketik <span className="font-mono text-white">{requireText}</span> untuk melanjutkan
+                <span className="text-sm text-ink-2">
+                  Ketik <span className="font-mono text-ink font-semibold">{requireText}</span> untuk melanjutkan
                 </span>
                 <input
                   value={typed}
                   onChange={(e) => setTyped(e.target.value)}
                   autoComplete="off"
                   spellCheck={false}
-                  className="rounded-lg border border-zinc-800 bg-black px-3 py-2.5 font-mono text-white focus:border-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                  className="px-input font-mono"
                 />
               </label>
             )}
 
-            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-1">
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-4 pt-2">
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="min-h-[44px] px-4 rounded-md border border-zinc-700 text-sm text-zinc-200 hover:border-zinc-500 focus-visible:outline-2 focus-visible:outline-white"
+                className="px-btn px-btn-cream"
               >
                 Batal
               </button>
@@ -134,7 +135,7 @@ export function ConfirmActionButton({
                 type="button"
                 onClick={submit}
                 disabled={locked || isPending}
-                className={`min-h-[44px] px-4 rounded-md text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${TONE_BTN[tone]}`}
+                className={`px-btn ${TONE_BTN[tone]}`}
               >
                 {isPending ? pendingLabel : confirmLabel}
               </button>

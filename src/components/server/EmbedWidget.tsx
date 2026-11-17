@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Code, CheckCircle } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 
 export function EmbedWidget({ serverSlug }: { serverSlug: string }) {
   const [copied, setCopied] = useState(false);
@@ -14,20 +14,15 @@ export function EmbedWidget({ serverSlug }: { serverSlug: string }) {
   };
 
   return (
-    <div className="bg-[#050505]/60 border border-white/10 rounded-xl p-6 flex flex-col gap-3">
-      <h3 className="text-sm font-semibold text-eter-starlight uppercase tracking-widest">Widget Status Server (HTML Embed)</h3>
-      <p className="text-sm text-zinc-400 font-light">
-        Salin kode HTML ini ke website atau forum server Anda untuk menampilkan status live player dan meningkatkan peringkat di EterVerse!
+    <div className="px-flat p-6 flex flex-col gap-3">
+      <h3 className="px-title text-lg text-ink">Widget status server (HTML)</h3>
+      <p className="text-sm text-ink-2">
+        Tempel kode ini di website atau forum server kamu untuk menampilkan status dan jumlah pemain secara langsung.
       </p>
-      <div className="flex items-center gap-2 mt-2">
-        <code className="flex-1 bg-black/60 border border-white/10 rounded-md p-2.5 text-[10px] text-zinc-500 font-mono overflow-hidden whitespace-nowrap text-ellipsis">
-          {embedCode}
-        </code>
-        <button 
-          onClick={copyToClipboard}
-          className="shrink-0 flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/10 rounded-md transition-colors duration-smooth"
-        >
-          {copied ? <CheckCircle weight="fill" className="text-eter-cyan" size={20} /> : <Code size={20} className="text-eter-starlight" />}
+      <div className="flex items-center gap-3 mt-2">
+        <code className="flex-1 min-w-0 ip-chip !text-[11px] truncate block">{embedCode}</code>
+        <button onClick={copyToClipboard} className="px-btn px-btn-cream px-btn-icon" aria-label="Salin kode embed">
+          <PixelIcon name={copied ? "check" : "copy"} size={18} />
         </button>
       </div>
     </div>

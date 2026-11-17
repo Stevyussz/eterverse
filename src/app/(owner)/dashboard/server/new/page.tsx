@@ -3,7 +3,8 @@ import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { PencilSimple } from "@phosphor-icons/react/dist/ssr";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
+import { Sprite } from "@/components/pixel/PixelArt";
 import { ServerSubmitForm } from "./ServerSubmitForm";
 import { parseServerForm } from "@/lib/server-form";
 import { rateLimit } from "@/lib/rate-limit";
@@ -61,38 +62,33 @@ export default async function NewServerPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
-      <header>
-        <h1 className="text-2xl sm:text-3xl font-display font-semibold text-white">Daftarkan Server</h1>
-        <p className="text-zinc-400 font-body mt-1 text-sm">
-          Satu akun untuk satu server. Admin meninjau setiap listing sebelum tampil di direktori publik.
-        </p>
+    <div className="max-w-3xl mx-auto flex flex-col gap-8 px-pop pb-20">
+      <header className="flex items-center gap-4">
+        <Sprite name="grassBlock" size={48} className="hidden sm:block shrink-0" />
+        <div>
+          <h1 className="px-title px-title-shadow text-3xl sm:text-4xl text-ink">Daftarkan server</h1>
+          <p className="text-ink-2 mt-2 text-sm">
+            Satu akun untuk satu server. Admin meninjau setiap listing sebelum tampil di direktori publik.
+          </p>
+        </div>
       </header>
 
       {existing ? (
-        <div className="bg-zinc-950/80 border border-zinc-800 p-6 sm:p-8 rounded-xl flex flex-col gap-4">
-          <h2 className="font-display text-lg font-semibold text-white">Akunmu sudah punya server</h2>
-          <p className="text-sm text-zinc-300 leading-relaxed">
-            <span className="text-white font-semibold">{existing.name}</span> sudah terdaftar di akun ini. Setiap akun hanya bisa
+        <div className="px-panel p-6 sm:p-8 flex flex-col gap-4">
+          <h2 className="px-title text-xl text-ink">Akunmu sudah punya server</h2>
+          <p className="text-sm text-ink-2 leading-relaxed">
+            <span className="text-ink font-semibold">{existing.name}</span> sudah terdaftar di akun ini. Setiap akun hanya bisa
             mendaftarkan satu server. Perbarui datanya lewat Edit; kalau ingin mendaftarkan server lain, hapus dulu yang lama dari dashboard.
           </p>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={`/dashboard/server/${existing._id.toString()}/edit`}
-              className="inline-flex items-center gap-2 min-h-[44px] px-5 rounded-md bg-white text-zinc-950 text-sm font-semibold hover:bg-zinc-200 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              <PencilSimple size={16} aria-hidden /> Edit {existing.name}
+          <div className="flex flex-wrap gap-4">
+            <Link href={`/dashboard/server/${existing._id.toString()}/edit`} className="px-btn">
+              <PixelIcon name="pencil" size={14} /> Edit {existing.name}
             </Link>
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center min-h-[44px] px-5 rounded-md border border-zinc-700 text-sm text-zinc-200 hover:border-zinc-500 transition-colors focus-visible:outline-2 focus-visible:outline-white"
-            >
-              Ke dashboard
-            </Link>
+            <Link href="/dashboard" className="px-btn px-btn-cream">Ke dashboard</Link>
           </div>
         </div>
       ) : (
-        <div className="bg-zinc-950/70 border border-zinc-800 p-6 sm:p-8 shadow-xl rounded-2xl">
+        <div className="px-panel p-5 sm:p-8">
           <ServerSubmitForm action={createServer} />
         </div>
       )}

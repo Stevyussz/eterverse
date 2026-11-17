@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Gift } from "@phosphor-icons/react";
+import { Sprite } from "@/components/pixel/PixelArt";
 import { getSavedUsername } from "@/lib/vote-client";
 
 const USERNAME_RE = /^[.*]?[A-Za-z0-9_]{3,16}$/;
@@ -32,7 +32,7 @@ export function VoteUsernameDialog({ serverName, onSubmit, onClose }: Props) {
       ref={ref}
       onClose={onClose}
       aria-labelledby="vote-dialog-title"
-      className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-xl border border-zinc-800 bg-zinc-950 p-0 text-white backdrop:bg-black/80"
+      className="m-auto w-[calc(100%-2rem)] max-w-sm px-panel p-0 backdrop:bg-[#2E2216]/70"
     >
       <form
         method="dialog"
@@ -48,16 +48,16 @@ export function VoteUsernameDialog({ serverName, onSubmit, onClose }: Props) {
         }}
       >
         <div className="flex items-center gap-3">
-          <Gift size={24} weight="duotone" className="text-amber-400 shrink-0" aria-hidden />
-          <h2 id="vote-dialog-title" className="font-display text-lg font-semibold leading-tight">
+          <Sprite name="chestGold" size={36} className="shrink-0" />
+          <h2 id="vote-dialog-title" className="px-title text-xl text-ink">
             Vote dan ambil hadiah di {serverName}
           </h2>
         </div>
-        <p className="text-sm text-zinc-400 font-body">
+        <p className="text-sm text-ink-2">
           Server ini memberi hadiah in-game untuk setiap vote. Tulis nama Minecraft kamu supaya hadiahnya masuk ke akun yang benar.
         </p>
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-mono text-xs text-zinc-300">Nama Minecraft</span>
+          <span className="px-label !mb-1">Nama Minecraft</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -69,25 +69,25 @@ export function VoteUsernameDialog({ serverName, onSubmit, onClose }: Props) {
             placeholder="Steve_123"
             aria-invalid={!!error}
             aria-describedby={error ? "vote-name-error" : undefined}
-            className="w-full rounded-lg border border-zinc-800 bg-black px-3 py-3 font-mono text-white placeholder:text-zinc-500 focus:border-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+            className="px-input font-mono"
           />
         </label>
         {error && (
-          <p id="vote-name-error" role="alert" className="text-xs text-rose-400">
+          <p id="vote-name-error" role="alert" className="text-sm text-redstone px-shake">
             {error}
           </p>
         )}
-        <div className="flex flex-col gap-2 pt-1">
+        <div className="flex flex-col gap-4 pt-2">
           <button
             type="submit"
-            className="min-h-[48px] rounded-md bg-white font-semibold text-zinc-950 hover:bg-zinc-200 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="px-btn px-btn-gold px-btn-block"
           >
             Vote dan kirim hadiah
           </button>
           <button
             type="button"
             onClick={() => onSubmit(undefined)}
-            className="min-h-[44px] rounded-md text-sm font-mono text-zinc-400 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-white"
+            className="px-btn px-btn-cream px-btn-block"
           >
             Vote tanpa hadiah
           </button>

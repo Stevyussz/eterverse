@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import connectToDatabase from '@/lib/db';
 import { Server } from '@/models/Server';
-import { StatusIcon } from '@/lib/og-shared';
+import { StatusIcon, OG_COLORS } from '@/lib/og-shared';
 
 export const runtime = 'nodejs'; // Use nodejs because mongoose connection fails in pure edge without extra setup
 
@@ -17,7 +17,7 @@ export async function GET(request: Request, props: { params: Promise<{ slug: str
     if (!server) {
       return new ImageResponse(
         (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', backgroundColor: '#09090b', color: '#a1a1aa', fontSize: 24, border: '2px solid #27272a' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', backgroundColor: OG_COLORS.panel, color: OG_COLORS.muted, fontSize: 24, border: `4px solid ${OG_COLORS.ink}` }}>
             Server Not Found
           </div>
         ),
@@ -38,17 +38,17 @@ export async function GET(request: Request, props: { params: Promise<{ slug: str
             justifyContent: 'center',
             width: '100%',
             height: '100%',
-            backgroundColor: '#050505',
-            border: '2px solid rgba(255,255,255,0.12)',
-            borderRadius: 10,
+            backgroundColor: OG_COLORS.panel,
+            border: `4px solid ${OG_COLORS.ink}`,
+            borderTop: `10px solid ${OG_COLORS.prism}`,
             padding: '16px 24px',
             fontFamily: 'sans-serif',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 4 }}>Status di EterVerse</span>
-              <span style={{ fontSize: 24, fontWeight: 'bold', color: '#f8fafc', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '250px' }}>
+              <span style={{ fontSize: 13, color: OG_COLORS.muted, marginBottom: 4 }}>Status di EterVerse</span>
+              <span style={{ fontSize: 24, fontWeight: 'bold', color: OG_COLORS.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '250px' }}>
                 {server.name}
               </span>
             </div>
@@ -56,11 +56,11 @@ export async function GET(request: Request, props: { params: Promise<{ slug: str
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <StatusIcon online={!!isOnline} size={22} />
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                <span style={{ fontSize: 20, fontWeight: 'bold', color: isOnline ? '#22D3EE' : '#a1a1aa' }}>
+                <span style={{ fontSize: 20, fontWeight: 'bold', color: isOnline ? OG_COLORS.onlineText : OG_COLORS.muted }}>
                   {isOnline ? `${currentPlayers.toLocaleString('id-ID')} / ${maxPlayers.toLocaleString('id-ID')}` : 'Offline'}
                 </span>
                 {/* The subtitle used to say "players online" even when the server was offline. */}
-                <span style={{ fontSize: 12, color: '#a1a1aa' }}>{isOnline ? 'pemain online' : 'server tidak merespons'}</span>
+                <span style={{ fontSize: 12, color: OG_COLORS.muted }}>{isOnline ? 'pemain online' : 'server tidak merespons'}</span>
               </div>
             </div>
           </div>

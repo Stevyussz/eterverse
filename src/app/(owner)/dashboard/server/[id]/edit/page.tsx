@@ -58,20 +58,20 @@ export default async function EditServerPage({ params }: Props) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
+    <div className="max-w-3xl mx-auto flex flex-col gap-8 px-pop pb-20">
       <header>
-        <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-3">
-          <a href="/dashboard" className="hover:text-white transition-colors">Dashboard</a>
-          <span>/</span>
-          <span className="text-zinc-400">Edit Server</span>
-        </div>
-        <h1 className="text-2xl md:text-3xl font-display font-semibold text-white">Edit Server</h1>
-        <p className="text-zinc-400 font-body mt-1 text-sm">
-          Memperbarui rincian server akan mengembalikan status ke <span className="text-amber-400 font-semibold">MENUNGGU</span> untuk ditinjau ulang oleh tim kurasi.
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-ink-2 mb-3">
+          <a href="/dashboard" className="hover:text-ink underline-offset-4 hover:underline">Dashboard</a>
+          <span aria-hidden>/</span>
+          <span className="text-ink">Edit server</span>
+        </nav>
+        <h1 className="px-title px-title-shadow text-3xl md:text-4xl text-ink">Edit server</h1>
+        <p className="text-ink-2 mt-2 text-sm">
+          Menyimpan perubahan mengembalikan status ke <span className="px-chip px-chip-gold !text-xs">Menunggu review</span> untuk ditinjau ulang admin.
         </p>
       </header>
-      
-      <div className="bg-zinc-950/70 border border-zinc-800 p-6 md:p-8 shadow-xl rounded-2xl">
+
+      <div className="px-panel p-5 md:p-8">
         <ServerEditForm action={updateServer} server={serializedServer} />
       </div>
     </div>

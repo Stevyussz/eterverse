@@ -61,7 +61,7 @@ export function BackgroundVideo({
     }
     return (
       <div
-        className={`bg-gradient-to-br from-zinc-900 via-black to-zinc-950 pointer-events-none ${className}`}
+        className={`bg-screen pointer-events-none ${className}`}
       />
     );
   }

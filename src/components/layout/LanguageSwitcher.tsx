@@ -1,51 +1,32 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
-import { Translate } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 
 interface LanguageSwitcherProps {
   className?: string;
   showIcon?: boolean;
 }
 
+// Two inventory slots; the active language is the gold-framed one.
 export function LanguageSwitcher({ className = "", showIcon = false }: LanguageSwitcherProps) {
   const { lang, setLang } = useLanguage();
 
   return (
-    <div
-      className={`inline-flex items-center p-0.5 rounded-lg bg-zinc-900/80 border border-zinc-800 text-xs font-mono select-none ${className}`}
-      role="group"
-      aria-label="Pilih Bahasa / Select Language"
-    >
-      {showIcon && (
-        <span className="pl-1.5 pr-1 text-zinc-500">
-          <Translate size={13} />
-        </span>
-      )}
-      <button
-        type="button"
-        onClick={() => setLang("id")}
-        className={`px-2 py-0.5 rounded-md transition-all duration-150 text-[11px] font-semibold ${
-          lang === "id"
-            ? "bg-white text-zinc-950 shadow-sm"
-            : "text-zinc-400 hover:text-white"
-        }`}
-        title="Bahasa Indonesia"
-      >
-        ID
-      </button>
-      <button
-        type="button"
-        onClick={() => setLang("en")}
-        className={`px-2 py-0.5 rounded-md transition-all duration-150 text-[11px] font-semibold ${
-          lang === "en"
-            ? "bg-white text-zinc-950 shadow-sm"
-            : "text-zinc-400 hover:text-white"
-        }`}
-        title="English"
-      >
-        EN
-      </button>
+    <div className={`inline-flex items-center gap-2 select-none ${className}`} role="group" aria-label="Pilih Bahasa / Select Language">
+      {showIcon && <PixelIcon name="globe" size={14} className="opacity-80" />}
+      {(["id", "en"] as const).map((code) => (
+        <button
+          key={code}
+          type="button"
+          onClick={() => setLang(code)}
+          aria-pressed={lang === code}
+          title={code === "id" ? "Bahasa Indonesia" : "English"}
+          className="px-slot font-pixel text-sm min-w-[40px] min-h-[32px] px-2"
+        >
+          {code.toUpperCase()}
+        </button>
+      ))}
     </div>
   );
 }

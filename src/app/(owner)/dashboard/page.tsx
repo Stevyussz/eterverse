@@ -3,31 +3,21 @@ import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import Link from "next/link";
 import mongoose from "mongoose";
-import {
-  Eye,
-  CursorClick,
-  CaretUp,
-  PencilSimple,
-  WarningCircle,
-  ArrowSquareOut,
-  Gift,
-  Code,
-  CheckCircle,
-  Circle,
-  Plus,
-  Prohibit,
-} from "@phosphor-icons/react/dist/ssr";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
+import { Sprite } from "@/components/pixel/PixelArt";
 import { revalidatePath } from "next/cache";
 import { displayAddress, invalidateServerLists } from "@/lib/server-queries";
 import { getUptimeSummary } from "@/lib/server-status";
 import { DeleteServerButton } from "@/components/dashboard/DeleteServerButton";
 import { LiveIcon } from "@/components/ui/LiveIcon";
+import { SafeImage } from "@/components/ui/SafeImage";
 
-const STATUS: Record<string, { label: string; className: string }> = {
-  APPROVED: { label: "Tayang", className: "text-emerald-300 border-emerald-500/30 bg-emerald-500/10" },
-  PENDING: { label: "Menunggu review", className: "text-amber-200 border-amber-500/30 bg-amber-500/10" },
-  REJECTED: { label: "Ditolak", className: "text-rose-300 border-rose-500/30 bg-rose-500/10" },
-  BANNED: { label: "Dibekukan", className: "text-orange-300 border-orange-500/30 bg-orange-500/10" },
+// Status chips always pair an icon with the word, never colour alone.
+const STATUS: Record<string, { label: string; className: string; icon: "check" | "clock" | "close" | "ban" }> = {
+  APPROVED: { label: "Tayang", className: "px-chip-prism", icon: "check" },
+  PENDING: { label: "Menunggu review", className: "px-chip-gold", icon: "clock" },
+  REJECTED: { label: "Ditolak", className: "!bg-redstone-l", icon: "close" },
+  BANNED: { label: "Dibekukan", className: "!bg-redstone-l", icon: "ban" },
 };
 
 interface ChecklistItem {
@@ -98,13 +88,13 @@ export default async function DashboardOverview() {
   const firstName = (session?.user?.name || "").split(" ")[0];
 
   return (
-    <div className="max-w-5xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
+    <div className="max-w-5xl mx-auto flex flex-col gap-8 px-pop pb-20">
       <header className="flex items-end justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-display font-semibold text-white">
+          <h1 className="px-title px-title-shadow text-3xl md:text-4xl text-ink">
             {firstName ? `Halo, ${firstName}` : "Dashboard"}
           </h1>
-          <p className="text-zinc-400 font-body mt-1 text-sm">
+          <p className="text-ink-2 mt-2 text-sm">
             {myServers.length > 0
               ? "Pantau server kamu dan lengkapi yang masih kurang."
               : "Daftarkan server pertamamu untuk mulai tampil di EterVerse."}
@@ -112,57 +102,43 @@ export default async function DashboardOverview() {
         </div>
         {/* One server per account: the button only exists while the account has none. */}
         {myServers.length === 0 && (
-          <Link
-            href="/dashboard/server/new"
-            className="inline-flex items-center gap-2 min-h-[44px] bg-white text-zinc-950 px-4 rounded-md font-semibold text-sm hover:bg-zinc-200 transition-colors shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            <Plus size={16} weight="bold" aria-hidden /> Daftarkan Server
+          <Link href="/dashboard/server/new" className="px-btn px-btn-gold shrink-0">
+            <PixelIcon name="plus" size={12} /> Daftarkan server
           </Link>
         )}
       </header>
 
       {myServers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-10 sm:p-16 bg-zinc-950/80 border border-zinc-800 rounded-xl text-center gap-4">
-          <h2 className="text-xl font-display font-semibold text-white">Belum ada server</h2>
-          <p className="text-zinc-400 font-body max-w-md text-sm">
+        <div className="px-panel flex flex-col items-center justify-center p-10 sm:p-14 text-center gap-4">
+          <Sprite name="chest" size={64} />
+          <h2 className="px-title text-2xl text-ink">Belum ada server</h2>
+          <p className="text-ink-2 max-w-md text-sm">
             Siapkan IP server, trailer pendek (video atau link YouTube), dan logo. Setelah dikirim, admin meninjau sebelum server tampil publik.
           </p>
-          <Link
-            href="/dashboard/server/new"
-            className="inline-flex items-center min-h-[48px] bg-white text-zinc-950 px-6 rounded-md font-semibold hover:bg-zinc-200 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            Daftarkan Server Pertamamu
+          <Link href="/dashboard/server/new" className="px-btn px-btn-gold mt-2">
+            Daftarkan server pertamamu
           </Link>
         </div>
       ) : (
         <>
-          <dl className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Metric label="Halaman dilihat" value={totals.views} icon={<Eye size={18} aria-hidden />} />
+          <dl className="grid grid-cols-2 md:grid-cols-4 gap-5">
+            <Metric label="Halaman dilihat" value={totals.views} icon={<PixelIcon name="eye" size={16} />} />
             <Metric
               label="Salin IP / Main"
               value={totals.clicks}
-              icon={<CursorClick size={18} aria-hidden />}
+              icon={<PixelIcon name="copy" size={16} />}
               note={conversion !== null ? `${conversion}% dari pengunjung` : undefined}
             />
-            <Metric label="Total vote" value={totals.votes} icon={<CaretUp size={18} weight="bold" aria-hidden />} />
-            <Metric label="Pemain online" value={totals.online} icon={<LiveIcon online={totals.online > 0} size={18} />} />
+            <Metric label="Total vote" value={totals.votes} icon={<Sprite name="emerald" size={16} />} />
+            <Metric label="Pemain online" value={totals.online} icon={<LiveIcon online={totals.online > 0} size={16} />} />
           </dl>
 
-          <section className="flex flex-col gap-4" aria-labelledby="my-servers">
-            <h2 id="my-servers" className="text-lg font-display font-semibold text-white">
-              {myServers.length > 1 ? (
-                <>Server kamu <span className="text-zinc-400 font-normal">({myServers.length})</span></>
-              ) : (
-                "Server kamu"
-              )}
+          <section className="flex flex-col gap-5" aria-labelledby="my-servers">
+            <h2 id="my-servers" className="px-title text-2xl text-ink">
+              Server kamu{myServers.length > 1 ? ` (${myServers.length})` : ""}
             </h2>
             {myServers.map((server, i) => (
-              <ServerPanel
-                key={server._id.toString()}
-                server={server}
-                uptime={uptimes[i]}
-                deleteAction={deleteMyServer}
-              />
+              <ServerPanel key={server._id.toString()} server={server} uptime={uptimes[i]} deleteAction={deleteMyServer} />
             ))}
           </section>
         </>
@@ -173,13 +149,13 @@ export default async function DashboardOverview() {
 
 function Metric({ label, value, icon, note }: { label: string; value: number; icon: React.ReactNode; note?: string }) {
   return (
-    <div className="bg-zinc-950/80 border border-zinc-800 p-4 rounded-xl flex flex-col gap-2">
-      <dt className="flex items-center justify-between gap-2 text-xs text-zinc-400">
+    <div className="px-panel p-4 flex flex-col gap-2">
+      <dt className="flex items-center justify-between gap-2 text-xs text-ink-2">
         {label}
-        <span className="text-zinc-400">{icon}</span>
+        <span className="text-ink-2">{icon}</span>
       </dt>
-      <dd className="text-2xl font-display font-semibold text-white">{value.toLocaleString("id-ID")}</dd>
-      {note && <dd className="text-xs font-mono text-zinc-400">{note}</dd>}
+      <dd className="text-2xl font-bold text-ink tabular">{value.toLocaleString("id-ID")}</dd>
+      {note && <dd className="text-xs text-ink-2">{note}</dd>}
     </div>
   );
 }
@@ -202,19 +178,25 @@ function ServerPanel({
   const address = displayAddress(server);
 
   return (
-    <article className="bg-zinc-950/80 border border-zinc-800 rounded-xl overflow-hidden">
-      <div className="p-4 sm:p-5 flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-3 flex-wrap">
+    <article className="px-panel">
+      <div className="p-4 sm:p-5 flex flex-col gap-5">
+        <div className="flex items-start gap-4 min-w-0">
+          <SafeImage src={server.logoUrl} fallbackName={server.name} alt="" className="w-14 h-14 shrink-0 object-cover px-frame text-sm" />
           <div className="flex flex-col gap-2 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-display text-lg font-semibold text-white truncate">{server.name}</h3>
-              <span className={`text-xs font-mono px-2 py-0.5 rounded-md border ${status.className}`}>{status.label}</span>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h3 className="px-title text-xl text-ink truncate">{server.name}</h3>
+              <span className={`px-chip ${status.className}`}>
+                <PixelIcon name={status.icon} size={12} />
+                {status.label}
+              </span>
             </div>
-            <div className="flex items-center gap-3 flex-wrap text-xs font-mono text-zinc-300">
+            <div className="flex items-center gap-3 flex-wrap text-sm">
               {!isRealm && (
                 <span className="inline-flex items-center gap-1.5">
                   <LiveIcon online={!!server.liveStatus?.isOnline} />
-                  {server.liveStatus?.isOnline ? `${server.liveStatus.currentPlayers || 0} online` : "Offline"}
+                  <span className={server.liveStatus?.isOnline ? "text-online-d" : "text-ink-2"}>
+                    {server.liveStatus?.isOnline ? `${server.liveStatus.currentPlayers || 0} online` : "Offline"}
+                  </span>
                 </span>
               )}
               {address && (
@@ -228,7 +210,7 @@ function ServerPanel({
         </div>
 
         {/* Per-server numbers; uptime only exists for live, non-Realm servers. */}
-        <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 text-sm">
+        <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Stat label="Dilihat" value={(server.metrics?.impressions || 0).toLocaleString("id-ID")} />
           <Stat label="Salin IP / Main" value={(server.metrics?.clicks || 0).toLocaleString("id-ID")} />
           <Stat label="Vote" value={(server.metrics?.votes || 0).toLocaleString("id-ID")} />
@@ -239,17 +221,17 @@ function ServerPanel({
         </dl>
 
         {server.moderationStatus === "REJECTED" && (
-          <div role="note" className="bg-rose-500/5 border border-rose-500/25 px-4 py-3 rounded-lg flex items-start gap-3">
-            <WarningCircle className="text-rose-300 mt-0.5 shrink-0" size={18} weight="fill" aria-hidden />
+          <div role="note" className="px-note px-note-error">
+            <PixelIcon name="alert" size={18} className="text-redstone mt-0.5 shrink-0" />
             <div className="text-sm">
-              <p className="font-semibold text-rose-200">Ditolak admin</p>
-              <p className="text-rose-200/90">{server.rejectionReason || "Tidak ada alasan yang ditulis."} Perbaiki lalu simpan ulang untuk ditinjau lagi.</p>
+              <p className="font-pixel text-base">Ditolak admin</p>
+              <p>{server.rejectionReason || "Tidak ada alasan yang ditulis."} Perbaiki lalu simpan ulang untuk ditinjau lagi.</p>
             </div>
           </div>
         )}
         {server.moderationStatus === "BANNED" && (
-          <div role="note" className="bg-orange-500/5 border border-orange-500/25 px-4 py-3 rounded-lg flex items-start gap-3 text-sm text-orange-200">
-            <Prohibit className="mt-0.5 shrink-0" size={18} aria-hidden />
+          <div role="note" className="px-note px-note-error text-sm">
+            <PixelIcon name="ban" size={18} className="text-redstone mt-0.5 shrink-0" />
             <span>
               Server ini dibekukan dan tidak tampil publik.
               {server.rejectionReason ? ` Alasan: ${server.rejectionReason}` : ""} Hubungi admin lewat Pusat Informasi.
@@ -257,27 +239,29 @@ function ServerPanel({
           </div>
         )}
 
+        {/* Listing completeness as an XP bar: filled from what the owner actually set. */}
         {doneCount < checklist.length && (
-          <details className="group rounded-lg border border-zinc-800 bg-black/40">
-            <summary className="cursor-pointer list-none min-h-[44px] px-4 flex items-center justify-between gap-3 text-sm text-zinc-200 focus-visible:outline-2 focus-visible:outline-white rounded-lg">
-              <span>
-                Lengkapi listing <span className="font-mono text-zinc-400">{doneCount}/{checklist.length}</span>
+          <details className="group px-slot">
+            <summary className="cursor-pointer list-none min-h-[48px] px-4 flex items-center justify-between gap-4 text-sm">
+              <span className="font-pixel text-base shrink-0">
+                Lengkapi listing <span className="tabular">{doneCount}/{checklist.length}</span>
               </span>
-              <span className="h-1.5 flex-1 max-w-40 rounded-full bg-zinc-800 overflow-hidden" aria-hidden>
-                <span className="block h-full bg-eter-cyan" style={{ width: `${(doneCount / checklist.length) * 100}%` }} />
+              <span className="px-bar flex-1 max-w-48" aria-hidden>
+                <span style={{ width: `${(doneCount / checklist.length) * 100}%` }} />
               </span>
+              <PixelIcon name="chevron" size={12} className="shrink-0 group-open:rotate-180 transition-transform" />
             </summary>
             <ul className="px-4 pb-3 flex flex-col">
               {checklist.map((item) => (
                 <li key={item.label}>
                   {item.done ? (
-                    <span className="flex items-center gap-2 min-h-[36px] text-sm text-zinc-400">
-                      <CheckCircle size={16} weight="fill" className="text-emerald-400" aria-hidden />
-                      <span className="line-through decoration-zinc-600">{item.label}</span>
+                    <span className="flex items-center gap-2 min-h-[40px] text-sm text-ink-2">
+                      <PixelIcon name="check" size={14} className="text-online-d" />
+                      <span className="line-through decoration-ink-3">{item.label}</span>
                     </span>
                   ) : (
-                    <Link href={item.href} className="flex items-center gap-2 min-h-[36px] text-sm text-white hover:text-eter-cyan transition-colors focus-visible:outline-2 focus-visible:outline-white rounded">
-                      <Circle size={16} className="text-zinc-500" aria-hidden />
+                    <Link href={item.href} className="flex items-center gap-2 min-h-[40px] text-sm text-ink hover:text-prism-d underline-offset-4 hover:underline">
+                      <PixelIcon name="plus" size={12} className="text-ink-2" />
                       {item.label}
                     </Link>
                   )}
@@ -288,13 +272,11 @@ function ServerPanel({
         )}
       </div>
 
-      <div className="border-t border-zinc-800 px-3 py-2 flex items-center gap-1 flex-wrap">
-        <PanelAction href={`/dashboard/server/${id}/edit`} icon={<PencilSimple size={16} aria-hidden />} label="Edit" />
-        {isLive && (
-          <PanelAction href={`/server/${server.slug}`} icon={<ArrowSquareOut size={16} aria-hidden />} label="Lihat halaman" external />
-        )}
-        {!isRealm && <PanelAction href="/dashboard/tools/votifier" icon={<Gift size={16} aria-hidden />} label="Hadiah vote" />}
-        {isLive && <PanelAction href="/dashboard/tools/widget" icon={<Code size={16} aria-hidden />} label="Widget" />}
+      <div className="border-t-[3px] border-ink bg-panel-2 px-3 py-3 flex items-center gap-3 flex-wrap">
+        <PanelAction href={`/dashboard/server/${id}/edit`} icon="pencil" label="Edit" />
+        {isLive && <PanelAction href={`/server/${server.slug}`} icon="external" label="Lihat halaman" external />}
+        {!isRealm && <PanelAction href="/dashboard/tools/votifier" icon="gift" label="Hadiah vote" />}
+        {isLive && <PanelAction href="/dashboard/tools/widget" icon="monitor" label="Widget" />}
         <span className="ml-auto">
           <DeleteServerButton serverId={id} serverName={server.name} deleteAction={deleteAction} />
         </span>
@@ -305,21 +287,17 @@ function ServerPanel({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <dt className="text-xs text-zinc-400">{label}</dt>
-      <dd className="font-mono text-white">{value}</dd>
+    <div className="px-slot px-3 py-2.5">
+      <dt className="text-xs text-ink-2">{label}</dt>
+      <dd className="font-bold text-ink tabular">{value}</dd>
     </div>
   );
 }
 
-function PanelAction({ href, icon, label, external = false }: { href: string; icon: React.ReactNode; label: string; external?: boolean }) {
+function PanelAction({ href, icon, label, external = false }: { href: string; icon: "pencil" | "external" | "gift" | "monitor"; label: string; external?: boolean }) {
   return (
-    <Link
-      href={href}
-      target={external ? "_blank" : undefined}
-      className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-md text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition-colors focus-visible:outline-2 focus-visible:outline-white"
-    >
-      {icon}
+    <Link href={href} target={external ? "_blank" : undefined} className="px-btn px-btn-cream px-btn-sm">
+      <PixelIcon name={icon} size={12} />
       {label}
     </Link>
   );

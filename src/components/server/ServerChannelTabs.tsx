@@ -1,23 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-  House,
-  VideoCamera,
-  Image as ImageIcon,
-  BookOpenText,
-  Star,
-  Users,
-  Trophy,
-  DiscordLogo,
-  WhatsappLogo,
-  TelegramLogo,
-  Globe,
-  FilmStrip,
-  Sparkle,
-  Lightning,
-  Play
-} from "@phosphor-icons/react";
+// Brand marks keep their official shapes; everything else is a pixel icon.
+import { DiscordLogo, WhatsappLogo, TelegramLogo } from "@phosphor-icons/react";
+import { PixelIcon, type PixelIconName } from "@/components/pixel/PixelIcon";
+import { Sprite } from "@/components/pixel/PixelArt";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { StarRating } from "@/components/server/StarRating";
@@ -32,6 +19,16 @@ interface ServerChannelTabsProps {
   isLoggedIn: boolean;
   userRating: number;
   ytId: string | null;
+}
+
+function Empty({ sprite, title, body }: { sprite: "film" | "chest"; title: string; body: string }) {
+  return (
+    <div className="px-flat py-14 px-6 text-center flex flex-col items-center gap-3">
+      <Sprite name={sprite} size={56} />
+      <h3 className="px-title text-lg text-ink">{title}</h3>
+      <p className="text-sm text-ink-2 max-w-sm">{body}</p>
+    </div>
+  );
 }
 
 type TabKey = "overview" | "trailer" | "gallery" | "about" | "reviews";
@@ -52,268 +49,148 @@ export function ServerChannelTabs({
   const rating = server.metrics?.rating || 0;
   const votes = server.metrics?.votes || 0;
   const gallery = server.galleryUrls || [];
-  // webp is 258KB vs 713KB for the png it replaces
-  const defaultBanner = "/dashboard-bg.webp";
+  const isRealm = server.serverType === "REALM";
+  const isCrossplay = !isRealm && (server.platform === "CROSSPLAY" || (!server.platform && server.port && server.port !== 19132));
 
-  const tabs: { key: TabKey; label: string; icon: React.ReactNode; badge?: string | number }[] = [
-    { key: "overview", label: t("server.overview"), icon: <House size={18} weight={activeTab === "overview" ? "fill" : "regular"} /> },
-    {
-      key: "trailer",
-      label: t("server.trailer"),
-      icon: <FilmStrip size={18} weight={activeTab === "trailer" ? "fill" : "regular"} />,
-      // No "HD" badge: video resolution is never checked, so it was an unbacked claim.
-      badge: undefined,
-    },
-    {
-      key: "gallery",
-      label: t("server.gallery"),
-      icon: <ImageIcon size={18} weight={activeTab === "gallery" ? "fill" : "regular"} />,
-      badge: gallery.length > 0 ? gallery.length : undefined,
-    },
-    { key: "about", label: t("server.about"), icon: <BookOpenText size={18} weight={activeTab === "about" ? "fill" : "regular"} /> },
-    {
-      key: "reviews",
-      label: t("server.reviews"),
-      icon: <Star size={18} weight={activeTab === "reviews" ? "fill" : "regular"} />,
-      badge: rating > 0 ? rating.toFixed(1) : undefined,
-    },
+  const tabs: { key: TabKey; label: string; icon: PixelIconName; badge?: string | number }[] = [
+    { key: "overview", label: t("server.overview"), icon: "home" },
+    // No "HD" badge: video resolution is never checked, so it was an unbacked claim.
+    { key: "trailer", label: t("server.trailer"), icon: "play" },
+    { key: "gallery", label: t("server.gallery"), icon: "image", badge: gallery.length > 0 ? gallery.length : undefined },
+    { key: "about", label: t("server.about"), icon: "scroll" },
+    { key: "reviews", label: t("server.reviews"), icon: "star", badge: rating > 0 ? rating.toFixed(1) : undefined },
   ];
+
+  const card = "px-flat p-5 sm:p-6 flex flex-col gap-4";
+  const cardTitle = "px-title text-lg text-ink flex items-center gap-2";
+
+  const socials = [
+    server.socialLinks?.discord && { href: server.socialLinks.discord, label: t("server.joinDiscord"), icon: <DiscordLogo size={20} weight="fill" className="text-[#4752C4]" aria-hidden /> },
+    server.socialLinks?.whatsapp && { href: server.socialLinks.whatsapp, label: t("server.whatsappGroup"), icon: <WhatsappLogo size={20} weight="fill" className="text-[#128C3E]" aria-hidden /> },
+    server.socialLinks?.telegram && { href: server.socialLinks.telegram, label: t("server.telegramGroup"), icon: <TelegramLogo size={20} weight="fill" className="text-[#1A7FB0]" aria-hidden /> },
+    server.socialLinks?.website && { href: server.socialLinks.website, label: t("server.officialWebsite"), icon: <PixelIcon name="globe" size={18} /> },
+  ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode }[];
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      
-      {/* ── YouTube-Style Sticky Tabs Bar (Refined & Minimalist) ────────────────── */}
-      <div className="border-b border-zinc-800/80 bg-[#09090b] sm:bg-[#09090b]/90 sm:backdrop-blur-md sticky top-[68px] sm:top-[74px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none py-1">
+      {/* Tabs as inventory slots; the strip sticks under the navbar (64px + drips). */}
+      <div className="sticky top-[76px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0 py-2 bg-cream">
+        <div role="tablist" aria-label="Bagian halaman server" className="flex items-center gap-3 overflow-x-auto scrollbar-none p-1">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.key;
             return (
               <button
                 key={tab.key}
+                role="tab"
+                aria-selected={isActive}
                 onClick={() => setActiveTab(tab.key)}
-                className={`relative flex items-center gap-2 py-3 px-3.5 sm:px-4 text-xs sm:text-sm font-medium transition-all duration-200 shrink-0 select-none ${
-                  isActive
-                    ? "text-white font-semibold"
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.03] rounded-lg"
-                }`}
+                className="px-slot shrink-0 inline-flex items-center gap-2 min-h-[44px] px-3.5 font-pixel text-sm"
               >
-                <span className={isActive ? "text-white" : "text-zinc-500"}>
-                  {tab.icon}
-                </span>
-                <span>{tab.label}</span>
-                {tab.badge !== undefined && (
-                  <span
-                    className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
-                      isActive
-                        ? "bg-white/10 border-white/20 text-white font-medium"
-                        : "bg-zinc-800/80 border-zinc-700/60 text-zinc-400"
-                    }`}
-                  >
-                    {tab.badge}
-                  </span>
-                )}
-                
-                {/* Active Underline Indicator (Clean, Sharp, Zero Neon Glow) */}
-                {isActive && (
-                  <div className="absolute bottom-0 left-2 right-2 h-[2px] bg-white rounded-full" />
-                )}
+                <PixelIcon name={tab.icon} size={14} className={isActive ? "text-gold-d" : "text-ink-2"} />
+                {tab.label}
+                {tab.badge !== undefined && <span className="px-chip !text-xs !py-0 !px-1.5 ml-0.5">{tab.badge}</span>}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* ── Tab Content Container ─────────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-6">
-
-        {/* ── TAB 1: OVERVIEW ────────────────────────────────────────────────────── */}
+      <div className="flex flex-col gap-6" role="tabpanel">
         {activeTab === "overview" && (
-          <div className="flex flex-col gap-6 animate-fade-in">
-            
-            {/* Server Health Metrics HUD (Matte Dark, Discrete Indicators) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 sm:p-5 rounded-2xl bg-zinc-900/30 border border-zinc-800/80">
-              
-              {/* Status */}
-              <div className="flex flex-col gap-1 p-3.5 rounded-xl bg-zinc-950/50 border border-zinc-800/60">
-                <span className="text-xs text-zinc-400">{t("server.serverStatus")}</span>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <LiveIcon online={isOnline} size={16} />
-                  <span className={`text-xs sm:text-sm font-mono font-semibold ${isOnline ? "text-eter-cyan" : "text-zinc-400"}`}>
-                    {isOnline ? "Online" : "Offline"}
-                  </span>
+          <div className="flex flex-col gap-6 px-pop">
+            {/* Stat slots */}
+            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[
+                {
+                  label: t("server.serverStatus"),
+                  icon: <LiveIcon online={isOnline} size={16} />,
+                  value: isRealm ? "Realm" : isOnline ? "Online" : "Offline",
+                  cls: isOnline && !isRealm ? "text-online-d" : "text-ink",
+                },
+                { label: t("server.onlinePlayers"), icon: <PixelIcon name="users" size={16} className="text-ink-2" />, value: `${currentPlayers.toLocaleString("id-ID")} / ${maxPlayers.toLocaleString("id-ID")}`, cls: "text-ink" },
+                { label: t("server.totalVote"), icon: <Sprite name="emerald" size={16} />, value: votes.toLocaleString("id-ID"), cls: "text-ink" },
+                { label: t("server.starRating"), icon: <PixelIcon name="star" size={16} className="text-gold-d" />, value: `${rating.toFixed(1)} / 5`, cls: "text-ink" },
+              ].map((s) => (
+                <div key={s.label} className="px-slot p-3.5 flex flex-col gap-1.5">
+                  <dt className="text-xs text-ink-2">{s.label}</dt>
+                  <dd className={`flex items-center gap-2 font-bold tabular ${s.cls}`}>
+                    {s.icon}
+                    {s.value}
+                  </dd>
                 </div>
-              </div>
+              ))}
+            </dl>
 
-              {/* Current Players */}
-              <div className="flex flex-col gap-1 p-3.5 rounded-xl bg-zinc-950/50 border border-zinc-800/60">
-                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">{t("server.onlinePlayers")}</span>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <Users size={16} className="text-zinc-400" weight="fill" />
-                  <span className="text-xs sm:text-sm font-mono font-semibold text-white">
-                    {currentPlayers.toLocaleString()}{" "}
-                    <span className="text-xs font-normal text-zinc-500 font-mono">/ {maxPlayers.toLocaleString()}</span>
-                  </span>
+            {/* How to join */}
+            {isCrossplay ? (
+              <div className={card}>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h3 className={cardTitle}>
+                    <PixelIcon name="bolt" size={16} className="text-gold-d" />
+                    Crossplay: Java & Bedrock
+                  </h3>
+                  <span className="text-sm text-ink-2">Pemain PC, HP, dan konsol bisa main bareng</span>
                 </div>
-              </div>
-
-              {/* Votes */}
-              <div className="flex flex-col gap-1 p-3.5 rounded-xl bg-zinc-950/50 border border-zinc-800/60">
-                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">{t("server.totalVote")}</span>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <Trophy size={16} className="text-amber-400/90" weight="fill" />
-                  <span className="text-xs sm:text-sm font-mono font-semibold text-white">
-                    {votes.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-
-              {/* Rating */}
-              <div className="flex flex-col gap-1 p-3.5 rounded-xl bg-zinc-950/50 border border-zinc-800/60">
-                <span className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">{t("server.starRating")}</span>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <Star size={16} className="text-amber-400" weight="fill" />
-                  <span className="text-xs sm:text-sm font-mono font-semibold text-amber-300">
-                    {rating.toFixed(1)}{" "}
-                    <span className="text-xs font-normal text-zinc-500 font-mono">/ 5.0</span>
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Connect & Join Box */}
-            {server.serverType !== "REALM" && (server.platform === "CROSSPLAY" || (!server.platform && server.port && server.port !== 19132)) ? (
-              <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 sm:p-6 flex flex-col gap-4">
-                <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3 flex-wrap gap-2">
-                  <span className="text-xs font-mono text-cyan-300 font-semibold uppercase tracking-wider flex items-center gap-1.5">
-                    <Lightning size={15} weight="fill" className="text-cyan-400" />
-                    Crossplay: Mendukung Java & Bedrock (MCPE)
-                  </span>
-                  <span className="text-[11px] font-mono text-zinc-500">
-                    Pemain PC, HP, & Konsol bisa bermain bersama
-                  </span>
-                </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Java Connection */}
-                  <div className="flex flex-col justify-between gap-3 p-4 bg-zinc-950/60 border border-zinc-800/80 rounded-xl">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-mono text-blue-300 uppercase tracking-wider mb-1">
-                        Java Edition (PC)
-                      </span>
-                      <span className="text-base sm:text-lg font-mono font-bold text-white tracking-tight break-all">
-                        {server.ipAddress}
-                      </span>
-                      {server.port && server.port !== 25565 && (
-                        <span className="text-[11px] font-mono text-zinc-400 mt-0.5">Port: {server.port}</span>
-                      )}
+                  <div className="px-slot p-4 flex flex-col justify-between gap-3">
+                    <div className="flex flex-col gap-1.5">
+                      <span className="font-pixel text-sm text-ink-2">Java Edition (PC)</span>
+                      <span className="ip-chip w-fit max-w-full"><span className="ip-chip-caret" aria-hidden>&gt;</span><span className="truncate">{server.ipAddress}{server.port && server.port !== 25565 ? `:${server.port}` : ""}</span></span>
                     </div>
-                    <CopyIPButton 
-                      ipAddress={server.ipAddress}
-                      port={server.port}
-                      className="w-full sm:w-fit"
-                    />
+                    <CopyIPButton ipAddress={server.ipAddress} port={server.port} className="w-full sm:w-fit" />
                   </div>
-
-                  {/* Bedrock Connection */}
-                  <div className="flex flex-col justify-between gap-3 p-4 bg-zinc-950/60 border border-zinc-800/80 rounded-xl">
-                    <div className="flex flex-col">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-emerald-300 uppercase tracking-wider mb-1">
-                          Bedrock / MCPE (HP & PC)
-                        </span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-800/60 text-cyan-300 font-semibold">
-                          Port: {server.bedrockPort || 19132}
-                        </span>
-                      </div>
-                      <span className="text-base sm:text-lg font-mono font-bold text-white tracking-tight break-all">
-                        {server.ipAddress}
-                      </span>
+                  <div className="px-slot p-4 flex flex-col justify-between gap-3">
+                    <div className="flex flex-col gap-1.5">
+                      <span className="font-pixel text-sm text-ink-2">Bedrock (HP & PC) · port {server.bedrockPort || 19132}</span>
+                      <span className="ip-chip w-fit max-w-full"><span className="ip-chip-caret" aria-hidden>&gt;</span><span className="truncate">{server.ipAddress}</span></span>
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <DirectPlayButton 
-                        serverName={server.name}
-                        ipAddress={server.ipAddress}
-                        port={server.bedrockPort || 19132}
-                        className="flex-1 sm:flex-initial"
-                      />
-                      <CopyIPButton 
-                        ipAddress={server.ipAddress}
-                        port={server.bedrockPort || 19132}
-                        className="flex-1 sm:flex-initial"
-                      />
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <DirectPlayButton serverName={server.name} ipAddress={server.ipAddress} port={server.bedrockPort || 19132} className="flex-1 sm:flex-initial" />
+                      <CopyIPButton ipAddress={server.ipAddress} port={server.bedrockPort || 19132} className="flex-1 sm:flex-initial" />
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
-                    {server.serverType === "REALM" 
-                      ? t("server.realmAddress") 
-                      : (server.platform === "BEDROCK" ? "Alamat Server Bedrock (MCPE)" : t("server.serverAddress"))}
+              <div className={`${card} sm:flex-row sm:items-center sm:justify-between`}>
+                <div className="flex flex-col gap-2 min-w-0">
+                  <span className="font-pixel text-sm text-ink-2">
+                    {isRealm ? t("server.realmAddress") : server.platform === "BEDROCK" ? "Alamat server Bedrock" : t("server.serverAddress")}
                   </span>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xl sm:text-2xl font-mono font-bold text-white tracking-tight break-all">
-                      {server.serverType === "REALM" 
-                        ? (server.realmCode || server.ipAddress)
-                        : server.ipAddress}
+                  <span className="ip-chip w-fit max-w-full !text-sm">
+                    <span className="ip-chip-caret" aria-hidden>&gt;</span>
+                    <span className="truncate">
+                      {isRealm ? server.realmCode || server.ipAddress : server.ipAddress}
+                      {!isRealm && server.port && server.port !== 25565 ? `:${server.port}` : ""}
                     </span>
-                    {server.serverType !== "REALM" && server.port && server.port !== 25565 && (
-                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">
-                        Port: {server.port}
-                      </span>
-                    )}
-                    {server.serverType === "REALM" && (
-                      <span className="text-xs font-mono px-2.5 py-0.5 rounded bg-purple-950/60 border border-purple-800/60 text-purple-300">
-                        Minecraft Realms
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-xs text-zinc-400 font-body mt-1">
-                    {server.serverType === "REALM"
-                      ? t("server.realmSubtext")
-                      : t("server.serverSubtext")}
                   </span>
+                  <span className="text-sm text-ink-2">{isRealm ? t("server.realmSubtext") : t("server.serverSubtext")}</span>
                 </div>
-                <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
-                  <DirectPlayButton 
-                    serverName={server.name}
-                    ipAddress={server.ipAddress}
-                    port={server.port}
-                    isRealm={server.serverType === "REALM"}
-                    realmCode={server.realmCode}
-                  />
-                  <CopyIPButton 
-                    ipAddress={server.ipAddress}
-                    port={server.port}
-                    isRealm={server.serverType === "REALM"}
-                    realmCode={server.realmCode}
-                  />
+                <div className="flex items-center gap-3 shrink-0 flex-wrap">
+                  {(isRealm || server.platform !== "JAVA") && (
+                    <DirectPlayButton serverName={server.name} ipAddress={server.ipAddress} port={server.port} isRealm={isRealm} realmCode={server.realmCode} />
+                  )}
+                  <CopyIPButton ipAddress={server.ipAddress} port={server.port} isRealm={isRealm} realmCode={server.realmCode} />
                 </div>
               </div>
             )}
 
-            {/* Featured Trailer Teaser (If available) */}
             {server.videoUrl && (
-              <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-display font-semibold text-zinc-200 flex items-center gap-2">
-                    <VideoCamera size={18} className="text-zinc-400" /> {t("server.officialTrailer")}
+              <div className={card}>
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className={cardTitle}>
+                    <PixelIcon name="play" size={14} className="text-prism-d" /> {t("server.officialTrailer")}
                   </h3>
-                  <button
-                    onClick={() => setActiveTab("trailer")}
-                    className="text-xs font-mono text-zinc-400 hover:text-white transition-colors"
-                  >
-                    Tab {t("server.trailer")} →
+                  <button onClick={() => setActiveTab("trailer")} className="px-btn px-btn-cream px-btn-sm">
+                    {t("server.trailer")}
+                    <PixelIcon name="arrow" rotate={180} size={12} />
                   </button>
                 </div>
-                
-                <div className="aspect-video w-full rounded-xl overflow-hidden bg-black border border-zinc-800 relative">
+                <div className="aspect-video w-full px-screen">
                   {ytId && teaserLoaded ? (
                     <iframe
                       src={`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       style={{ border: 0 }}
@@ -325,330 +202,159 @@ export function ServerChannelTabs({
                       type="button"
                       onClick={() => setTeaserLoaded(true)}
                       aria-label={`${t("server.officialTrailer")}: ${server.name}`}
-                      className="group/play absolute inset-0 w-full h-full focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white"
+                      className="group/play on-dark absolute inset-0 w-full h-full"
                     >
-                      <img
-                        src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`}
-                        alt=""
-                        loading="lazy"
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover/play:opacity-100 transition-opacity"
-                      />
+                      <img src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`} alt="" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
                       <span className="absolute inset-0 flex items-center justify-center">
-                        <span className="w-16 h-16 rounded-full bg-black/75 border border-white/20 flex items-center justify-center text-white group-hover/play:bg-black transition-colors">
-                          <Play weight="fill" size={28} />
+                        <span className="px-btn px-btn-gold !min-h-[64px] !min-w-[64px] !p-0 group-hover/play:brightness-110">
+                          <PixelIcon name="play" size={28} />
                         </span>
                       </span>
                     </button>
                   ) : (
-                    <video
-                      src={server.videoUrl}
-                      controls
-                      preload="metadata"
-                      className="w-full h-full object-contain bg-black"
-                      poster={server.bannerUrl || defaultBanner}
-                    />
+                    <video src={server.videoUrl} controls preload="metadata" className="w-full h-full object-contain bg-screen" poster={server.bannerUrl || undefined} />
                   )}
                 </div>
               </div>
             )}
 
-            {/* Overview Quick Summary (Markdown Fixed) */}
-            <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-5 sm:p-6 flex flex-col gap-3">
-              <h3 className="text-sm font-display font-semibold text-zinc-200 flex items-center gap-2">
-                <Sparkle size={18} className="text-zinc-400" /> {t("server.summaryTitle")}
+            <div className={card}>
+              <h3 className={cardTitle}>
+                <PixelIcon name="scroll" size={16} className="text-prism-d" /> {t("server.summaryTitle")}
               </h3>
-              <div className="prose prose-invert max-w-none text-sm text-zinc-300 font-body leading-relaxed line-clamp-4 overflow-hidden">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {server.description}
-                </ReactMarkdown>
+              <div className="prose prose-eter max-w-none text-sm leading-relaxed line-clamp-4 overflow-hidden">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{server.description}</ReactMarkdown>
               </div>
-              <button
-                onClick={() => setActiveTab("about")}
-                className="text-xs font-mono text-zinc-400 hover:text-white transition-colors w-fit mt-1"
-              >
+              <button onClick={() => setActiveTab("about")} className="px-btn px-btn-cream px-btn-sm w-fit">
                 {t("server.readFull")}
               </button>
             </div>
-
           </div>
         )}
 
-        {/* ── TAB 2: TRAILER & REELS ──────────────────────────────────────────────── */}
         {activeTab === "trailer" && (
-          <div className="flex flex-col gap-6 animate-fade-in">
-            
-            {/* Main Cinema Video Showcase */}
+          <div className="flex flex-col gap-6 px-pop">
             {server.videoUrl ? (
-              <div className="flex flex-col gap-4">
-                <div className="bg-black border border-zinc-800 rounded-2xl overflow-hidden aspect-video relative group">
-                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 bg-zinc-950/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-zinc-700/60 text-xs font-mono text-zinc-300 flex items-center gap-2 pointer-events-none">
-                    <FilmStrip size={16} className="text-zinc-400" /> {t("server.officialTrailer")}
-                  </div>
+              <>
+                <div className="aspect-video w-full px-screen">
                   {ytId ? (
                     <iframe
                       src={`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       style={{ border: 0 }}
                       title={t("server.officialTrailer")}
                     />
                   ) : (
-                    <video
-                      src={server.videoUrl}
-                      controls
-                      autoPlay
-                      className="w-full h-full object-contain bg-black"
-                      poster={server.bannerUrl || defaultBanner}
-                    />
+                    <video src={server.videoUrl} controls autoPlay className="w-full h-full object-contain bg-screen" poster={server.bannerUrl || undefined} />
                   )}
                 </div>
-
-                <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-zinc-200">{server.name} {t("server.officialTrailer")}</span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <DirectPlayButton 
-                      serverName={server.name}
-                      ipAddress={server.ipAddress}
-                      port={server.port}
-                      isRealm={server.serverType === "REALM"}
-                      realmCode={server.realmCode}
-                    />
-                    <CopyIPButton 
-                      ipAddress={server.ipAddress}
-                      port={server.port}
-                      isRealm={server.serverType === "REALM"}
-                      realmCode={server.realmCode}
-                    />
+                <div className={`${card} sm:flex-row sm:items-center sm:justify-between`}>
+                  <span className="font-pixel text-base text-ink">{server.name}: {t("server.officialTrailer")}</span>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {(isRealm || server.platform !== "JAVA") && (
+                      <DirectPlayButton serverName={server.name} ipAddress={server.ipAddress} port={server.port} isRealm={isRealm} realmCode={server.realmCode} />
+                    )}
+                    <CopyIPButton ipAddress={server.ipAddress} port={server.port} isRealm={isRealm} realmCode={server.realmCode} />
                   </div>
                 </div>
-              </div>
+              </>
             ) : (
-              <div className="py-16 text-center border border-zinc-800/60 rounded-2xl bg-zinc-950/40 flex flex-col items-center gap-3">
-                <FilmStrip size={36} className="text-zinc-600" />
-                <h3 className="text-base font-display text-zinc-300">{t("server.noTrailer")}</h3>
-                <p className="text-xs font-body text-zinc-500 max-w-sm">
-                  {t("server.noTrailerDesc")}
-                </p>
-              </div>
+              <Empty sprite="film" title={t("server.noTrailer")} body={t("server.noTrailerDesc")} />
             )}
-
-            {/* Server Shorts / Reels Feature Showcase (Refined Dark Studio) */}
-            <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-6 flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700/60 flex items-center justify-center text-zinc-300 shrink-0">
-                  <FilmStrip size={18} />
-                </div>
-                <div>
-                  <h4 className="text-sm font-display font-semibold text-white flex items-center gap-2">
-                    EterVerse Clips & Reels
-                    <span className="text-[10px] font-mono bg-zinc-800 border border-zinc-700 text-zinc-300 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                      {t("server.comingSoon")}
-                    </span>
-                  </h4>
-                  <p className="text-xs text-zinc-400 font-body mt-0.5">
-                    {t("server.clipsSubtitle")}
-                  </p>
-                </div>
-              </div>
-
-              {/* Minimalist 9:16 Preview Cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-1">
-                {[
-                  { title: "PvP Arena Highlights", tag: "Warzone" },
-                  { title: "Epic Castle Timelapse", tag: "Creative" },
-                  { title: "Custom Boss Fight Event", tag: "RPG" },
-                  { title: "SMP Economy Market", tag: "Survival" },
-                ].map((clip, i) => (
-                  <div
-                    key={i}
-                    className="relative aspect-[9/16] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 hover:border-zinc-700 p-3.5 flex flex-col justify-end group transition-colors"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                    <span className="relative z-10 text-[10px] font-mono text-zinc-400 uppercase tracking-wider">{clip.tag}</span>
-                    <span className="relative z-10 text-xs font-medium text-zinc-200 line-clamp-2 mt-0.5">{clip.title}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
           </div>
         )}
 
-        {/* ── TAB 3: GALLERY ──────────────────────────────────────────────────────── */}
         {activeTab === "gallery" && (
-          <div className="flex flex-col gap-6 animate-fade-in">
+          <div className="flex flex-col gap-4 px-pop">
             {gallery.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-                    {gallery.length} Tangkapan Layar
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <>
+                <span className="text-sm text-ink-2">{gallery.length} tangkapan layar</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   {gallery.map((url: string, index: number) => (
-                    <div
-                      key={index}
-                      className="aspect-video bg-zinc-950 border border-zinc-800 hover:border-zinc-700 rounded-xl overflow-hidden group relative transition-colors"
-                    >
-                      <img
-                        src={url}
-                        alt={`${server.name} Screenshot ${index + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                      <div className="absolute bottom-2.5 left-2.5 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-mono text-zinc-400 border border-zinc-800 pointer-events-none">
-                        Foto {index + 1}
-                      </div>
-                    </div>
+                    <a key={index} href={url} target="_blank" rel="noopener noreferrer" className="aspect-video px-screen block group">
+                      <img src={url} alt={`${server.name} screenshot ${index + 1}`} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                      <span className="absolute bottom-2 left-2 px-chip">Foto {index + 1}</span>
+                    </a>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <Empty sprite="chest" title={t("server.noGallery")} body={t("server.noGalleryDesc")} />
+            )}
+          </div>
+        )}
+
+        {activeTab === "about" && (
+          <div className="flex flex-col gap-6 px-pop">
+            <div className={card}>
+              <h3 className={cardTitle}>
+                <Sprite name="book" size={22} /> Info lengkap & aturan {server.name}
+              </h3>
+              <div className="prose prose-eter max-w-none text-sm sm:text-base leading-relaxed break-words">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{server.description}</ReactMarkdown>
+              </div>
+            </div>
+            <div className={card}>
+              <h4 className="font-pixel text-base text-ink">Spesifikasi server</h4>
+              <dl className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <dt className="text-ink-2">Alamat</dt>
+                  <dd className="font-mono text-ink break-all">{isRealm ? server.realmCode || server.ipAddress : server.ipAddress}</dd>
+                </div>
+                {!isRealm && (
+                  <div>
+                    <dt className="text-ink-2">Port</dt>
+                    <dd className="font-mono text-ink">{server.port || 25565}</dd>
+                  </div>
+                )}
+                <div>
+                  <dt className="text-ink-2">Mode / tag</dt>
+                  <dd className="text-ink">{server.tags?.join(", ") || "-"}</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "reviews" && (
+          <div className="flex flex-col gap-6 px-pop">
+            <div className={card}>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className={cardTitle}>
+                    <PixelIcon name="star" size={16} className="text-gold-d" /> {t("server.rateTitle")} {server.name}
+                  </h3>
+                  <p className="text-sm text-ink-2 mt-1">{t("server.rateDesc")}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-3xl font-bold text-ink tabular">{rating.toFixed(1)}</span>
+                  <span className="text-xs text-ink-2 block">dari 5</span>
+                </div>
+              </div>
+              <StarRating slug={server.slug} initialRating={rating} isLoggedIn={isLoggedIn} userRating={userRating} />
+            </div>
+
+            {socials.length > 0 && (
+              <div className={card}>
+                <h3 className={cardTitle}>{t("server.officialCommunity")}</h3>
+                <p className="text-sm text-ink-2 -mt-2">{t("server.communitySubtitle")}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {socials.map((s) => (
+                    <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer" className="px-btn px-btn-cream !justify-start">
+                      {s.icon}
+                      {s.label}
+                    </a>
                   ))}
                 </div>
               </div>
-            ) : (
-              <div className="py-16 text-center border border-zinc-800/60 rounded-2xl bg-zinc-950/40 flex flex-col items-center gap-3">
-                <ImageIcon size={36} className="text-zinc-600" />
-                <h3 className="text-base font-display text-zinc-300">{t("server.noGallery")}</h3>
-                <p className="text-xs font-body text-zinc-500 max-w-sm">
-                  {t("server.noGalleryDesc")}
-                </p>
-              </div>
             )}
-          </div>
-        )}
 
-        {/* ── TAB 4: ABOUT SERVER (FULL DESCRIPTION & RULES) ──────────────────────── */}
-        {activeTab === "about" && (
-          <div className="flex flex-col gap-6 animate-fade-in">
-            <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-6 sm:p-8">
-              <h3 className="text-lg font-display font-semibold text-white mb-6 border-b border-zinc-800 pb-4 flex items-center gap-2.5">
-                <BookOpenText size={20} className="text-zinc-400" /> Informasi Lengkap & Aturan {server.name}
-              </h3>
-              
-              <div className="prose prose-invert max-w-none font-body text-sm sm:text-base text-zinc-300 leading-relaxed break-words">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {server.description}
-                </ReactMarkdown>
-              </div>
-            </div>
-
-            {/* Server Details Spec Card */}
-            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-5 flex flex-col gap-3">
-              <h4 className="text-xs font-mono uppercase text-zinc-500 tracking-wider">Spesifikasi Server</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs font-mono">
-                <div>
-                  <span className="text-zinc-500 block">IP Address:</span>
-                  <span className="text-zinc-200 font-semibold break-all">{server.ipAddress}</span>
-                </div>
-                <div>
-                  <span className="text-zinc-500 block">Port:</span>
-                  <span className="text-zinc-200 font-semibold">{server.port || 25565}</span>
-                </div>
-                <div>
-                  <span className="text-zinc-500 block">Kategori / Tags:</span>
-                  <span className="text-zinc-300">{server.tags?.join(", ") || "-"}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── TAB 5: REVIEWS & COMMUNITY ─────────────────────────────────────────── */}
-        {activeTab === "reviews" && (
-          <div className="flex flex-col gap-6 animate-fade-in">
-            
-            {/* Interactive Rating Section */}
-            <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-6 sm:p-8 flex flex-col gap-4">
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
-                <div>
-                  <h3 className="text-base font-display font-semibold text-white flex items-center gap-2">
-                    <Star size={18} className="text-amber-400" weight="fill" /> {t("server.rateTitle")} {server.name}
-                  </h3>
-                  <p className="text-xs text-zinc-400 font-body mt-1">
-                    {t("server.rateDesc")}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <span className="text-2xl font-mono font-bold text-amber-400">{rating.toFixed(1)}</span>
-                  <span className="text-xs font-mono text-zinc-500 block">/ 5.0 Rating</span>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <StarRating
-                  slug={server.slug}
-                  initialRating={rating}
-                  isLoggedIn={isLoggedIn}
-                  userRating={userRating}
-                />
-              </div>
-            </div>
-
-            {/* Social Media & Community Grid */}
-            <div className="bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-6 flex flex-col gap-4">
-              <h3 className="text-base font-display font-semibold text-white">{t("server.officialCommunity")}</h3>
-              <p className="text-xs text-zinc-400 font-body -mt-2">
-                {t("server.communitySubtitle")}
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
-                {server.socialLinks?.discord && (
-                  <a
-                    href={server.socialLinks.discord}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 bg-[#5865F2]/10 hover:bg-[#5865F2]/20 border border-[#5865F2]/25 text-white transition-all px-4 py-3 rounded-xl text-sm font-medium"
-                  >
-                    <DiscordLogo size={20} weight="fill" className="text-[#5865F2]" />
-                    <span>{t("server.joinDiscord")}</span>
-                  </a>
-                )}
-                {server.socialLinks?.whatsapp && (
-                  <a
-                    href={server.socialLinks.whatsapp}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/25 text-white transition-all px-4 py-3 rounded-xl text-sm font-medium"
-                  >
-                    <WhatsappLogo size={20} weight="fill" className="text-[#25D366]" />
-                    <span>{t("server.whatsappGroup")}</span>
-                  </a>
-                )}
-                {server.socialLinks?.telegram && (
-                  <a
-                    href={server.socialLinks.telegram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 bg-[#229ED9]/10 hover:bg-[#229ED9]/20 border border-[#229ED9]/25 text-white transition-all px-4 py-3 rounded-xl text-sm font-medium"
-                  >
-                    <TelegramLogo size={20} weight="fill" className="text-[#229ED9]" />
-                    <span>{t("server.telegramGroup")}</span>
-                  </a>
-                )}
-                {server.socialLinks?.website && (
-                  <a
-                    href={server.socialLinks.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 text-zinc-200 hover:text-white transition-all px-4 py-3 rounded-xl text-sm font-medium"
-                  >
-                    <Globe size={20} className="text-zinc-400" />
-                    <span>{t("server.officialWebsite")}</span>
-                  </a>
-                )}
-              </div>
-            </div>
-
-            {/* Embed Widget Generator */}
             <EmbedWidget serverSlug={server.slug} />
-
           </div>
         )}
-
       </div>
-
     </div>
   );
 }

@@ -4,6 +4,8 @@ import { auth } from "@/auth";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import { VotifierForm } from "./VotifierForm";
+import { DashHeader } from "@/components/dashboard/DashHeader";
+import { Sprite } from "@/components/pixel/PixelArt";
 
 export const metadata: Metadata = {
   title: "Hadiah Vote (Votifier) | EterVerse",
@@ -38,37 +40,34 @@ export default async function VotifierPage() {
     .lean();
 
   return (
-    <div className="max-w-4xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-2xl sm:text-3xl font-display font-semibold text-white">Hadiah Vote (Votifier)</h1>
-        <p className="text-zinc-400 font-body text-sm max-w-2xl">
-          Setiap pemain vote server kamu di EterVerse, kami kirim sinyal Votifier ke server kamu dan plugin reward
-          memberi hadiahnya. Pemain mengisi nama Minecraft saat vote.
-        </p>
-      </header>
+    <div className="max-w-4xl mx-auto flex flex-col gap-8 px-pop pb-20">
+      <DashHeader title="Hadiah vote" sprite="chestGold">
+        Setiap pemain vote server kamu di EterVerse, kami kirim sinyal Votifier ke server kamu dan plugin reward
+        memberi hadiahnya. Pemain mengisi nama Minecraft saat vote.
+      </DashHeader>
 
-      <ol className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Setup as a quest log: four steps, numbered like hotbar slots */}
+      <ol className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {STEPS.map((step, i) => (
-          <li key={step.title} className="rounded-xl border border-zinc-800 bg-zinc-950/80 p-5 flex gap-4">
-            <span className="font-mono text-sm text-amber-300 shrink-0" aria-hidden>
-              {String(i + 1).padStart(2, "0")}
+          <li key={step.title} className="px-flat p-5 flex gap-4">
+            <span className="px-slot w-10 h-10 shrink-0 flex items-center justify-center font-pixel text-lg" aria-hidden>
+              {i + 1}
             </span>
             <div className="flex flex-col gap-1">
-              <h2 className="text-sm font-semibold text-white">{step.title}</h2>
-              <p className="text-sm text-zinc-400 leading-relaxed">{step.body}</p>
+              <h2 className="font-pixel text-base text-ink">{step.title}</h2>
+              <p className="text-sm text-ink-2 leading-relaxed">{step.body}</p>
             </div>
           </li>
         ))}
       </ol>
 
       {servers.length === 0 ? (
-        <div className="p-10 border border-zinc-800 bg-zinc-950/80 text-center rounded-xl flex flex-col items-center gap-3">
-          <p className="text-zinc-300">
+        <div className="px-panel p-10 text-center flex flex-col items-center gap-3">
+          <Sprite name="chest" size={56} />
+          <p className="text-ink-2">
             Belum ada server untuk disambungkan. Realms tidak didukung karena tidak bisa memasang plugin.
           </p>
-          <Link href="/dashboard/server/new" className="text-sm font-mono text-white underline underline-offset-4">
-            Daftarkan server
-          </Link>
+          <Link href="/dashboard/server/new" className="px-btn px-btn-gold">Daftarkan server</Link>
         </div>
       ) : (
         <div className="flex flex-col gap-6">

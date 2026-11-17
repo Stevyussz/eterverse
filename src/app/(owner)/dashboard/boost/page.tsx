@@ -1,56 +1,41 @@
-import { Lightning, Trophy, Star } from "@phosphor-icons/react/dist/ssr";
+import { Sprite, type SpriteName } from "@/components/pixel/PixelArt";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
+import { DashHeader } from "@/components/dashboard/DashHeader";
+
+// Only benefits the code actually delivers. "AI priority" was listed once, but the
+// matchmaker never ranked partners higher.
+const PERKS: { sprite: SpriteName; title: string; desc: string }[] = [
+  { sprite: "goldBlock", title: "Badge Partner", desc: "Badge emas di kartu server, hasil pencarian, dan halaman servermu. Berlabel jelas sebagai partner." },
+  { sprite: "film", title: "Slot banner beranda", desc: "Servermu masuk rotasi banner paling atas di beranda, lengkap dengan trailer dan IP." },
+];
 
 export default function EterShopBoostPage() {
   return (
-    <div className="max-w-4xl mx-auto flex flex-col gap-10 animate-fade-in pb-20 mt-4">
-      
-      <div className="text-center flex flex-col items-center">
-        <h1 className="text-3xl md:text-5xl font-display font-bold text-white">Partner EterShop</h1>
-        {/* Only benefits the code actually delivers. "AI priority" was listed but the
-            matchmaker never ranked partners higher. */}
-        <p className="text-base sm:text-lg text-zinc-300 font-body mt-4 max-w-2xl leading-relaxed">
-          Server partner tampil di banner utama beranda dan memakai badge Partner di setiap kartu dan halaman servernya.
-        </p>
+    <div className="max-w-4xl mx-auto flex flex-col gap-8 px-pop pb-20">
+      <DashHeader title="Partner EterShop" sprite="goldBlock">
+        Server partner tampil di banner utama beranda dan memakai badge Partner di setiap kartu dan halaman servernya.
+      </DashHeader>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {PERKS.map((p) => (
+          <div key={p.title} className="px-panel p-6 flex flex-col gap-3">
+            <Sprite name={p.sprite} size={40} />
+            <h2 className="px-title text-xl text-ink">{p.title}</h2>
+            <p className="text-sm text-ink-2 leading-relaxed">{p.desc}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
-        <FeatureCard
-          icon={<Trophy size={28} className="text-amber-400" />}
-          title="Badge Partner"
-          desc="Badge emas di kartu server, hasil pencarian, dan halaman servermu. Berlabel jelas sebagai partner."
-        />
-        <FeatureCard
-          icon={<Star size={28} className="text-amber-400" />}
-          title="Slot banner beranda"
-          desc="Servermu masuk rotasi banner paling atas di beranda, lengkap dengan trailer dan IP."
-        />
-      </div>
-
-      <div className="bg-zinc-900/30 border border-zinc-800 p-8 sm:p-10 mt-4 flex flex-col items-center text-center rounded-2xl">
-        <h2 className="text-xl sm:text-2xl font-display font-semibold text-white mb-3">Siap Tingkatkan Popularitas Server?</h2>
-        <p className="text-zinc-400 text-sm max-w-md mb-6 leading-relaxed">
-          Slot partner dibatasi untuk menjaga eksklusivitas dan efektivitas promosi. Hubungi tim kami untuk pengajuan server partner.
+      <div className="px-panel prism-bricks on-dark text-white p-8 sm:p-10 flex flex-col items-center text-center gap-4">
+        <Sprite name="chestGold" size={48} />
+        <h2 className="px-title px-title-shadow-dark text-2xl">Ajukan server partner</h2>
+        <p className="text-white/90 text-sm max-w-md leading-relaxed">
+          Pengajuan ditinjau manual oleh tim kami. Kirim nama server dan link halaman EterVerse-nya lewat email.
         </p>
-        <a 
-          href="mailto:admin@eterverse.com?subject=EterShop%20Partner%20Application"
-          className="bg-amber-400 text-zinc-950 font-medium px-8 py-3.5 rounded-lg hover:bg-amber-300 transition-all flex items-center gap-2 text-sm shadow-sm active:scale-[0.98]"
-        >
-          <Lightning weight="fill" size={18} /> Ajukan via Email
+        <a href="mailto:admin@eterverse.com?subject=EterShop%20Partner%20Application" className="px-btn px-btn-gold">
+          <PixelIcon name="mail" size={14} /> Ajukan via email
         </a>
       </div>
-      
-    </div>
-  );
-}
-
-function FeatureCard({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
-  return (
-    <div className="bg-zinc-900/20 border border-zinc-800/80 p-6 rounded-xl text-center flex flex-col items-center gap-3">
-      <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/20 flex items-center justify-center rounded-xl">
-        {icon}
-      </div>
-      <h3 className="text-base font-display font-semibold text-white">{title}</h3>
-      <p className="text-xs text-zinc-400 leading-relaxed">{desc}</p>
     </div>
   );
 }

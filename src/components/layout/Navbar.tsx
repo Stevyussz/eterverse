@@ -2,182 +2,125 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Cube, DiscordLogo, List, X, Sparkle, PlusCircle, SignOut, CaretRight } from "@phosphor-icons/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { useLanguage } from "@/context/LanguageContext";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { DASHBOARD_MENU_EVENT } from "@/lib/ui-events";
+import { PixelIcon, type PixelIconName } from "@/components/pixel/PixelIcon";
+import { Logo } from "@/components/pixel/Logo";
 
 interface NavbarProps {
   isLoggedIn: boolean;
   isAdmin: boolean;
 }
 
+// One solid prismarine bar on every page, 64px tall, with the family's pixel drips under it.
+// Solid instead of a transparent-then-blurred bar: no backdrop-filter repaint while scrolling.
 export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [lastPath, setLastPath] = useState<string | null>(null);
   const pathname = usePathname();
   const { t } = useLanguage();
 
-  useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const isOver = window.scrollY > 20;
-          setScrolled((prev) => (prev !== isOver ? isOver : prev));
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Close mobile drawer on route navigation
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+  // Close the drawer on navigation (render-time update, no effect needed).
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    if (mobileOpen) setMobileOpen(false);
+  }
 
   const isDashboardOrAdmin = pathname?.startsWith("/dashboard") || pathname?.startsWith("/admin");
-
-  const navLinks = [
-    { href: "/", label: t("nav.home") },
-    { href: "/discover", label: t("nav.discover") },
-    { href: "/leaderboard", label: t("nav.leaderboard") },
-    { href: "/etershop", label: t("nav.etershop"), isGold: true },
-  ];
-
   const isDashboard = pathname?.startsWith("/dashboard");
 
+  const navLinks: { href: string; label: string; icon: PixelIconName; isGold?: boolean }[] = [
+    { href: "/", label: t("nav.home"), icon: "home" },
+    { href: "/discover", label: t("nav.discover"), icon: "map" },
+    { href: "/leaderboard", label: t("nav.leaderboard"), icon: "trophy" },
+    { href: "/etershop", label: t("nav.etershop"), icon: "sparkle", isGold: true },
+  ];
+
   return (
-    <nav
-      className={`fixed top-0 w-full z-50 ${
-        isDashboardOrAdmin
-          ? // App pages: one solid bar with a fixed 64px height. The shrinking transparent bar
-            // left a gap (or an overlap) against the dashboard bar and admin tabs below it.
-            "h-16 flex items-center bg-[#09090b] border-b border-white/10"
-          : `transition-all duration-smooth ${
-              scrolled || mobileOpen
-                ? "bg-[#09090b] sm:bg-[#09090b]/90 sm:backdrop-blur-md border-b border-white/10 py-3.5 shadow-2xl"
-                : "bg-transparent py-5"
-            }`
-      }`}
-    >
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-        
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group z-50">
-          <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-white/25 group-hover:bg-white/10 transition-all duration-300">
-            <Cube 
-              weight="duotone" 
-              size={20} 
-              className="text-zinc-200 group-hover:rotate-12 transition-transform duration-300" 
-            />
-          </div>
-          <span className="font-display font-bold text-xl tracking-tight text-white">
-            Eter<span className="text-zinc-400">Verse</span>
+    <nav className="prism-top fixed top-0 inset-x-0 z-50 h-16 text-white on-dark" aria-label="Navigasi utama">
+      <div className="w-full max-w-7xl h-full mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
+        <Link href="/" className="hover-bob flex items-center shrink-0 min-h-[44px]" aria-label="EterVerse, ke beranda">
+          <span className="bob-target inline-flex">
+            <Logo size={30} tone="dark" />
           </span>
         </Link>
 
-        {/* Desktop Links */}
         {!isDashboardOrAdmin && (
-          <div className="hidden md:flex items-center gap-1 bg-zinc-900/60 border border-zinc-800 rounded-full px-3 py-1 backdrop-blur-md">
+          <ul className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = link.href === "/" ? pathname === "/" : pathname?.startsWith(link.href);
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`relative text-xs font-mono px-3.5 py-1 rounded-full transition-all duration-200 flex items-center gap-1.5 ${
-                    isActive
-                      ? link.isGold
-                        ? "text-amber-300 bg-amber-500/10 font-semibold"
-                        : "text-white bg-white/10 font-semibold"
-                      : link.isGold
-                      ? "text-zinc-400 hover:text-amber-300"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  {link.isGold && <Sparkle size={12} weight="fill" className="text-amber-400" />}
-                  {link.label}
-                  {isActive && (
-                    <span
-                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-0.5 rounded-full ${
-                        link.isGold ? "bg-amber-400" : "bg-white"
-                      }`}
-                    />
-                  )}
-                </Link>
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`relative flex items-center gap-2 min-h-[44px] px-3 font-pixel text-[15px] transition-colors ${
+                      isActive ? "text-white" : link.isGold ? "text-gold-l hover:text-white" : "text-white/85 hover:text-white"
+                    }`}
+                  >
+                    <PixelIcon name={link.icon} size={14} className={link.isGold ? "text-gold" : ""} />
+                    {link.label}
+                    {isActive && <span className="absolute left-3 right-3 bottom-1 h-[3px] bg-gold" aria-hidden />}
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
 
-        {/* Auth / Action Area */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Language Switcher on Desktop */}
-          <div className="hidden sm:flex items-center">
+        <div className="flex items-center gap-3">
+          <div className="hidden lg:flex items-center">
             <LanguageSwitcher />
           </div>
 
           {!isDashboardOrAdmin && (
-            <Link
-              href="/dashboard/server/new"
-              className="hidden lg:inline-flex items-center gap-1.5 text-xs font-mono font-medium text-zinc-300 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-zinc-800"
-            >
-              <PlusCircle size={15} />
+            <Link href="/dashboard/server/new" className="px-btn px-btn-gold px-btn-sm hidden lg:inline-flex">
+              <PixelIcon name="plus" size={12} />
               {t("nav.submitServer")}
             </Link>
           )}
-          
+
           {isLoggedIn ? (
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-3">
               {isAdmin && (
-                <Link
-                  href="/admin"
-                  className="flex items-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 text-amber-300 text-xs font-mono font-semibold px-3 py-2 rounded-lg transition-all"
-                >
+                <Link href="/admin" className="px-btn px-btn-dirt px-btn-sm">
+                  <PixelIcon name="shield" size={12} />
                   {t("nav.admin")}
                 </Link>
               )}
-              <Link
-                href="/dashboard"
-                className="flex items-center gap-1.5 bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-mono font-semibold px-3.5 py-2 rounded-lg transition-all shadow-sm"
-              >
-                {t("nav.dashboard")}
-              </Link>
+              {!isDashboard && (
+                <Link href="/dashboard" className="px-btn px-btn-cream px-btn-sm">
+                  {t("nav.dashboard")}
+                </Link>
+              )}
               <button
                 onClick={() => signOut()}
-                className="flex items-center gap-1 bg-zinc-900/60 hover:bg-red-500/10 border border-zinc-800 hover:border-red-500/30 text-zinc-400 hover:text-red-400 text-xs font-mono px-3 py-2 rounded-lg transition-all"
+                className="px-btn px-btn-cream px-btn-sm px-btn-icon !min-h-[36px] !min-w-[36px]"
+                aria-label={t("nav.signOut")}
                 title={t("nav.signOut")}
               >
-                <SignOut size={15} />
+                <PixelIcon name="logout" size={14} />
               </button>
             </div>
           ) : (
-            <Link
-              href="/login"
-              className="hidden sm:flex items-center gap-2 bg-white/5 hover:bg-[#5865F2]/15 border border-white/10 hover:border-[#5865F2]/30 text-white text-xs font-mono px-4 py-2 rounded-lg transition-all"
-            >
-              <DiscordLogo weight="fill" size={16} className="text-[#5865F2]" />
+            <Link href="/login" className="px-btn px-btn-cream px-btn-sm hidden sm:inline-flex">
+              <PixelIcon name="user" size={12} />
               {t("nav.signIn")}
             </Link>
           )}
 
-          {/* Mobile menu button. On dashboard pages it opens the dashboard drawer instead of
-              the public menu, so there is a single menu button rather than two stacked bars.
-              Admin pages have their own tab bar and need no button here. */}
+          {/* One menu button on phones. Dashboard pages open the dashboard drawer; admin
+              pages have their own tab strip and need none. */}
           {isDashboard ? (
             <button
               onClick={() => window.dispatchEvent(new CustomEvent(DASHBOARD_MENU_EVENT))}
               aria-controls="dashboard-nav"
-              className="md:hidden inline-flex items-center gap-2 min-h-[44px] px-3 rounded-md text-sm text-zinc-200 hover:text-white bg-white/5 border border-white/10 transition-colors focus-visible:outline-2 focus-visible:outline-white"
+              className="md:hidden px-btn px-btn-cream px-btn-sm !min-h-[44px]"
             >
-              <List size={20} weight="bold" aria-hidden />
+              <PixelIcon name="menu" size={14} />
               Menu
             </button>
           ) : !isDashboardOrAdmin ? (
@@ -185,92 +128,70 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
               aria-expanded={mobileOpen}
-              className="md:hidden w-11 h-11 flex items-center justify-center rounded-md text-zinc-300 hover:text-white bg-white/5 border border-white/10 transition-colors focus-visible:outline-2 focus-visible:outline-white"
+              aria-controls="public-nav"
+              className="md:hidden px-btn px-btn-cream px-btn-icon"
             >
-              {mobileOpen ? <X size={20} weight="bold" /> : <List size={20} weight="bold" />}
+              <PixelIcon name={mobileOpen ? "close" : "menu"} size={16} />
             </button>
           ) : null}
         </div>
       </div>
 
-      {/* Mobile Drawer Menu (public pages only) */}
       {mobileOpen && !isDashboardOrAdmin && (
-        <div className="md:hidden bg-[#09090b]/95 backdrop-blur-2xl border-b border-zinc-800 px-6 py-6 flex flex-col gap-4 animate-fade-in shadow-2xl">
-          {/* Mobile Language Switcher Row */}
-          <div className="flex items-center justify-between pb-3 border-b border-zinc-800/80">
-            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Bahasa / Language</span>
-            <LanguageSwitcher showIcon />
-          </div>
-
-          <div className="flex flex-col gap-2">
+        <div id="public-nav" className="md:hidden absolute top-[76px] inset-x-3 px-panel p-4 flex flex-col gap-4 px-pop text-ink max-h-[calc(100dvh-90px)] overflow-y-auto">
+          <ul className="grid grid-cols-2 gap-3">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = link.href === "/" ? pathname === "/" : pathname?.startsWith(link.href);
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? link.isGold
-                        ? "bg-amber-500/10 text-amber-300 border border-amber-500/25 font-semibold"
-                        : "bg-white/10 text-white border border-white/15 font-semibold"
-                      : "text-zinc-300 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    {link.isGold && <Sparkle size={16} weight="fill" className="text-amber-400" />}
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className="px-slot flex items-center gap-2.5 min-h-[52px] px-3 font-pixel text-base"
+                  >
+                    <PixelIcon name={link.icon} size={16} className={link.isGold ? "text-gold-d" : "text-prism-d"} />
                     {link.label}
-                  </span>
-                  {isActive && <CaretRight size={14} weight="bold" className="text-white" aria-hidden />}
-                </Link>
+                  </Link>
+                </li>
               );
             })}
-            <Link
-              href="/dashboard/server/new"
-              className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-zinc-300 hover:bg-white/5 hover:text-white transition-colors"
-            >
-              <PlusCircle size={18} className="text-zinc-400" />
-              {t("nav.submitServer")}
-            </Link>
-          </div>
+          </ul>
 
-          <div className="pt-4 border-t border-zinc-800 flex flex-col gap-2">
+          <Link href="/dashboard/server/new" className="px-btn px-btn-gold px-btn-block">
+            <PixelIcon name="plus" size={12} />
+            {t("nav.submitServer")}
+          </Link>
+
+          <div className="flex flex-col gap-3">
             {isLoggedIn ? (
               <>
+                <Link href="/dashboard" className="px-btn px-btn-block">
+                  {t("nav.dashboard")}
+                </Link>
                 {isAdmin && (
-                  <Link
-                    href="/admin"
-                    className="flex items-center justify-center gap-2 bg-amber-500/10 border border-amber-500/25 text-amber-300 font-mono text-sm py-2.5 rounded-lg font-medium"
-                  >
+                  <Link href="/admin" className="px-btn px-btn-dirt px-btn-block">
+                    <PixelIcon name="shield" size={12} />
                     {t("nav.admin")}
                   </Link>
                 )}
-                <Link
-                  href="/dashboard"
-                  className="flex items-center justify-center gap-2 bg-white text-zinc-950 font-mono text-sm py-2.5 rounded-lg font-semibold"
-                >
-                  {t("nav.dashboard")}
-                </Link>
-                <button
-                  onClick={() => signOut()}
-                  className="flex items-center justify-center gap-2 bg-zinc-900/60 border border-zinc-800 text-zinc-400 hover:text-red-400 font-mono text-sm py-2.5 rounded-lg"
-                >
-                  <SignOut size={16} /> {t("nav.signOut")}
+                <button onClick={() => signOut()} className="px-btn px-btn-cream px-btn-block">
+                  <PixelIcon name="logout" size={14} /> {t("nav.signOut")}
                 </button>
               </>
             ) : (
-              <Link
-                href="/login"
-                className="flex items-center justify-center gap-2 bg-[#5865F2]/15 border border-[#5865F2]/30 text-white font-mono text-sm py-2.5 rounded-lg font-semibold"
-              >
-                <DiscordLogo weight="fill" size={18} className="text-[#5865F2]" />
-                {t("nav.signInDiscord")}
+              <Link href="/login" className="px-btn px-btn-block">
+                <PixelIcon name="user" size={12} />
+                {t("nav.signIn")}
               </Link>
             )}
+          </div>
+
+          <div className="flex items-center justify-between pt-3 border-t-2 border-dashed border-ink/20">
+            <span className="text-sm text-ink-2">Bahasa / Language</span>
+            <LanguageSwitcher />
           </div>
         </div>
       )}
     </nav>
   );
 }
-

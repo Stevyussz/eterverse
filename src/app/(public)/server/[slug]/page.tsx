@@ -20,14 +20,13 @@ import { Favorite } from "@/models/Favorite";
 import { isAdminEmail } from "@/lib/admin-guard";
 import { getUptimeSummary, refreshIfStale } from "@/lib/server-status";
 import { after } from "next/server";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
+import { Sprite } from "@/components/pixel/PixelArt";
+// Brand marks stay the official shapes (DESIGN-ETERVERSE.md: only exception to pixel icons).
 import {
-  Users,
-  Trophy,
-  Crown,
   DiscordLogo,
   WhatsappLogo,
-  TelegramLogo,
-  Globe
+  TelegramLogo
 } from "@phosphor-icons/react/dist/ssr";
 import { getYoutubeId } from "@/utils/youtube";
 
@@ -141,7 +140,6 @@ export default async function ServerProfilePage(props: Props) {
     after(() => refreshIfStale(serverData._id).catch((err) => console.error("status refresh failed:", err)));
   }
 
-  const defaultBanner = "/dashboard-bg.webp";
 
   const ytId = getYoutubeId(serverData.videoUrl);
   const isOnline = !!serverData.liveStatus?.isOnline;
@@ -163,130 +161,104 @@ export default async function ServerProfilePage(props: Props) {
           <ImpressionTracker slug={serverData.slug} />
         </>
       ) : (
-        <div role="status" className="fixed top-20 inset-x-0 z-40 mx-auto w-fit max-w-[calc(100%-2rem)] rounded-md border border-amber-500/40 bg-zinc-950 px-4 py-2 text-xs font-mono text-amber-300">
+        <div role="status" className="fixed top-[84px] inset-x-0 z-40 mx-auto w-fit max-w-[calc(100%-2rem)] px-chip px-chip-gold !text-sm !py-1.5 !whitespace-normal">
           Pratinjau {isOwner ? "owner" : "admin"}: server ini belum tampil untuk publik (
           {serverData.moderationStatus === "PENDING" ? "menunggu review" : serverData.moderationStatus === "BANNED" ? "dibekukan" : "ditolak"}).
         </div>
       )}
       
-      {/* Cinematic Server Banner with 100% Organic Transparent Ambient Blend */}
-      <div className="relative w-full h-[280px] sm:h-[380px] md:h-[460px] bg-transparent overflow-hidden select-none pointer-events-none">
-        {/* Banner with radial + linear masks fading smoothly into the site wallpaper */}
-        <div 
-          className="absolute inset-0 w-full h-full"
-          style={{
-            maskImage: "radial-gradient(ellipse 96% 85% at 50% 35%, black 45%, transparent 95%)",
-            WebkitMaskImage: "radial-gradient(ellipse 96% 85% at 50% 35%, black 45%, transparent 95%)",
-          }}
-        >
-          <SafeImage
-            src={serverData.bannerUrl}
-            fallbackSrc={defaultBanner}
-            alt=""
-            className="w-full h-full object-cover opacity-75 scale-[1.02] filter saturate-[1.15] transition-transform duration-700"
-            style={{
-              maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 65%, transparent 100%)",
-              WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 65%, transparent 100%)",
-            }}
-          />
+      {/* Banner: a framed window onto the server's world; prismarine bricks when there is none. */}
+      <div className="relative w-full pt-16 prism-bricks border-b-[3px] border-ink select-none">
+        <div className="relative h-[200px] sm:h-[320px] md:h-[400px] overflow-hidden">
+          {serverData.bannerUrl && (
+            <SafeImage src={serverData.bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          )}
         </div>
-
-        {/* Soft atmospheric gradient at bottom for text contrast without harsh box collision */}
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#09090b]/85 via-[#09090b]/30 to-transparent pointer-events-none" />
       </div>
 
-      <main className="relative min-h-screen px-4 sm:px-6 lg:px-24 pb-32 -mt-20 sm:-mt-28">
-        
-        {/* Profile Content Container */}
-        <div className="max-w-5xl mx-auto flex flex-col gap-6">
-          
-          {/* Channel Header: Logo, Title, Actions & Socials */}
-          <div className="flex flex-col gap-4 relative z-10">
-            
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
-              
-              {/* Logo & Main Info */}
-              <div className="flex items-end gap-4 sm:gap-6">
-                <div className="relative w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-2xl bg-black border-2 border-zinc-800 shadow-2xl overflow-hidden shrink-0">
+      <main className="relative min-h-screen px-4 sm:px-6 lg:px-8 pb-32 -mt-12 sm:-mt-16">
+        <div className="max-w-6xl mx-auto flex flex-col gap-8">
+          {/* Profile card */}
+          <div className="px-panel p-4 sm:p-6 flex flex-col gap-5 relative z-10">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
+              <div className="flex items-start gap-4 sm:gap-5 min-w-0">
+                <div className="relative w-20 h-20 sm:w-28 sm:h-28 shrink-0 px-frame bg-slot -mt-12 sm:-mt-16">
                   <SafeImage
                     src={serverData.logoUrl}
                     fallbackName={serverData.name}
                     alt={`Logo ${serverData.name}`}
                     className="w-full h-full object-cover"
                   />
-                  {!isRealm && (
-                    <div className="absolute bottom-1.5 right-1.5 flex items-center justify-center rounded-md bg-zinc-950/90 border border-zinc-800 p-1">
-                      <LiveIcon online={isOnline} size={16} />
-                      <span className="sr-only">{isOnline ? "Online" : "Offline"}</span>
+                </div>
+
+                <div className="flex flex-col gap-2 min-w-0">
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <h1 className="px-title px-title-shadow text-2xl sm:text-3xl md:text-4xl text-ink break-words">
+                      {serverData.name}
+                    </h1>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {!isRealm && (
+                      <span className="px-chip">
+                        <LiveIcon online={isOnline} size={12} />
+                        {isOnline ? (
+                          <span className="text-online-d">{currentPlayers.toLocaleString("id-ID")} online</span>
+                        ) : (
+                          <span className="text-ink-2">Offline</span>
+                        )}
+                      </span>
+                    )}
+                    <span className="px-chip px-chip-prism">
+                      {isRealm ? (
+                        <><PixelIcon name="crown" size={12} /> Realm</>
+                      ) : serverData.platform === "CROSSPLAY" ? (
+                        "Java + Bedrock"
+                      ) : serverData.platform === "BEDROCK" ? (
+                        "Bedrock (HP)"
+                      ) : (
+                        "Java Edition"
+                      )}
+                    </span>
+                    {serverData.isEterShopPartner && (
+                      <span className="px-chip px-chip-gold">
+                        <PixelIcon name="sparkle" size={12} className="text-gold-d" /> Partner
+                      </span>
+                    )}
+                    <span className="px-chip">
+                      <Sprite name="emerald" size={12} />
+                      <span className="tabular">{votes.toLocaleString("id-ID")}</span> vote
+                    </span>
+                    {rating > 0 && (
+                      <span className="px-chip">
+                        <PixelIcon name="star" size={12} className="text-gold-d" />
+                        {Number(rating).toFixed(1)}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="ip-chip w-fit max-w-full">
+                    <span className="ip-chip-caret" aria-hidden>&gt;</span>
+                    <span className="truncate">
+                      {isRealm
+                        ? serverData.realmCode || serverData.ipAddress
+                        : `${serverData.ipAddress}${serverData.port && serverData.port !== 25565 ? `:${serverData.port}` : ""}`}
+                    </span>
+                  </div>
+
+                  {serverData.tags?.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                      {serverData.tags.map((tag: string, i: number) => (
+                        <a key={i} href={`/discover?tag=${encodeURIComponent(tag)}`} className="px-slot font-pixel text-xs px-2 py-1 min-h-[28px] inline-flex items-center">
+                          {tag}
+                        </a>
+                      ))}
                     </div>
                   )}
                 </div>
-
-                <div className="flex flex-col gap-1 pb-1">
-                  <div className="flex items-center gap-2.5 flex-wrap">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white tracking-tight leading-tight">
-                      {serverData.name}
-                    </h1>
-                    {isRealm ? (
-                      <div className="bg-purple-500/15 border border-purple-500/35 text-purple-300 font-mono text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
-                        <Crown weight="fill" size={12} /> Realm
-                      </div>
-                    ) : serverData.platform === "CROSSPLAY" ? (
-                      <div className="bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 font-mono text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
-                        Java + Bedrock
-                      </div>
-                    ) : serverData.platform === "BEDROCK" ? (
-                      <div className="bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 font-mono text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
-                        Bedrock (MCPE)
-                      </div>
-                    ) : (
-                      <div className="bg-blue-500/15 border border-blue-500/35 text-blue-300 font-mono text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
-                        Java Edition
-                      </div>
-                    )}
-                    {serverData.isEterShopPartner && (
-                      <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
-                        <Trophy weight="fill" size={12} /> Partner
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-                    {isRealm ? (
-                      <>
-                        <span className="text-purple-300 font-semibold break-all">
-                          {serverData.realmCode || serverData.ipAddress}
-                        </span>
-                        <span>•</span>
-                        <span className="text-zinc-400">Minecraft Realms</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="text-zinc-300 font-semibold break-all">
-                          {serverData.ipAddress}{serverData.port && serverData.port !== 25565 ? `:${serverData.port}` : ''}
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
-                          <Users size={13} className="text-zinc-400" weight="fill" />
-                          {currentPlayers.toLocaleString()} Online
-                        </span>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Tags Carousel/Pills */}
-                  <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                    {serverData.tags?.map((tag: string, i: number) => (
-                      <span key={i} className="px-2 py-0.5 bg-zinc-900 border border-zinc-800 rounded-md text-[10px] font-mono text-zinc-400">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
 
-              {/* Action Buttons (Desktop & Tablet) */}
-              <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-end flex-wrap">
+              {/* Actions */}
+              <div className="flex items-center gap-3 shrink-0 flex-wrap">
                 <VoteButton
                   slug={serverData.slug}
                   initialVotes={votes}
@@ -294,7 +266,7 @@ export default async function ServerProfilePage(props: Props) {
                   rewardsEnabled={rewardsEnabled}
                 />
                 {(isRealm || serverData.platform !== "JAVA") && (
-                  <DirectPlayButton 
+                  <DirectPlayButton
                     serverName={serverData.name}
                     ipAddress={serverData.ipAddress}
                     port={effectiveBedrockPort}
@@ -321,71 +293,46 @@ export default async function ServerProfilePage(props: Props) {
                   }
                 />
               </div>
-
             </div>
 
-            {/* Quick Community Social Links */}
             {(serverData.socialLinks?.discord || serverData.socialLinks?.whatsapp || serverData.socialLinks?.telegram || serverData.socialLinks?.website) && (
-              <div className="flex items-center gap-2 overflow-x-auto py-1 scrollbar-none">
+              <div className="flex items-center gap-3 overflow-x-auto py-1 px-1 scrollbar-none border-t-2 border-dashed border-ink/15 pt-4">
                 {serverData.socialLinks?.discord && (
-                  <a
-                    href={serverData.socialLinks.discord}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-[#5865F2]/10 border border-[#5865F2]/25 text-white hover:bg-[#5865F2]/20 px-3 py-1.5 rounded-lg text-xs font-medium shrink-0 transition-colors"
-                  >
-                    <DiscordLogo size={16} weight="fill" className="text-[#5865F2]" />
-                    <span>Discord</span>
+                  <a href={serverData.socialLinks.discord} target="_blank" rel="noopener noreferrer" className="px-btn px-btn-cream px-btn-sm shrink-0">
+                    <DiscordLogo size={16} weight="fill" className="text-[#4752C4]" aria-hidden />
+                    Discord
                   </a>
                 )}
                 {serverData.socialLinks?.whatsapp && (
-                  <a
-                    href={serverData.socialLinks.whatsapp}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-[#25D366]/10 border border-[#25D366]/25 text-white hover:bg-[#25D366]/20 px-3 py-1.5 rounded-lg text-xs font-medium shrink-0 transition-colors"
-                  >
-                    <WhatsappLogo size={16} weight="fill" className="text-[#25D366]" />
-                    <span>WhatsApp</span>
+                  <a href={serverData.socialLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="px-btn px-btn-cream px-btn-sm shrink-0">
+                    <WhatsappLogo size={16} weight="fill" className="text-[#128C3E]" aria-hidden />
+                    WhatsApp
                   </a>
                 )}
                 {serverData.socialLinks?.telegram && (
-                  <a
-                    href={serverData.socialLinks.telegram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-[#229ED9]/10 border border-[#229ED9]/25 text-white hover:bg-[#229ED9]/20 px-3 py-1.5 rounded-lg text-xs font-medium shrink-0 transition-colors"
-                  >
-                    <TelegramLogo size={16} weight="fill" className="text-[#229ED9]" />
-                    <span>Telegram</span>
+                  <a href={serverData.socialLinks.telegram} target="_blank" rel="noopener noreferrer" className="px-btn px-btn-cream px-btn-sm shrink-0">
+                    <TelegramLogo size={16} weight="fill" className="text-[#1A7FB0]" aria-hidden />
+                    Telegram
                   </a>
                 )}
                 {serverData.socialLinks?.website && (
-                  <a
-                    href={serverData.socialLinks.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-zinc-900/60 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium shrink-0 transition-colors"
-                  >
-                    <Globe size={16} className="text-zinc-400" />
-                    <span>Website</span>
+                  <a href={serverData.socialLinks.website} target="_blank" rel="noopener noreferrer" className="px-btn px-btn-cream px-btn-sm shrink-0">
+                    <PixelIcon name="globe" size={14} />
+                    Website
                   </a>
                 )}
               </div>
             )}
-
           </div>
 
           {!isRealm && <UptimePanel summary={uptime} version={serverData.liveStatus?.version} />}
 
-          {/* YouTube-Style Categorized Tabs */}
           <ServerChannelTabs
             server={serverData}
             isLoggedIn={!!session?.user}
             userRating={userRating}
             ytId={ytId}
           />
-
         </div>
       </main>
 

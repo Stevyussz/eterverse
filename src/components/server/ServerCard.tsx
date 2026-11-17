@@ -1,10 +1,12 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Users, Star, CaretUp, Trophy, Crown } from "@phosphor-icons/react";
 import Link from "next/link";
 import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
 import { LiveIcon } from "@/components/ui/LiveIcon";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
+import { Sprite } from "@/components/pixel/PixelArt";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { isLowEndDevice, isPageScrolling, isTouchDevice, subscribeScroll } from "@/lib/scroll-perf";
 
 interface ServerCardProps {
@@ -14,6 +16,7 @@ interface ServerCardProps {
   platform?: 'JAVA' | 'BEDROCK' | 'CROSSPLAY';
   videoUrl?: string;
   bannerUrl?: string;
+  logoUrl?: string;
   isEterShopPartner?: boolean;
   onlinePlayers?: number;
   maxPlayers?: number;
@@ -37,6 +40,7 @@ export function ServerCard({
   platform = 'CROSSPLAY',
   videoUrl = "",
   bannerUrl,
+  logoUrl = "",
   isEterShopPartner = false,
   onlinePlayers = 0,
   maxPlayers = 0,
@@ -128,54 +132,68 @@ export function ServerCard({
   const isRealm = serverType === 'REALM';
 
   return (
-    <Link 
+    <Link
       href={`/server/${slug}`}
       ref={cardRef}
       aria-label={`${name}, ${isRealm ? "Realm" : isOnline ? `online, ${onlinePlayers} pemain` : "offline"}`}
-      className="server-card group relative flex flex-col aspect-[4/5] sm:aspect-[9/16] rounded-xl overflow-hidden border border-zinc-800/90 bg-zinc-950 hover:border-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/60 active:scale-[0.99] [contain:paint] card-cv"
+      className="server-card group px-panel px-lift flex flex-col h-full card-cv"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Video / Banner Background */}
-      <BackgroundVideo 
-        videoUrl={videoUrl} 
-        fallbackImage={bannerUrl}
-        isHovered={isHovered} 
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-55'}`}
-      />
-      
-      {/* Gradient Overlay for Readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/60 to-transparent pointer-events-none" />
-
-      {/* Top row: live status is the first thing a player checks; Partner is the only badge. */}
-      <div className="relative z-10 flex justify-between items-start p-3.5 sm:p-4 gap-2">
-        {isRealm ? (
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-black/80 border border-white/10 px-2 py-1 text-[11px] font-mono text-purple-200">
-            <Crown weight="fill" className="text-purple-300" size={12} aria-hidden />
-            Realm
-          </span>
-        ) : (
-          <span className={`inline-flex items-center gap-1.5 rounded-md bg-black/80 border px-2 py-1 text-[11px] font-mono ${isOnline ? "border-cyan-400/40 text-cyan-200" : "border-white/10 text-zinc-400"}`}>
-            <LiveIcon online={isOnline} size={13} />
-            {isOnline ? `${(onlinePlayers || 0).toLocaleString("id-ID")} online` : "Offline"}
-          </span>
-        )}
-        {isEterShopPartner && (
-          <span className="inline-flex items-center gap-1 rounded-md bg-amber-950/90 border border-amber-500/40 px-2 py-1 text-[11px] font-mono text-amber-200">
-            <Trophy weight="fill" className="text-amber-400" size={12} aria-hidden />
-            Partner
-          </span>
+      {/* The trailer screen. Status sits on it like the ping corner of the Multiplayer list. */}
+      <div className="relative aspect-video px-screen !shadow-none border-b-[3px] border-ink">
+        <BackgroundVideo
+          videoUrl={videoUrl}
+          fallbackImage={bannerUrl}
+          isHovered={isHovered}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-x-0 top-0 flex justify-between items-start p-2.5 gap-2">
+          {isRealm ? (
+            <span className="px-chip">
+              <PixelIcon name="crown" size={12} className="text-gold-d" />
+              Realm
+            </span>
+          ) : (
+            <span className="px-chip">
+              <LiveIcon online={isOnline} size={12} />
+              {isOnline ? (
+                <span className="text-online-d">{(onlinePlayers || 0).toLocaleString("id-ID")} online</span>
+              ) : (
+                <span className="text-ink-2">Offline</span>
+              )}
+            </span>
+          )}
+          {isEterShopPartner && (
+            <span className="px-chip px-chip-gold">
+              <PixelIcon name="sparkle" size={12} className="text-gold-d" />
+              Partner
+            </span>
+          )}
+        </div>
+        {!videoUrl && !bannerUrl && (
+          <div className="absolute inset-0 flex items-center justify-center" aria-hidden>
+            <Sprite name="grassBlock" size={48} />
+          </div>
         )}
       </div>
 
-      {/* Bottom Content */}
-      <div className="relative z-10 mt-auto p-4 sm:p-5 flex flex-col gap-2.5">
-        <p className="text-[11px] font-mono text-zinc-400 truncate">
-          {[isRealm ? "Realm" : PLATFORM_LABEL[platform], ...safeTags.slice(0, 2)].filter(Boolean).join(" · ")}
-        </p>
-        <h3 className="font-display text-lg sm:text-xl font-semibold text-white leading-tight line-clamp-2">
-          {name}
-        </h3>
+      <div className="p-4 flex flex-col gap-3 flex-1">
+        <div className="flex items-start gap-3">
+          {/* Server icon, as on the Multiplayer screen */}
+          <SafeImage
+            src={logoUrl}
+            alt=""
+            fallbackName={name}
+            className="w-11 h-11 shrink-0 object-cover px-frame !bg-slot text-sm"
+          />
+          <div className="min-w-0 flex-1">
+            <h3 className="px-title text-lg text-ink leading-tight line-clamp-2">{name}</h3>
+            <p className="text-xs text-ink-2 truncate mt-1">
+              {[isRealm ? "Realm" : PLATFORM_LABEL[platform], ...safeTags.slice(0, 2)].filter(Boolean).join(" · ")}
+            </p>
+          </div>
+        </div>
 
         {/* Identity motif: the address itself, in mono, the way players will type it. */}
         {address && (
@@ -185,29 +203,28 @@ export function ServerCard({
           </div>
         )}
 
-        <div className="flex items-center gap-3 sm:gap-4 pt-2 border-t border-zinc-800/80 font-mono text-[11px] sm:text-xs text-zinc-300">
+        <div className="mt-auto flex items-center gap-4 pt-3 border-t-2 border-dashed border-ink/15 text-sm text-ink tabular">
           {!isRealm && (
             <span className="flex items-center gap-1.5" title="Pemain online / slot">
-              <Users weight="fill" className="text-zinc-400" size={14} aria-hidden />
+              <PixelIcon name="users" size={14} className="text-ink-2" />
               {(onlinePlayers || 0).toLocaleString("id-ID")}/{(maxPlayers || 0).toLocaleString("id-ID")}
             </span>
           )}
           <span className="flex items-center gap-1.5" title="Vote">
-            <CaretUp weight="bold" className="text-zinc-400" size={14} aria-hidden />
+            <Sprite name="emerald" size={14} />
             {(votes || 0).toLocaleString("id-ID")}
             <span className="sr-only">vote</span>
           </span>
           {rating > 0 ? (
             <span className="flex items-center gap-1.5 ml-auto" title="Rating pemain">
-              <Star weight="fill" className="text-amber-400" size={14} aria-hidden />
+              <PixelIcon name="star" size={14} className="text-gold-d" />
               {rating.toFixed(1)}
             </span>
           ) : (
-            <span className="ml-auto text-zinc-400">Belum dirating</span>
+            <span className="ml-auto text-xs text-ink-2">Belum dirating</span>
           )}
         </div>
       </div>
     </Link>
   );
 }
-

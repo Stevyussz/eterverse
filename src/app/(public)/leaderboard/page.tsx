@@ -1,12 +1,21 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Trophy, CaretUp } from "@phosphor-icons/react/dist/ssr";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import { VoteMonthly, wibMonth } from "@/models/VoteMonthly";
 import { displayAddress } from "@/lib/server-queries";
 import { LiveIcon } from "@/components/ui/LiveIcon";
 import { SafeImage } from "@/components/ui/SafeImage";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
+import { Sprite } from "@/components/pixel/PixelArt";
+import { PageHero } from "@/components/pixel/PageHero";
+
+// Podium = the ore tiers players already rank by: gold, iron, copper.
+const PODIUM = [
+  { label: "Juara 1", face: "bg-gold", text: "text-ink" },
+  { label: "Juara 2", face: "bg-[#D8D8D8]", text: "text-ink" },
+  { label: "Juara 3", face: "bg-[#E89A6A]", text: "text-ink" },
+];
 
 export const revalidate = 60;
 
@@ -59,77 +68,88 @@ export default async function LeaderboardPage() {
   }
 
   return (
-    <main className="relative min-h-screen pt-28 pb-24 px-4 sm:px-6 lg:px-24">
-      <div className="max-w-3xl mx-auto flex flex-col gap-8">
-        <header className="flex flex-col gap-2">
-          <h1 className="text-3xl md:text-4xl font-display font-semibold text-white">Peringkat {monthLabel(thisMonth)}</h1>
-          <p className="text-sm text-zinc-300">
-            Diurutkan dari vote bulan ini. Satu akun bisa vote tiap server sekali sehari. Peringkat direset dalam{" "}
-            <span className="font-mono text-white">{daysUntilReset()} hari</span>.
-          </p>
-        </header>
+    <main className="relative min-h-screen pb-8">
+      <PageHero title={`Peringkat ${monthLabel(thisMonth)}`} sprite="goldBlock" eyebrow="Vote bulanan">
+        <p className="text-sm text-ink-2 max-w-2xl">
+          Diurutkan dari vote bulan ini. Satu akun bisa vote tiap server sekali sehari. Peringkat direset dalam{" "}
+          <span className="px-chip px-chip-gold !text-sm">{daysUntilReset()} hari</span>
+        </p>
+      </PageHero>
 
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 flex flex-col gap-10">
         {failed ? (
-          <div role="alert" className="p-8 rounded-xl border border-rose-500/30 bg-zinc-950/80 text-center text-sm text-zinc-200">
+          <div role="alert" className="px-note px-note-error">
+            <PixelIcon name="alert" size={18} className="text-redstone shrink-0 mt-0.5" />
             Peringkat gagal dimuat. Coba muat ulang halaman.
           </div>
         ) : current.length === 0 ? (
-          <div className="p-10 rounded-xl border border-zinc-800 bg-zinc-950/80 text-center flex flex-col items-center gap-3">
-            <Trophy size={36} className="text-zinc-500" aria-hidden />
-            <p className="text-zinc-200">Belum ada vote bulan ini.</p>
-            <p className="text-sm text-zinc-400">Vote pertama langsung menempatkan servernya di puncak.</p>
-            <Link href="/discover" className="mt-1 inline-flex items-center min-h-[44px] px-5 rounded-md bg-white text-zinc-950 text-sm font-semibold hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-              Cari server untuk di-vote
-            </Link>
+          <div className="px-flat p-10 text-center flex flex-col items-center gap-3">
+            <Sprite name="emerald" size={56} />
+            <p className="font-pixel text-lg text-ink">Belum ada vote bulan ini.</p>
+            <p className="text-sm text-ink-2">Vote pertama langsung menempatkan servernya di puncak.</p>
+            <Link href="/discover" className="px-btn mt-2">Cari server untuk di-vote</Link>
           </div>
         ) : (
-          <ol className="flex flex-col divide-y divide-zinc-800 rounded-xl border border-zinc-800 bg-zinc-950/80">
-            {current.map(({ votes, server }, i) => (
-              <li key={server._id.toString()} data-reveal style={{ "--reveal-i": Math.min(i, 3) } as React.CSSProperties}>
-                <Link
-                  href={`/server/${server.slug}`}
-                  className="flex items-center gap-4 p-4 hover:bg-white/[0.03] transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-white"
+          <ol className="px-panel">
+            {current.map(({ votes, server }, i) => {
+              const podium = PODIUM[i];
+              return (
+                <li
+                  key={server._id.toString()}
+                  data-reveal
+                  style={{ "--reveal-i": Math.min(i, 3) } as React.CSSProperties}
+                  className={i > 0 ? "border-t-2 border-ink/15" : ""}
                 >
-                  {/* Top three get the gold accent; the rest stay neutral so the podium reads first. */}
-                  <span className={`w-8 shrink-0 text-center font-display text-xl font-bold ${i < 3 ? "text-amber-300" : "text-zinc-400"}`}>
-                    {i + 1}
-                  </span>
-                  <div className="w-11 h-11 shrink-0 rounded-lg overflow-hidden border border-zinc-800 bg-zinc-900">
-                    <SafeImage src={server.logoUrl} fallbackName={server.name} alt="" className="w-full h-full object-cover text-xs" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-display font-semibold text-white truncate">{server.name}</p>
-                    <p className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 truncate">
-                      {server.serverType !== "REALM" && <LiveIcon online={!!server.liveStatus?.isOnline} size={12} />}
-                      {displayAddress(server)}
-                    </p>
-                  </div>
-                  <span className="flex items-center gap-1 font-mono text-sm text-white shrink-0">
-                    <CaretUp size={14} weight="bold" className="text-zinc-400" aria-hidden />
-                    {votes.toLocaleString("id-ID")}
-                    <span className="sr-only">vote</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
+                  <Link href={`/server/${server.slug}`} className="flex items-center gap-4 p-4 hover:bg-panel-2 transition-colors">
+                    {/* Top three get an ore-tier rank block; the rest a plain number so the podium reads first. */}
+                    <span
+                      className={`w-10 h-10 shrink-0 flex items-center justify-center font-pixel text-lg font-bold ${
+                        podium ? `${podium.face} ${podium.text} px-frame` : "text-ink-2"
+                      }`}
+                      aria-label={`Peringkat ${i + 1}`}
+                    >
+                      {i + 1}
+                    </span>
+                    <SafeImage
+                      src={server.logoUrl}
+                      fallbackName={server.name}
+                      alt=""
+                      className="w-11 h-11 shrink-0 object-cover px-frame text-xs"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-pixel text-base text-ink truncate">{server.name}</p>
+                      <p className="flex items-center gap-1.5 text-xs font-mono text-ink-2 truncate">
+                        {server.serverType !== "REALM" && <LiveIcon online={!!server.liveStatus?.isOnline} size={12} />}
+                        {displayAddress(server)}
+                      </p>
+                    </div>
+                    <span className="flex items-center gap-1.5 font-pixel text-base text-ink shrink-0 tabular">
+                      <Sprite name="emerald" size={16} />
+                      {votes.toLocaleString("id-ID")}
+                      <span className="sr-only">vote</span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
           </ol>
         )}
 
         {previous.length > 0 && (
-          <section className="flex flex-col gap-3" aria-labelledby="prev">
-            <h2 id="prev" className="text-lg font-display font-semibold text-white">Juara {monthLabel(lastMonth)}</h2>
-            <ol className="grid sm:grid-cols-3 gap-3">
+          <section className="flex flex-col gap-4" aria-labelledby="prev">
+            <h2 id="prev" className="px-title text-2xl text-ink flex items-center gap-2">
+              <PixelIcon name="trophy" size={20} className="text-gold-d" />
+              Juara {monthLabel(lastMonth)}
+            </h2>
+            <ol className="grid sm:grid-cols-3 gap-5">
               {previous.map(({ votes, server }, i) => (
                 <li key={server._id.toString()}>
-                  <Link
-                    href={`/server/${server.slug}`}
-                    className="flex flex-col gap-1 p-4 rounded-xl border border-zinc-800 bg-zinc-950/80 hover:border-zinc-600 transition-colors focus-visible:outline-2 focus-visible:outline-white"
-                  >
-                    <span className="flex items-center gap-1.5 text-xs font-mono text-amber-300">
-                      <Trophy size={14} weight="fill" aria-hidden /> Juara {i + 1}
+                  <Link href={`/server/${server.slug}`} className="px-panel px-lift flex flex-col gap-1.5 p-4 h-full">
+                    <span className={`px-chip w-fit ${i === 0 ? "px-chip-gold" : ""}`}>
+                      <PixelIcon name="trophy" size={12} /> {PODIUM[i].label}
                     </span>
-                    <span className="font-display font-semibold text-white truncate">{server.name}</span>
-                    <span className="text-xs font-mono text-zinc-400">{votes.toLocaleString("id-ID")} vote</span>
+                    <span className="font-pixel text-base text-ink truncate mt-1">{server.name}</span>
+                    <span className="text-sm text-ink-2 tabular">{votes.toLocaleString("id-ID")} vote</span>
                   </Link>
                 </li>
               ))}

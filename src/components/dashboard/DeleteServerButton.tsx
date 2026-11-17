@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 import { ConfirmActionButton } from "@/components/dashboard/ConfirmActionButton";
 
 interface Props {
@@ -22,10 +22,10 @@ export function DeleteServerButton({ serverId, serverName, deleteAction }: Props
       pendingLabel="Menghapus..."
       label={
         <>
-          <Trash size={16} aria-hidden /> Hapus
+          <PixelIcon name="trash" size={12} /> Hapus
         </>
       }
-      className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-md text-sm text-zinc-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-white"
+      className="px-btn px-btn-cream px-btn-sm !text-redstone"
     />
   );
 }

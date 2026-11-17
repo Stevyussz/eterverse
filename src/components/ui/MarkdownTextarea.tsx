@@ -5,7 +5,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { Markdown } from 'tiptap-markdown';
 import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
-import { TextB, TextItalic, TextStrikethrough, ListBullets, ListNumbers, Link as LinkIcon, Quotes } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 import { useEffect, useState } from 'react';
 
 interface MarkdownTextareaProps {
@@ -35,7 +35,7 @@ export function MarkdownTextarea({ name, placeholder, defaultValue = "", require
     },
     editorProps: {
       attributes: {
-        className: 'prose prose-invert prose-sm sm:prose-base focus:outline-none min-h-[150px] p-4 max-w-none text-eter-starlight',
+        className: 'prose prose-eter prose-sm sm:prose-base focus:outline-none min-h-[160px] p-4 max-w-none',
       },
     },
   });
@@ -49,54 +49,54 @@ export function MarkdownTextarea({ name, placeholder, defaultValue = "", require
 
   if (!editor) {
     return (
-      <div className="flex flex-col border border-white/10 rounded-sm bg-black/50 overflow-hidden min-h-[150px]">
+      <div className="px-input !p-0 min-h-[200px]" aria-busy="true">
         {/* Loading state or fallback */}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col border border-white/10 rounded-sm bg-black/50 overflow-hidden focus-within:border-eter-cyan transition-colors group">
+    <div className="px-input !p-0 flex flex-col focus-within:outline-3 focus-within:outline-dashed focus-within:outline-gold-d focus-within:outline-offset-4">
       
       {/* Hidden input to pass markdown to FormData */}
       <input type="hidden" name={name} value={markdownContent} required={required} />
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-white/5 bg-white/[0.02]">
+      <div className="flex flex-wrap items-center gap-1.5 p-2 border-b-2 border-ink/15 bg-panel-2" role="toolbar" aria-label="Format teks">
         <ToolbarButton 
-          icon={<TextB size={18} />} 
+          icon={<span className="font-bold">B</span>} 
           isActive={editor.isActive('bold')}
           onClick={() => editor.chain().focus().toggleBold().run()} 
           title="Bold" 
         />
         <ToolbarButton 
-          icon={<TextItalic size={18} />} 
+          icon={<span className="italic">I</span>} 
           isActive={editor.isActive('italic')}
           onClick={() => editor.chain().focus().toggleItalic().run()} 
           title="Italic" 
         />
         <ToolbarButton 
-          icon={<TextStrikethrough size={18} />} 
+          icon={<span className="line-through">S</span>} 
           isActive={editor.isActive('strike')}
           onClick={() => editor.chain().focus().toggleStrike().run()} 
           title="Strikethrough" 
         />
-        <div className="w-px h-4 bg-white/10 mx-1"></div>
+        <div className="w-0.5 h-5 bg-ink/15 mx-1" aria-hidden></div>
         <ToolbarButton 
-          icon={<ListBullets size={18} />} 
+          icon={<span>•≡</span>} 
           isActive={editor.isActive('bulletList')}
           onClick={() => editor.chain().focus().toggleBulletList().run()} 
           title="Bullet List" 
         />
         <ToolbarButton 
-          icon={<ListNumbers size={18} />} 
+          icon={<span>1.</span>} 
           isActive={editor.isActive('orderedList')}
           onClick={() => editor.chain().focus().toggleOrderedList().run()} 
           title="Numbered List" 
         />
-        <div className="w-px h-4 bg-white/10 mx-1"></div>
+        <div className="w-0.5 h-5 bg-ink/15 mx-1" aria-hidden></div>
         <ToolbarButton 
-          icon={<LinkIcon size={18} />} 
+          icon={<PixelIcon name="link" size={14} />} 
           isActive={editor.isActive('link')}
           onClick={() => {
             const previousUrl = editor.getAttributes('link').href;
@@ -111,7 +111,7 @@ export function MarkdownTextarea({ name, placeholder, defaultValue = "", require
           title="Link" 
         />
         <ToolbarButton 
-          icon={<Quotes size={18} />} 
+          icon={<span>&ldquo;</span>} 
           isActive={editor.isActive('blockquote')}
           onClick={() => editor.chain().focus().toggleBlockquote().run()} 
           title="Quote" 
@@ -134,7 +134,9 @@ function ToolbarButton({ icon, onClick, title, isActive }: { icon: React.ReactNo
         onClick();
       }}
       title={title}
-      className={`p-1.5 rounded-sm transition-colors ${isActive ? 'bg-eter-cyan/20 text-eter-cyan' : 'text-zinc-400 hover:text-eter-starlight hover:bg-white/10'}`}
+      aria-label={title}
+      aria-pressed={!!isActive}
+      className="px-slot w-9 h-9 inline-flex items-center justify-center font-pixel text-sm"
     >
       {icon}
     </button>

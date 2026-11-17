@@ -12,6 +12,7 @@ export interface ServerCardData {
   platform?: "JAVA" | "BEDROCK" | "CROSSPLAY";
   videoUrl?: string;
   bannerUrl?: string;
+  logoUrl?: string;
   isEterShopPartner?: boolean;
   onlinePlayers: number;
   maxPlayers: number;
@@ -34,7 +35,7 @@ export function displayAddress(s: { serverType?: string; ipAddress?: string; por
 // Every public list (homepage, discover, matchmaker) must go through these two: a raw lean()
 // document carries the owner's private ownerWhatsApp into the HTML and API responses.
 export const CARD_FIELDS =
-  "name slug description serverType platform videoUrl bannerUrl isEterShopPartner liveStatus metrics tags ownerId createdAt ipAddress port realmCode";
+  "name slug description serverType platform videoUrl bannerUrl logoUrl isEterShopPartner liveStatus metrics tags ownerId createdAt ipAddress port realmCode";
 
 export function toCard(s: any): ServerCardData {
   return {
@@ -47,6 +48,7 @@ export function toCard(s: any): ServerCardData {
     platform: s.platform,
     videoUrl: s.videoUrl,
     bannerUrl: s.bannerUrl,
+    logoUrl: s.logoUrl || "",
     isEterShopPartner: !!s.isEterShopPartner,
     onlinePlayers: s.liveStatus?.currentPlayers || 0,
     maxPlayers: s.liveStatus?.maxPlayers || 0,
@@ -111,6 +113,6 @@ export const getHomeData = unstable_cache(
       partners: partners.map(toCard),
     };
   },
-  ["home-data-v2"],
+  ["home-data-v3"],
   { revalidate: 60, tags: ["servers"] }
 );

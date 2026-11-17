@@ -2,7 +2,9 @@ import { Metadata } from "next";
 import connectToDatabase from "@/lib/db";
 import { Server } from "@/models/Server";
 import { ServerCard } from "@/components/server/ServerCard";
-import { MagnifyingGlass, FunnelSimple } from "@phosphor-icons/react/dist/ssr";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
+import { Sprite } from "@/components/pixel/PixelArt";
+import { PageHero } from "@/components/pixel/PageHero";
 import { escapeRegex, safeSearchTerm } from "@/lib/text";
 import { CARD_FIELDS, toCard } from "@/lib/server-queries";
 import { majorVersions } from "@/lib/mc-status";
@@ -98,81 +100,66 @@ export default async function DiscoverPage({ searchParams }: Props) {
     .slice(0, 8);
 
   const PLATFORMS = [
-    { id: "", label: "Semua Platform" },
-    { id: "CROSSPLAY", label: "Crossplay (Java + Bedrock)" },
-    { id: "JAVA", label: "Java Edition" },
+    { id: "", label: "Semua" },
+    { id: "CROSSPLAY", label: "Java + Bedrock" },
+    { id: "JAVA", label: "Java" },
     { id: "BEDROCK", label: "Bedrock / HP" },
     { id: "REALM", label: "Realms" },
   ];
 
+  const pill = "px-slot shrink-0 inline-flex items-center min-h-[40px] px-3.5 font-pixel text-sm";
+  const rowLabel = "font-pixel text-sm text-ink-2 inline-flex items-center gap-1.5 min-w-[72px]";
+
   return (
-    <main className="relative min-h-screen pt-28 pb-24 px-6 lg:px-24">
-      <div className="max-w-7xl mx-auto flex flex-col gap-8">
-
-        {/* Header */}
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl md:text-4xl font-display font-semibold text-white">Jelajahi Server</h1>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-body text-zinc-400" aria-live="polite">
-            <span>
-              {servers.length >= 48 ? "48+ server" : `${servers.length} server`} ditemukan
-              {hasFilters ? " dengan filter ini" : ""}.
-            </span>
-            {hasFilters && (
-              <a href="/discover" className="font-mono text-xs text-white underline underline-offset-4 min-h-[44px] sm:min-h-0 inline-flex items-center focus-visible:outline-2 focus-visible:outline-white rounded">
-                Reset filter
-              </a>
-            )}
-          </div>
+    <main className="relative min-h-screen pb-8">
+      <PageHero title="Jelajahi server" sprite="map" eyebrow="Server list">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-2" aria-live="polite">
+          <span>
+            {servers.length >= 48 ? "48+ server" : `${servers.length} server`} ditemukan
+            {hasFilters ? " dengan filter ini" : ""}.
+          </span>
+          {hasFilters && (
+            <a href="/discover" className="text-prism-d underline underline-offset-4 min-h-[44px] sm:min-h-0 inline-flex items-center">
+              Reset filter
+            </a>
+          )}
         </div>
+      </PageHero>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col gap-7">
         {/* Keyboard users otherwise tab through ~20 filter pills before the first result. */}
-        <a
-          href="#hasil"
-          className="sr-only focus:not-sr-only focus:self-start focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-zinc-950"
-        >
+        <a href="#hasil" className="sr-only focus:not-sr-only focus:self-start px-btn px-btn-gold px-btn-sm">
           Lewati ke hasil
         </a>
 
-        {/* Search & Filters */}
-        <form method="GET" className="flex flex-col md:flex-row gap-3">
+        <form method="GET" className="px-panel p-3 flex flex-col md:flex-row gap-3">
           {platform && <input type="hidden" name="platform" value={platform} />}
           {tag && <input type="hidden" name="tag" value={tag} />}
           {version && <input type="hidden" name="version" value={version} />}
           <div className="relative flex-1">
-            <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+            <PixelIcon name="search" size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-2" />
             <input
               name="q"
               type="text"
               defaultValue={q}
-              placeholder="Cari berdasarkan nama, IP, atau deskripsi..."
-              className="w-full bg-zinc-950/80 border border-zinc-800 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:border-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 transition-colors placeholder:text-zinc-500"
+              placeholder="Cari nama, IP, atau deskripsi"
+              className="px-input !pl-10"
               aria-label="Cari server"
               maxLength={60}
             />
           </div>
-          <select
-            name="sort"
-            defaultValue={sort}
-            className="bg-zinc-950/80 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-300 focus:border-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 transition-colors"
-            aria-label="Urutkan server"
-          >
-            <option value="votes">Vote Terbanyak</option>
-            <option value="rating">Rating Tertinggi</option>
+          <select name="sort" defaultValue={sort} className="px-input md:!w-56" aria-label="Urutkan server">
+            <option value="votes">Vote terbanyak</option>
+            <option value="rating">Rating tertinggi</option>
             <option value="newest">Terbaru</option>
-            <option value="players">Pemain Terbanyak</option>
+            <option value="players">Pemain terbanyak</option>
           </select>
-          <button type="submit" className="bg-white text-zinc-950 font-medium px-6 py-2.5 rounded-lg hover:bg-zinc-200 transition-all text-sm shadow-sm active:scale-[0.98]">
-            Cari Server
-          </button>
+          <button type="submit" className="px-btn">Cari</button>
         </form>
 
-        {/* Filter Rows Container */}
-        <div className="flex flex-col gap-3">
-          {/* Platform Pills */}
+        <div className="flex flex-col gap-4">
           <div className="filter-row">
-            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">
-              Edisi:
-            </span>
+            <span className={rowLabel}>Edisi</span>
             {PLATFORMS.map(p => {
               const isActive = (platform || "") === p.id;
               const nextParams = new URLSearchParams({
@@ -184,47 +171,40 @@ export default async function DiscoverPage({ searchParams }: Props) {
               });
               if (!p.id) nextParams.delete("platform");
               return (
-                <a
-                  key={p.id}
-                  href={`/discover?${nextParams.toString()}`}
-                  className={`shrink-0 inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all ${
-                    isActive
-                      ? 'bg-white text-zinc-950 font-semibold border-white shadow-sm'
-                      : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white bg-zinc-950/40'
-                  }`}
-                >
+                <a key={p.id} href={`/discover?${nextParams.toString()}`} aria-current={isActive ? "page" : undefined} className={pill}>
                   {p.label}
                 </a>
               );
             })}
           </div>
 
-          {/* Tag Pills */}
           <div className="filter-row">
-            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
-              <FunnelSimple size={14} /> Kategori:
+            <span className={rowLabel}>
+              <PixelIcon name="filter" size={12} /> Mode
             </span>
-            <a 
+            <a
               href={`/discover?${new URLSearchParams({ ...(q && { q }), ...(platform && { platform }), ...(version && { version }), sort }).toString()}`}
-              className={`shrink-0 inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${!tag ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
+              aria-current={!tag ? "page" : undefined}
+              className={pill}
             >
               Semua
             </a>
             {ALL_TAGS.map(t => (
-              <a 
-                key={t} 
+              <a
+                key={t}
                 href={`/discover?${new URLSearchParams({ ...(q && { q }), ...(platform && { platform }), ...(version && { version }), tag: t, sort }).toString()}`}
-                className={`shrink-0 inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${tag?.toLowerCase() === t.toLowerCase() ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
+                aria-current={tag?.toLowerCase() === t.toLowerCase() ? "page" : undefined}
+                className={pill}
               >
                 {t}
               </a>
             ))}
           </div>
 
-          {/* Version Pills: only shown once pinged servers have reported a version */}
+          {/* Version pills: only shown once pinged servers have reported a version */}
           {VERSIONS.length > 0 && (
             <div className="filter-row">
-              <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Versi:</span>
+              <span className={rowLabel}>Versi</span>
               {["", ...VERSIONS].map((v) => {
                 const isActive = version === v;
                 const href = `/discover?${new URLSearchParams({
@@ -235,12 +215,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
                   sort,
                 }).toString()}`;
                 return (
-                  <a
-                    key={v || "all"}
-                    href={href}
-                    aria-current={isActive ? "true" : undefined}
-                    className={`shrink-0 inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-mono px-3 py-1.5 rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors ${isActive ? 'bg-white text-zinc-950 font-semibold border-white' : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'}`}
-                  >
+                  <a key={v || "all"} href={href} aria-current={isActive ? "page" : undefined} className={pill}>
                     {v || "Semua"}
                   </a>
                 );
@@ -249,19 +224,16 @@ export default async function DiscoverPage({ searchParams }: Props) {
           )}
         </div>
 
-        {/* Results */}
         <span id="hasil" tabIndex={-1} className="sr-only">Hasil pencarian</span>
         {serialized.length === 0 ? (
-          <div className="py-20 px-6 text-center border border-zinc-800/80 rounded-xl bg-zinc-950/80 flex flex-col items-center gap-3">
-            <MagnifyingGlass size={32} className="text-zinc-500" aria-hidden />
-            <p className="text-zinc-200 font-body">
+          <div className="px-flat py-14 px-6 text-center flex flex-col items-center gap-3">
+            <Sprite name="chest" size={56} />
+            <p className="font-pixel text-lg text-ink">
               Tidak ada server yang cocok{q ? ` dengan "${q}"` : ""}.
             </p>
-            <p className="text-sm text-zinc-400">Coba kata lain, atau longgarkan filternya.</p>
+            <p className="text-sm text-ink-2">Coba kata lain, atau longgarkan filternya.</p>
             {hasFilters && (
-              <a href="/discover" className="mt-1 inline-flex items-center min-h-[44px] px-5 rounded-md bg-white text-zinc-950 text-sm font-semibold hover:bg-zinc-200 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                Hapus semua filter
-              </a>
+              <a href="/discover" className="px-btn px-btn-cream mt-2">Hapus semua filter</a>
             )}
           </div>
         ) : (
@@ -273,7 +245,6 @@ export default async function DiscoverPage({ searchParams }: Props) {
             ))}
           </div>
         )}
-
       </div>
     </main>
   );

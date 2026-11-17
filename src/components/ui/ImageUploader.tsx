@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { UploadSimple, Spinner, CheckCircle, WarningCircle, Image as ImageIcon, X } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 import { uploadImageToImgBB } from "@/app/actions/uploadImage";
 import { compressImage } from "@/lib/image-compress";
 
@@ -88,88 +88,86 @@ export function ImageUploader({ name, label, aspectRatio = "square", onUploadSuc
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">{label}</label>
+      <span className="px-label !mb-1">{label}</span>
       
       {/* Hidden input to store the actual URL for the form submission */}
       <input type="hidden" name={name} value={isGallery ? galleryUrls.join(",") : preview} />
 
       {!isGallery ? (
-        /* SINGLE IMAGE UPLOADER */
-        <div className="flex items-end gap-4">
-          <div 
-            onClick={() => fileInputRef.current?.click()}
-            className={`
-              relative overflow-hidden flex flex-col items-center justify-center border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 group
-              ${preview ? 'border-zinc-700 bg-black/60' : 'border-zinc-700 bg-zinc-900/40 hover:border-zinc-500 hover:bg-zinc-900/60'}
-              ${aspectRatio === 'square' ? 'w-24 h-24' : 'w-full h-32'}
-            `}
+        /* Single image: a recessed slot; tap to pick, tap again to replace. */
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          aria-label={preview ? `Ganti ${label}` : `Unggah ${label}`}
+          className={`px-slot relative overflow-hidden flex flex-col items-center justify-center group ${aspectRatio === "square" ? "w-28 h-28" : "w-full aspect-video max-h-48"}`}
+        >
+          {isUploading ? (
+            <span className="flex flex-col items-center gap-2 text-ink-2">
+              <PixelIcon name="refresh" size={20} className="px-spin" />
+              <span className="font-pixel text-xs">Mengunggah</span>
+            </span>
+          ) : preview ? (
+            <>
+              <img src={preview} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              <span className="absolute bottom-1.5 right-1.5 px-chip !text-xs">
+                <PixelIcon name="upload" size={10} /> Ganti
+              </span>
+            </>
+          ) : (
+            <span className="flex flex-col items-center gap-2 text-ink-2 group-hover:text-ink">
+              <PixelIcon name="upload" size={22} />
+              <span className="font-pixel text-sm">Unggah</span>
+            </span>
+          )}
+        </button>
+      ) : (
+        <div className="flex flex-col gap-4">
+          <button
+            type="button"
+            onClick={() => !isUploading && fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="px-slot w-full py-7 flex flex-col items-center justify-center gap-2 text-ink-2 hover:text-ink"
           >
             {isUploading ? (
-              <div className="flex flex-col items-center gap-2 text-zinc-300">
-                <Spinner size={24} className="animate-spin" />
-                <span className="text-[10px] font-medium font-mono uppercase">Mengunggah...</span>
-              </div>
-            ) : preview ? (
               <>
-                <img src={preview} alt="Preview" className="w-full h-full object-cover opacity-90 group-hover:opacity-50 transition-opacity" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <UploadSimple size={24} className="text-white drop-shadow-md" weight="bold" />
-                  <span className="text-xs font-semibold text-white drop-shadow-md mt-1">Ganti</span>
-                </div>
+                <PixelIcon name="refresh" size={22} className="px-spin" />
+                <span className="font-pixel text-sm">Mengunggah gambar</span>
               </>
             ) : (
-              <div className="flex flex-col items-center text-zinc-400 group-hover:text-white transition-colors">
-                <UploadSimple size={24} />
-                <span className="text-[10px] font-mono uppercase tracking-wider mt-2">Unggah</span>
-              </div>
+              <>
+                <PixelIcon name="image" size={28} />
+                <span className="font-pixel text-sm text-ink">Ketuk untuk unggah screenshot</span>
+                <span className="text-xs">PNG, JPG, WEBP. Foto besar otomatis diperkecil.</span>
+              </>
             )}
-          </div>
-        </div>
-      ) : (
-        /* MULTIPLE GALLERY UPLOADER */
-        <div className="flex flex-col gap-4">
-          <div 
-            onClick={() => !isUploading && fileInputRef.current?.click()}
-            className={`w-full py-6 flex flex-col items-center justify-center border-2 border-dashed rounded-xl transition-all duration-200 ${isUploading ? 'border-zinc-700 bg-zinc-900 cursor-not-allowed opacity-50' : 'cursor-pointer border-zinc-700 bg-zinc-900/40 hover:border-zinc-500 hover:bg-zinc-900/60'}`}
-          >
-            {isUploading ? (
-              <div className="flex flex-col items-center gap-2 text-zinc-300">
-                <Spinner size={24} className="animate-spin" />
-                <span className="text-[10px] font-medium font-mono uppercase">Mengunggah Gambar...</span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center text-zinc-400">
-                <ImageIcon size={32} />
-                <span className="text-[10px] font-mono uppercase tracking-wider mt-2">Klik untuk Unggah Screenshot</span>
-                <span className="text-xs text-zinc-400 mt-1">PNG, JPG, WEBP. Foto besar otomatis diperkecil.</span>
-              </div>
-            )}
-          </div>
+          </button>
 
           {galleryUrls.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
+            <ul className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {galleryUrls.map((url, idx) => (
-                <div key={idx} className="relative aspect-video rounded-md overflow-hidden bg-black/50 border border-white/10 group">
-                  <img src={url} alt={`Gallery item ${idx+1}`} className="w-full h-full object-cover" />
-                  <button 
+                <li key={idx} className="relative aspect-video px-screen">
+                  <img src={url} alt={`Screenshot ${idx + 1}`} className="w-full h-full object-cover" />
+                  <button
                     type="button"
                     onClick={() => removeGalleryItem(idx)}
-                    className="absolute top-2 right-2 w-6 h-6 bg-red-500/80 hover:bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label={`Hapus screenshot ${idx + 1}`}
+                    className="absolute top-1.5 right-1.5 px-btn px-btn-red !min-h-[32px] !min-w-[32px] !p-0"
                   >
-                    <X size={14} weight="bold" />
+                    <PixelIcon name="close" size={12} />
                   </button>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-1.5 text-eter-red mt-1">
-          <WarningCircle size={14} />
-          <span className="text-xs">{error}</span>
-        </div>
+        <p role="alert" className="flex items-center gap-1.5 text-redstone text-sm mt-1 px-shake">
+          <PixelIcon name="alert" size={14} />
+          {error}
+        </p>
       )}
 
       {/* Hidden file input */}

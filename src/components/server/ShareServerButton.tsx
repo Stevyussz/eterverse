@@ -1,6 +1,6 @@
 "use client";
 
-import { ShareNetwork } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 import { toast } from "sonner";
 
 interface Props {
@@ -37,9 +37,9 @@ export function ShareServerButton({ serverName, address, slug }: Props) {
     <button
       type="button"
       onClick={handleShare}
-      className="min-h-[44px] px-4 rounded-lg border border-zinc-800 bg-zinc-900/40 text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors inline-flex items-center gap-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+      className="px-btn px-btn-cream"
     >
-      <ShareNetwork size={18} aria-hidden />
+      <PixelIcon name="share" size={16} />
       Ajak Teman
     </button>
   );

@@ -1,14 +1,8 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import {
-  UploadSimple,
-  X,
-  CheckCircle,
-  VideoCamera,
-  FilmSlate,
-  Warning,
-} from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
+import { Sprite } from "@/components/pixel/PixelArt";
 import { toast } from "sonner";
 import { getYoutubeId } from "@/utils/youtube";
 
@@ -194,151 +188,93 @@ export function VideoUploader({ name, defaultValue }: VideoUploaderProps) {
     else setUploadState("idle");
   };
 
+  const openPicker = () => uploadState !== "uploading" && fileInputRef.current?.click();
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {/* Hidden input carries the final URL to the parent FormData */}
       <input type="hidden" name={name} value={videoUrl} />
 
-      {/* ── PREVIEW STATE ──────────────────────────────────────────────────── */}
       {uploadState === "success" && videoUrl ? (
         <div className="flex flex-col gap-3">
-          <div className="relative rounded-sm border border-white/10 bg-black overflow-hidden aspect-video group">
+          <div className="relative aspect-video px-screen">
             {getYoutubeId(videoUrl) ? (
               <iframe
                 src={`https://www.youtube.com/embed/${getYoutubeId(videoUrl)}?autoplay=0&rel=0`}
-                className="w-full h-full object-cover"
+                className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 style={{ border: 0 }}
                 title="Preview Video"
               />
             ) : (
-              <video
-                src={videoUrl}
-                controls
-                preload="metadata"
-                className="w-full h-full object-contain"
-              />
+              <video src={videoUrl} controls preload="metadata" className="w-full h-full object-contain" />
             )}
             <div className="absolute top-2 right-2 flex items-center gap-2 z-20">
-              <span className="bg-green-500/90 text-black px-2 py-1 rounded-sm text-[10px] font-bold flex items-center gap-1 backdrop-blur-sm shadow-lg">
-                <CheckCircle size={11} weight="fill" /> Tersimpan
+              <span className="px-chip px-chip-prism">
+                <PixelIcon name="check" size={11} /> Tersimpan
               </span>
-              <button
-                type="button"
-                onClick={handleReset}
-                className="bg-black/80 text-white p-1.5 rounded-sm hover:bg-red-500/80 transition-colors backdrop-blur-sm border border-white/10"
-                title="Hapus / Ganti video"
-              >
-                <X size={13} weight="bold" />
+              <button type="button" onClick={handleReset} className="px-btn px-btn-red !min-h-[32px] !min-w-[32px] !p-0" aria-label="Hapus atau ganti video">
+                <PixelIcon name="close" size={12} />
               </button>
             </div>
           </div>
-          <p className="text-[10px] font-mono text-zinc-500 text-center">
-            {getYoutubeId(videoUrl)
-              ? "YouTube Trailer Terhubung"
-              : fileName || "Video Cloudinary (720p dioptimasi)"} · Siap ditampilkan di profil server
+          <p className="text-sm text-ink-2 text-center">
+            {getYoutubeId(videoUrl) ? "Trailer YouTube terhubung" : fileName || "Video Cloudinary (720p)"} · siap tampil di profil server
           </p>
         </div>
       ) : (
         <>
-          {/* ── DROP ZONE ─────────────────────────────────────────────────── */}
           <div
+            role="button"
+            tabIndex={uploadState === "uploading" ? -1 : 0}
+            aria-label="Unggah video trailer"
+            aria-busy={uploadState === "uploading"}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            onClick={() =>
-              uploadState !== "uploading" && fileInputRef.current?.click()
-            }
-            className={[
-              "border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-8 min-h-[180px] relative overflow-hidden transition-all duration-200 select-none",
-              uploadState === "uploading"
-                ? "border-zinc-500 bg-zinc-900/40 cursor-wait"
-                : isDragging
-                ? "border-white/40 bg-white/5 cursor-copy scale-[1.01]"
-                : uploadState === "error"
-                ? "border-red-500/40 bg-red-500/5 cursor-pointer hover:border-red-400/60"
-                : "border-zinc-800 bg-zinc-950/40 cursor-pointer hover:border-zinc-700 hover:bg-zinc-900/40",
-            ].join(" ")}
+            onClick={openPicker}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                openPicker();
+              }
+            }}
+            className={`px-slot flex flex-col items-center justify-center p-8 min-h-[190px] select-none ${
+              uploadState === "uploading" ? "cursor-wait" : isDragging ? "is-selected cursor-copy" : "cursor-pointer"
+            } ${uploadState === "error" ? "!bg-redstone-l" : ""}`}
           >
             {uploadState === "uploading" ? (
-              // ── UPLOADING STATE ────────────────────────────────────────────
-              <div className="flex flex-col items-center gap-4 w-full max-w-[220px] pointer-events-none">
-                <div className="relative">
-                  <FilmSlate
-                    size={36}
-                    className="text-zinc-300"
-                  />
-                </div>
-                <div className="w-full flex flex-col gap-1.5">
-                  <div className="w-full bg-black/60 rounded-full h-1.5 overflow-hidden border border-white/5">
-                    <div
-                      className="bg-gradient-to-r from-eter-cyan to-cyan-300 h-full rounded-full transition-all duration-300 ease-out relative"
-                      style={{ width: `${progress}%` }}
-                    >
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-[shimmer_1.5s_infinite]" />
-                    </div>
+              <div className="flex flex-col items-center gap-4 w-full max-w-[260px] pointer-events-none">
+                <Sprite name="film" size={40} />
+                {/* Real upload progress from the XHR, drawn as an XP bar */}
+                <div className="w-full flex flex-col gap-2">
+                  <div className="px-bar px-bar-gold" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Progres unggah">
+                    <span style={{ width: `${progress}%` }} />
                   </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-[10px] font-mono text-zinc-400 truncate max-w-[160px]">
-                      {fileName}
-                    </p>
-                    <p className="text-[10px] font-mono text-eter-cyan font-bold">
-                      {progress}%
-                    </p>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-ink-2 truncate max-w-[180px]">{fileName}</span>
+                    <span className="font-pixel text-ink tabular">{progress}%</span>
                   </div>
                 </div>
-                <p className="text-xs text-zinc-400">
-                  Mengupload langsung ke cloud...
-                </p>
+                <p className="text-sm text-ink-2">Mengunggah langsung ke cloud</p>
               </div>
             ) : uploadState === "error" ? (
-              // ── ERROR STATE ────────────────────────────────────────────────
               <div className="flex flex-col items-center gap-2 pointer-events-none">
-                <Warning size={32} className="text-red-400" weight="fill" />
-                <p className="text-sm font-medium text-red-400">
-                  Upload Gagal
-                </p>
-                <p className="text-xs text-zinc-500">
-                  Klik untuk coba lagi
-                </p>
+                <PixelIcon name="alert" size={30} className="text-redstone" />
+                <p className="font-pixel text-base text-redstone">Unggah gagal</p>
+                <p className="text-sm text-ink-2">Ketuk untuk coba lagi</p>
               </div>
             ) : (
-              // ── IDLE / DRAG STATE ──────────────────────────────────────────
-              <div className="flex flex-col items-center gap-3 pointer-events-none">
-                <div
-                  className={[
-                    "w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200",
-                    isDragging
-                      ? "bg-white/10 border border-white/30"
-                      : "bg-white/5 border border-white/10",
-                  ].join(" ")}
-                >
-                  <UploadSimple
-                    size={26}
-                    className={isDragging ? "text-white" : "text-zinc-400"}
-                    weight={isDragging ? "bold" : "regular"}
-                  />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-medium text-white">
-                    {isDragging ? (
-                      <span className="text-white">Lepaskan di sini!</span>
-                    ) : (
-                      <>
-                        Seret & Lepas video, atau{" "}
-                        <span className="text-white underline underline-offset-2 hover:text-zinc-300">
-                          pilih file
-                        </span>
-                      </>
-                    )}
-                  </p>
-                  <p className="text-[10px] text-zinc-500 font-mono mt-1 uppercase tracking-widest">
-                    {ALLOWED_EXT_LABEL} · Maks {MAX_FILE_SIZE_MB}MB · Maks {MAX_DURATION_SECONDS}dtk
-                  </p>
-                </div>
+              <div className="flex flex-col items-center gap-3 pointer-events-none text-center">
+                <PixelIcon name="upload" size={28} className={isDragging ? "text-gold-d" : "text-ink-2"} />
+                <p className="font-pixel text-base text-ink">
+                  {isDragging ? "Lepaskan di sini" : "Seret video ke sini, atau ketuk untuk pilih file"}
+                </p>
+                <p className="text-xs text-ink-2">
+                  {ALLOWED_EXT_LABEL} · maks {MAX_FILE_SIZE_MB}MB · maks {MAX_DURATION_SECONDS} detik
+                </p>
               </div>
             )}
 
@@ -352,27 +288,22 @@ export function VideoUploader({ name, defaultValue }: VideoUploaderProps) {
             />
           </div>
 
-          {/* ── YOUTUBE FALLBACK ──────────────────────────────────────────── */}
           {uploadState !== "uploading" && (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
-                <div className="h-px bg-white/8 flex-1" />
-                <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest whitespace-nowrap">
-                  atau tempel link YouTube
-                </span>
-                <div className="h-px bg-white/8 flex-1" />
+                <div className="flex-1 border-t-2 border-dashed border-ink/20" />
+                <span className="text-xs text-ink-2 whitespace-nowrap">atau tempel link YouTube</span>
+                <div className="flex-1 border-t-2 border-dashed border-ink/20" />
               </div>
               <div className="relative flex items-center">
-                <VideoCamera
-                  size={16}
-                  className="absolute left-3 text-zinc-600 pointer-events-none"
-                />
+                <PixelIcon name="play" size={14} className="absolute left-3.5 text-ink-2 pointer-events-none" />
                 <input
                   type="url"
+                  aria-label="Link YouTube trailer"
                   placeholder="https://youtube.com/watch?v=..."
                   value={videoUrl.startsWith("http") && !videoUrl.includes("cloudinary") ? videoUrl : ""}
                   onChange={handleYouTubeInput}
-                  className="w-full bg-black/30 border border-white/8 rounded-sm pl-9 pr-4 py-2 text-xs text-eter-starlight placeholder:text-zinc-600 focus:border-eter-cyan/50 focus:outline-none transition-colors"
+                  className="px-input !pl-10"
                 />
               </div>
             </div>

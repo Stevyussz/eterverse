@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { VerseScene } from "@/components/pixel/VerseScene";
+import { Sprite } from "@/components/pixel/PixelArt";
 
 type Props = {
   searchParams: Promise<{ verifyRequest?: string; callbackUrl?: string }>;
@@ -21,16 +23,16 @@ export default async function LoginPage(props: Props) {
   const isVerifyRequest = searchParams?.verifyRequest === "true" || searchParams?.verifyRequest === "";
 
   return (
-    <main className="min-h-screen flex items-center justify-center relative px-6 z-10 pt-20 pb-20">
+    <main className="min-h-screen flex items-center justify-center relative px-4 pt-24 pb-16 bg-[#CDE8F4]">
+      <VerseScene className="absolute inset-x-0 bottom-0 w-full h-[140px] sm:h-[200px]" />
       
-      <div className="w-full max-w-md bg-[#050505]/95 sm:bg-[#050505]/90 sm:backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl flex flex-col gap-8 relative overflow-hidden">
+      <div className="w-full max-w-md px-panel p-6 sm:p-8 flex flex-col gap-7 relative z-10 px-pop">
         
         {!isVerifyRequest && (
           <div className="flex flex-col items-center text-center gap-2 relative z-10">
-            <h1 className="text-2xl sm:text-3xl font-display font-semibold text-white tracking-tight">
-              Selamat Datang Kembali
-            </h1>
-            <p className="text-zinc-400 font-body text-sm">
+            <Sprite name="portal" size={48} />
+            <h1 className="px-title px-title-shadow text-3xl text-ink">Masuk ke EterVerse</h1>
+            <p className="text-ink-2 text-sm">
               {isPlayerLogin
                 ? "Masuk untuk vote dan memberi rating server. Satu akun, satu vote per hari."
                 : "Masuk untuk mengelola server dan memantau analitik EterVerse."}
@@ -42,7 +44,7 @@ export default async function LoginPage(props: Props) {
         <LoginForm isVerifyRequest={isVerifyRequest} callbackUrl={callbackUrl} />
         
         {!isVerifyRequest && (
-          <p className="text-center text-xs text-zinc-400 relative z-10 mt-2 leading-relaxed">
+          <p className="text-center text-xs text-ink-2 leading-relaxed">
             Dengan masuk, Anda menyetujui Ketentuan Layanan dan Kebijakan Privasi kami.
           </p>
         )}

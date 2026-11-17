@@ -1,6 +1,6 @@
 "use client";
 
-import { GameController, ArrowSquareOut } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 import { useLanguage } from "@/context/LanguageContext";
 import { trackJoinIntent } from "@/lib/track-click";
 
@@ -33,14 +33,12 @@ export function DirectPlayButton({
         href={realmUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className={`font-mono text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 border select-none active:scale-[0.97] shrink-0 bg-purple-600 hover:bg-purple-500 text-white border-purple-400/40 shadow-sm hover:shadow-[0_2px_16px_rgba(168,85,247,0.35)] ${className}`}
+        className={`px-btn shrink-0 ${className}`}
         title={lang === "id" ? "Buka Realm langsung di Minecraft" : "Open Realm directly in Minecraft"}
       >
-        <GameController size={16} weight="fill" />
-        <span className="font-semibold tracking-tight">
-          {t("server.joinRealm")}
-        </span>
-        <ArrowSquareOut size={13} weight="bold" />
+        <PixelIcon name="gamepad" size={16} />
+        {t("server.joinRealm")}
+        <PixelIcon name="external" size={12} />
       </a>
     );
   }
@@ -53,13 +51,11 @@ export function DirectPlayButton({
     <a
       onClick={trackJoinIntent}
       href={directLink}
-      className={`font-mono text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 border select-none active:scale-[0.97] shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400/40 shadow-sm hover:shadow-[0_2px_16px_rgba(16,185,129,0.35)] ${className}`}
+      className={`px-btn shrink-0 ${className}`}
       title={lang === "id" ? `Buka langsung di Minecraft (${ipAddress}:${effectivePort})` : `Launch directly in Minecraft (${ipAddress}:${effectivePort})`}
     >
-      <GameController size={16} weight="fill" />
-      <span className="font-semibold tracking-tight">
-        {t("server.directPlay")}
-      </span>
+      <PixelIcon name="gamepad" size={16} />
+      {t("server.directPlay")}
     </a>
   );
 }

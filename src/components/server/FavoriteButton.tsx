@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Heart } from "@phosphor-icons/react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 import { toast } from "sonner";
 
 export function FavoriteButton({ slug, initial }: { slug: string; initial: boolean }) {
@@ -52,11 +52,9 @@ export function FavoriteButton({ slug, initial }: { slug: string; initial: boole
       onClick={toggle}
       aria-pressed={favorited}
       aria-label={favorited ? "Hapus dari favorit" : "Simpan ke favorit"}
-      className={`min-h-[44px] min-w-[44px] px-3 rounded-lg border inline-flex items-center justify-center gap-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
-        favorited ? "border-rose-500/40 bg-rose-500/10 text-rose-200" : "border-zinc-800 bg-zinc-900/40 text-zinc-300 hover:text-white hover:border-zinc-700"
-      }`}
+      className={`px-btn ${favorited ? "px-btn-red" : "px-btn-cream"}`}
     >
-      <Heart size={18} weight={favorited ? "fill" : "regular"} aria-hidden />
+      <PixelIcon name={favorited ? "heart" : "heartOutline"} size={16} className={favorited ? "" : "text-redstone"} />
       <span className="hidden sm:inline">{favorited ? "Favorit" : "Simpan"}</span>
     </button>
   );

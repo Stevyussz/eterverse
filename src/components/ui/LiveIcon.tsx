@@ -1,11 +1,11 @@
-import { WifiHigh, WifiSlash } from "@phosphor-icons/react/dist/ssr";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 
-// Server status as an icon instead of a coloured dot: the shape itself says online/offline,
-// so it also reads for colour-blind players. Cyan stays reserved for "online".
+// Server status drawn like the ping bars on Minecraft's Multiplayer screen: full green bars
+// when online, flat bars with an X when not. The shape carries the meaning, not only colour.
 export function LiveIcon({ online, size = 14, className = "" }: { online: boolean; size?: number; className?: string }) {
   return online ? (
-    <WifiHigh size={size} weight="bold" className={`text-eter-cyan shrink-0 ${className}`} aria-hidden />
+    <PixelIcon name="signal" size={size} className={`text-online shrink-0 ${className}`} />
   ) : (
-    <WifiSlash size={size} weight="bold" className={`text-zinc-500 shrink-0 ${className}`} aria-hidden />
+    <PixelIcon name="signalOff" size={size} className={`text-ink-3 shrink-0 ${className}`} />
   );
 }
