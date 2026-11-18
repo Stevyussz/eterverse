@@ -25,7 +25,7 @@ export function Footer() {
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-10 lg:gap-8 pb-10 border-b-2 border-dashed border-bone/20">
           <div className="col-span-2 flex flex-col gap-4">
             <Link href="/" className="w-fit" aria-label="EterVerse, ke beranda">
-              <Logo size={30} tone="dark" />
+              <Logo />
             </Link>
             <p className="text-bone/85 leading-relaxed max-w-sm">{t("footer.tagline")}</p>
             <LanguageSwitcher showIcon className="text-bone" />

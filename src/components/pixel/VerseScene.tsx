@@ -12,9 +12,11 @@ const LOCAL: Record<string, { grid: string[]; palette: Palette }> = {
     grid: ["PPpPPPPp", "PqPPqPPP", "PPPPPpPq", "pPPqPPPP", "PPPPPPqP", "PqPpPPPP", "PPPPqPpP", "qPPPPPPP"],
     palette: { P: "#2E8077", p: "#77C9BC", q: "#1D5E57" },
   },
+  // Ether vortex, same colours as the logo mark
   portal: {
-    grid: ["vVvvvVvv", "vvVvvvVv", "VvvVvvvV", "vVvvVvvv", "vvVvvVvv", "VvvVvvVv", "vVvvVvvV", "vvVvvVvv"],
-    palette: { v: "#7A44B5", V: "#B98BE8" },
+    // Diagonal shimmer that tiles seamlessly across the 2x3 opening (a spiral per tile repeated).
+    grid: ["bbcbbabb", "bcbbabbc", "cbbabbcb", "bbabbcbb", "babbcbbw", "abbcbbab", "bbcbbabb", "bcwbabbc"],
+    palette: { a: "#2A9D95", b: "#5FD6CC", c: "#B8FFF6", w: "#FFFFFF" },
   },
   water: {
     grid: ["wwWwwwww", "wwwwwWww", "Wwwwwwww", "wwwwWwww", "wwWwwwwW", "wwwwwwww", "wWwwwwWw", "wwwwwwww"],
@@ -118,7 +120,9 @@ export function VerseScene({ className, variant = "overworld" }: { className?: s
   for (let dy = 0; dy < 5; dy++) {
     for (let dx = 0; dx < 4; dx++) {
       const edge = dy === 0 || dy === 4 || dx === 0 || dx === 3;
-      place(edge ? "prismarine" : "portal", PORTAL_COL + dx, base - dy);
+      const corner = (dy === 0 || dy === 4) && (dx === 0 || dx === 3);
+      // Same gate as the logo: prismarine frame, gold corner blocks, ether inside.
+      place(corner ? "goldBlock" : edge ? "prismarine" : "portal", PORTAL_COL + dx, base - dy);
     }
   }
 

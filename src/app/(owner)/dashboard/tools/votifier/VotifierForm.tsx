@@ -117,7 +117,7 @@ export function VotifierForm(props: Props) {
             onClick={() => startTest(async () => setTestState(await testVotifier(id, testName.trim())))}
             className="px-btn px-btn-gold"
           >
-            <PixelIcon name="send" size={14} />
+            <PixelIcon name="arrow" rotate={180} size={14} />
             {testing ? "Mengirim" : "Kirim vote tes"}
           </button>
         </div>

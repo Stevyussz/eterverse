@@ -265,24 +265,6 @@ export const SPRITES = {
     ],
     palette: { k: K, c: "#4DD8DF", C: "#1E8C99", w: "#A87A45", W: "#7A5530" },
   },
-  // EterVerse brand mark: a prismarine-framed portal, "a door into other worlds".
-  portal: {
-    grid: [
-      "kkkkkkkkkkkk",
-      "kPPpPPPPpPPk",
-      "kPkkkkkkkkPk",
-      "kpkVvvvVvkpk",
-      "kPkvVvvvVkPk",
-      "kPkvvVvVvkPk",
-      "kPkVvvVvvkPk",
-      "kpkvVvvVvkpk",
-      "kPkvvVvvVkPk",
-      "kPkkkkkkkkPk",
-      "kPPpPPPPpPPk",
-      "kkkkkkkkkkkk",
-    ],
-    palette: { k: K, P: "#2E8077", p: "#77C9BC", v: "#7A44B5", V: "#B98BE8" },
-  },
   // Vote = emerald: the currency players hand to the server they like. 16x16 (the other
   // sprites are 12x12) because it is the one shown on every card and button.
   emerald: {
@@ -308,20 +290,20 @@ export const SPRITES = {
   },
   book: {
     grid: [
-      "............",
-      ".kkkkkkkkkk.",
-      ".kRRRRRRRRk.",
-      ".kRrrrrrrRk.",
-      ".kRrYYYYrRk.",
-      ".kRrrrrrrRk.",
-      ".kRRRRRRRRk.",
-      ".kRRRRRRRRk.",
-      ".kRRRRRRRRk.",
-      ".kWWWWWWWWk.",
-      ".kkkkkkkkkk.",
-      "............",
+      "..kkkkkkkkk.",
+      ".kSRRRRRRRRk",
+      ".kSRrrrrrrRk",
+      ".kSRrYYYYrRk",
+      ".kSRrrrrrrRk",
+      ".kSRRRRRRRRk",
+      ".kSRRRRYRRRk",
+      ".kSRRRRRRRRk",
+      ".kSRRRRRRRRk",
+      ".kSWWWWWWWWk",
+      ".kSwwwwwwwwk",
+      "..kkkkkkkkk.",
     ],
-    palette: { k: K, R: "#8A3F1C", r: "#B5592A", Y: "#F2B318", W: "#F7EFDC" },
+    palette: { k: K, S: "#5E2A12", R: "#8A3F1C", r: "#B5592A", Y: "#F2B318", W: "#F7EFDC", w: "#E6DABD" },
   },
   bell: {
     grid: [
@@ -412,11 +394,13 @@ export function Sprite({
   label?: string;
 }) {
   const s = SPRITES[name];
+  const cols = s.grid[0].length;
+  const px = Math.max(1, Math.round(size / cols)) * cols;
   return (
     <svg
       viewBox={`0 0 ${s.grid[0].length} ${s.grid.length}`}
-      width={size}
-      height={size}
+      width={px}
+      height={px}
       shapeRendering="crispEdges"
       className={className}
       role={label ? "img" : undefined}

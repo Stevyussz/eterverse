@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { VerseScene } from "@/components/pixel/VerseScene";
-import { Sprite } from "@/components/pixel/PixelArt";
+import { LogoMark } from "@/components/pixel/Logo";
 
 type Props = {
   searchParams: Promise<{ verifyRequest?: string; callbackUrl?: string }>;
@@ -31,7 +31,7 @@ export default async function LoginPage(props: Props) {
         
         {!isVerifyRequest && (
           <div className="flex flex-col items-center text-center gap-2 relative z-10">
-            <Sprite name="portal" size={48} />
+            <LogoMark size={64} />
             <h1 className="px-title px-title-shadow text-3xl text-ink">Masuk ke EterVerse</h1>
             <p className="text-ink-2 text-sm">
               {isPlayerLogin

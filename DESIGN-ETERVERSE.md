@@ -12,7 +12,7 @@ Kalau ada yang bertentangan, `DESIGN.md` menang, kecuali tercatat di bagian "Pen
 - **Kepribadian:** ramah, gamer, jujur, praktis.
 - **Motif utama: layar Multiplayer Minecraft.** Setiap server tampil seperti entri di daftar Multiplayer: ikon server di kiri, nama, baris info, sinyal ping, jumlah pemain.
 - **Motif pendukung:**
-  - **Portal prismarine** = logo dan pusat adegan beranda ("pintu ke dunia lain").
+  - **Gerbang Eter** = logo dan pusat adegan beranda (lihat bagian 12).
   - **Layar trailer** (`.px-screen`) = monitor gelap berbingkai tinta tempat video diputar.
   - **Chip IP** (`.ip-chip`) = alamat ditulis seperti diketik di game: mono, latar tinta, caret `>` emas.
 
@@ -127,7 +127,7 @@ Komponen React: `PixelIcon` (grid 12x12) dan `Sprite`, keduanya di `src/componen
 | `.px-note` (+ `-error`, `-info`, `-gold`) | globals.css | pemberitahuan; selalu ikon + teks |
 | `.px-btn-discord` | globals.css | tombol login Discord |
 | `LiveIcon` | components/ui | status server = **bar ping Minecraft**: 4 bar hijau saat online, bar datar + X saat offline |
-| `Logo` | components/pixel | sprite portal + wordmark "EterVerse" |
+| `Logo` / `LogoMark` | components/pixel | logo resmi dari `brand-art.ts` (hasil `scripts/brand.mjs`); jangan digambar ulang di komponen |
 | `VerseScene` | components/pixel | adegan hero beranda dan login: dunia blok dengan portal di tengah |
 | `PageHero` | components/pixel | header halaman publik (pita sandstone) |
 | `DashHeader` | components/dashboard | header halaman dashboard/admin |
@@ -141,7 +141,7 @@ Emerald digambar di grid **16x16** (sprite lain 12x12) karena tampil di setiap k
 Animasi vote (hanya setelah server menerima vote): emerald terbang naik + 5 percikan pixel hijau (`.px-spark`). Saat hover, emerald memantul (`hover-bob`).
 
 ### Sprite EterVerse (ditambahkan ke `PixelArt.tsx`)
-`portal` (logo), `emerald` (vote), `goldBlock` (partner, peringkat), `book` (info), `bell` (event), `map` (jelajah). Favicon `src/app/icon.svg` digambar dari grid `portal`.
+`emerald` (vote), `goldBlock` (partner, peringkat), `book` (info), `bell` (event), `map` (jelajah). Logo, favicon (`src/app/icon.svg`), dan `apple-icon.png` dibuat oleh `scripts/brand.mjs` (bagian 12).
 
 `SPRITES` memakai `satisfies`, jadi nama sprite yang salah ketik gagal di `tsc`, bukan crash saat render.
 
@@ -232,3 +232,48 @@ Dilarang: hitungan pemain atau statistik karangan, "slot partner tinggal sedikit
 - [ ] Setiap angka tampil sekali per layar (jangan ulang online/vote/rating di header dan di tab).
 - [ ] Klaim di copy bisa dibuktikan oleh kode atau data.
 - [ ] `npx tsc --noEmit`, `npm test`, dan `npm run build` lolos.
+
+---
+
+## 12. Logo dan branding
+
+### Konsep: Gerbang Eter
+Gerbang berbingkai prismarine dengan empat sudut **blok emas**. Separuh atas jendelanya berisi **pusaran cahaya eter** (teal ke putih, satu lengan spiral menuju inti putih); separuh bawah memperlihatkan **dunia blok**: langit, bukit rumput, tanah.
+
+Artinya: *masuk lewat gerbang, sampai di dunia sebuah server.* "Eter" adalah gerbang cahayanya, dan "Verse" adalah dunia-dunia di baliknya.
+
+Portal ungu yang lama sengaja ditinggalkan. Di Minecraft, portal ungu berarti jalan ke Nether, pesan yang salah untuk sebuah direktori server.
+
+Warnanya mengikuti 60-30-10: teal prismarine 30%, emas 10%, dan krem/tanah dari dunianya.
+
+**Wordmark:** huruf blok pixel buatan sendiri (grid 5x7, setiap pixel 2 unit) dengan bevel terang, sisi dalam, dan outline tinta. "ETER" berwarna bone, "VERSE" berwarna prismarine terang. Karena punya outline sendiri, wordmark terbaca di latar krem, Nether, maupun teal tanpa versi terpisah.
+
+### Sumber dan file
+Satu sumber pixel: `scripts/brand.mjs`. Jalankan `node scripts/brand.mjs` setelah mengubah logo. Skrip ini menulis:
+- `src/components/pixel/brand-art.ts`, dipakai `<Logo/>` dan `<LogoMark/>` di situs.
+- `src/app/icon.svg` (favicon).
+- `public/brand/*.svg`.
+
+| File (`public/brand/`) | Untuk |
+|---|---|
+| `eterverse-mark.svg`, `png/mark-512.png`, `png/mark-1024.png` | lambang saja, transparan |
+| `eterverse-logo.svg`, `png/logo-horizontal.png` | logo mendatar (header situs, kop dokumen, watermark video) |
+| `eterverse-logo-stacked.svg`, `png/logo-stacked.png` | logo bertumpuk (poster, slide pembuka, stiker) |
+| `eterverse-wordmark.svg`, `png/wordmark.png` | tulisan saja |
+| `png/avatar-teal-1024.png`, `avatar-cream`, `avatar-nether` | foto profil (Discord, WA, IG, YouTube); aman dipotong lingkaran |
+| `png/banner-x-*-1500x500.png` | header X/Twitter, banner Discord server |
+| `png/banner-og-*-1200x630.png` | gambar share link, thumbnail postingan, Facebook |
+| `png/banner-square-*-1080x1080.png` | postingan Instagram/WA, pengumuman |
+
+Setiap banner tersedia dalam versi `overworld` (terang) dan `nether` (gelap).
+
+### Aturan pakai
+- **Skala bilangan bulat saja** (1x, 2x, 3x, ...): lambang 16, 32, 48, 64 px; wordmark tinggi 19, 38, 57 px. Skala pecahan membuat pixel tidak rata.
+- **Ukuran minimum:** lambang 16 px (favicon); logo mendatar tinggi 32 px.
+- **Ruang kosong** di sekeliling logo minimal selebar satu blok emas sudut (3/16 lebar lambang).
+- **Latar:** krem, Nether gelap, atau teal tua. Di atas foto, letakkan logo pada panel polos.
+- **Jangan:**
+  - Memutar, meregangkan, atau mengganti warnanya.
+  - Menambah bayangan halus atau glow.
+  - Mengganti pusaran dengan warna ungu.
+  - Mengetik "EterVerse" dengan font lain sebagai pengganti wordmark.

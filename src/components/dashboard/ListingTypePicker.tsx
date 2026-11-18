@@ -30,7 +30,7 @@ export function ListingTypePicker({
         <legend className="px-label">Tipe listing</legend>
         <div className="grid grid-cols-2 gap-4">
           <button type="button" onClick={() => onType("SERVER")} aria-pressed={serverType === "SERVER"} className="px-slot p-3.5 text-left flex flex-col gap-1">
-            <span className="font-pixel text-base flex items-center gap-2"><PixelIcon name="block" size={14} />Server</span>
+            <span className="font-pixel text-base flex items-center gap-2"><PixelIcon name="database" size={14} />Server</span>
             <span className="text-xs text-ink-2">Java, Bedrock, atau crossplay</span>
           </button>
           <button type="button" onClick={() => onType("REALM")} aria-pressed={serverType === "REALM"} className="px-slot p-3.5 text-left flex flex-col gap-1">

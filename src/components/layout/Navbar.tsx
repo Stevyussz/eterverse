@@ -45,7 +45,7 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
       <div className="w-full max-w-7xl h-full mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
         <Link href="/" className="hover-bob flex items-center shrink-0 min-h-[44px]" aria-label="EterVerse, ke beranda">
           <span className="bob-target inline-flex">
-            <Logo size={30} tone="dark" />
+            <Logo wordmarkClassName="h-[22px] min-[400px]:h-[28px] sm:h-[38px]" />
           </span>
         </Link>
 
