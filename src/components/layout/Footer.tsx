@@ -20,15 +20,15 @@ export function Footer() {
   const linkCls = "inline-flex min-h-[32px] items-center gap-1.5 hover:text-gold transition-colors";
 
   return (
-    <footer className="ground on-dark mt-16 text-cream text-sm pt-16 pb-28 lg:pb-12">
+    <footer className="ground on-dark mt-16 text-bone text-sm pt-16 pb-28 lg:pb-12">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-10 border-b-2 border-dashed border-cream/20">
-          <div className="lg:col-span-2 flex flex-col gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-10 lg:gap-8 pb-10 border-b-2 border-dashed border-bone/20">
+          <div className="col-span-2 flex flex-col gap-4">
             <Link href="/" className="w-fit" aria-label="EterVerse, ke beranda">
               <Logo size={30} tone="dark" />
             </Link>
-            <p className="text-cream/85 leading-relaxed max-w-sm">{t("footer.tagline")}</p>
-            <LanguageSwitcher showIcon className="text-cream" />
+            <p className="text-bone/85 leading-relaxed max-w-sm">{t("footer.tagline")}</p>
+            <LanguageSwitcher showIcon className="text-bone" />
           </div>
 
           <div className="flex flex-col gap-3">
@@ -63,7 +63,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="col-span-2 lg:col-span-1 flex flex-col gap-3">
             <h2 className="font-pixel text-base text-gold">{t("footer.community")}</h2>
             <ul className="flex flex-col gap-1">
               <li>
@@ -76,7 +76,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-cream/75">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-bone/75">
           <span>© {year} EterVerse. {t("footer.rights")}</span>
           <span className="text-center sm:text-right max-w-md">{t("footer.disclaimer")}</span>
         </div>

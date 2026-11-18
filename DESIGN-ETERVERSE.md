@@ -54,7 +54,53 @@ Kalau ada yang bertentangan, `DESIGN.md` menang, kecuali tercatat di bagian "Pen
 | Ink di `prism-l` (chip platform) | 8.01 |
 | Ink di langit hero #CDE8F4 | 12+ |
 
+Token pendukung (tidak menambah warna, hanya memisahkan peran):
+
+| Token | Overworld | Peran |
+|---|---|---|
+| `frame` | #2E2216 | bingkai, bayangan keras, latar chip IP. **Tetap gelap di kedua tema.** Jangan pakai `ink` untuk bingkai. |
+| `bone` | #F2EAD3 | teks di permukaan yang selalu gelap (footer, sidebar kayu). Tidak berubah per tema. |
+| `prism-t` | #1D5E57 | teal sebagai teks atau ikon (link, eyebrow). Pakai ini, bukan `text-prism-d`. |
+| `sky` (`bg-sky`) | #CDE8F4 | langit hero beranda dan login |
+
 `prism` (#2E8077) **tidak boleh** jadi latar teks putih kecil (4.7, lolos hanya tipis). Pakai `prism-d`.
+
+## 2b. Tema Nether (mode gelap)
+
+Mode kedua, dipilih lewat tombol matahari/api di navbar. Pilihan disimpan di `localStorage` (`eterverse:theme`) dan dipasang ke `<html data-theme="nether">` oleh skrip kecil di `<head>` sebelum halaman tampil, jadi tidak ada kedip terang. Overworld tetap bawaan (aturan keluarga: terang dulu).
+
+Prinsip 60-30-10 tetap sama:
+- **60%: blackstone.** Permukaan gelap kemerahan.
+- **30%: teal warped forest.** Token prismarine dipakai apa adanya, karena teal memang warna hutan warped di Nether.
+- **10%: emas.**
+- **Tekstur:**
+  - Pita header jadi blackstone berbintik emas.
+  - Footer jadi netherrack dengan lapisan crimson nylium.
+  - Sidebar jadi papan crimson.
+  - Hero memakai `VerseScene variant="nether"`: nylium, netherrack, blackstone, lava, crimson fungus, glowstone, dengan portal tetap prismarine.
+
+| Token | Nether | Kontras (dihitung) |
+|---|---|---|
+| `cream` / `panel` / `panel-2` / `slot` | #1C1214 / #2A1B1E / #33221F / #130B0C | |
+| `ink` | #F4E7D6 | 13.5 di panel |
+| `ink-2` | #D2BCA8 | 9.0 di panel |
+| `ink-3` | #A8907E | 5.5 di panel |
+| `prism-t` | #6FE0D2 | 10.4 di panel |
+| `prism-l` (latar chip) | #134A46 | ink di atasnya 8.2 |
+| `gold-d` (ikon, fokus) | #F5C542 | 10.2 di panel |
+| `gold-l` (slot terpilih, chip emas) | #4A3512 | ink di atasnya 9.5 |
+| `online` / `online-d` | #4FBF3A / #6FD45C | 6.9 / 8.8 di panel |
+| `redstone` / `redstone-l` | #FF8A7A / #4A1C1C | 7.2 di panel / ink 11.7 |
+| `lapis` / `lapis-l` | #A9BEFF / #1C2650 | 9.0 di panel / ink 12.0 |
+| `frame` | #0B0607 | |
+| `dirt-d` (footer) | #4A1E1E | `bone` di atasnya 11.5 |
+| `sky` | #2A0F12 | ink 14.7 |
+
+Aturan supaya komponen baru otomatis benar di kedua tema:
+- Teks: `text-ink`, `text-ink-2`, `text-prism-t`, `text-gold-d`. Bingkai: `border-frame`, `.px-*`.
+- Di permukaan yang selalu gelap (navbar prismarine, blok `prism-bricks`, footer, sidebar): pakai warna tetap (`text-white`, `text-bone`, `text-[#FFF1C2]`), bukan token yang berubah.
+- Teks di atas emas atau perak (tombol emas, podium) memakai #2E2216 tetap.
+- Gambar yang berbeda per tema: render dua versi dengan `.only-light` dan `.only-nether`.
 
 ## 3. Tipografi
 
@@ -86,7 +132,13 @@ Komponen React: `PixelIcon` (grid 12x12) dan `Sprite`, keduanya di `src/componen
 | `PageHero` | components/pixel | header halaman publik (pita sandstone) |
 | `DashHeader` | components/dashboard | header halaman dashboard/admin |
 | `ListingTypePicker` | components/dashboard | pilih tipe & platform listing (slot inventory) |
+| `EmptySlotCard` | components/server | slot cekung "Slot ini masih kosong" yang menutup baris grid pendek (hanya di daftar tanpa filter); fakta, bukan server palsu |
 | `ServerCard` | components/server | entri ala Multiplayer: layar trailer, ikon server, nama, chip IP, pemain/vote/rating |
+
+### Ikon vote: emerald 16x16
+Emerald digambar di grid **16x16** (sprite lain 12x12) karena tampil di setiap kartu dan tombol: outline hijau tua, sisi terang kiri-atas, sisi gelap kanan-bawah, kilau putih. `Sprite` membaca ukuran grid sendiri. Pakai ukuran kelipatan 16 (16 di chip/kartu, 32 di tombol vote, 64 di empty state) supaya pixel tetap tajam.
+
+Animasi vote (hanya setelah server menerima vote): emerald terbang naik + 5 percikan pixel hijau (`.px-spark`). Saat hover, emerald memantul (`hover-bob`).
 
 ### Sprite EterVerse (ditambahkan ke `PixelArt.tsx`)
 `portal` (logo), `emerald` (vote), `goldBlock` (partner, peringkat), `book` (info), `bell` (event), `map` (jelajah). Favicon `src/app/icon.svg` digambar dari grid `portal`.
@@ -164,14 +216,19 @@ Dilarang: hitungan pemain atau statistik karangan, "slot partner tinggal sedikit
 1. **Logo merek pihak ketiga** (Discord, WhatsApp, Telegram) tetap memakai bentuk resmi dari Phosphor. Mengganti logo merek dengan gambar pixel buatan sendiri akan menyesatkan. Semua ikon lain wajib `PixelIcon`.
 2. **Ikon toolbar editor deskripsi** memakai huruf Pixelify (B, I, S, 1., “) agar mirip buku-dan-pena Minecraft, tanpa set ikon tambahan.
 3. **Gambar OG dan widget** (`/api/og`, `/api/widget`) memakai font sans bawaan Satori, karena Pixelify tidak dimuat di renderer gambar. Warna, bingkai tinta, header prismarine, dan bar ping tetap sama dengan situs.
-4. **Video dan gambar owner** tidak di-pixelate. Itu konten milik owner, ditampilkan apa adanya di dalam `.px-screen`.
+4. **`.px-chip` memakai Plus Jakarta Sans 600 (12.5px), bukan Pixelify.** Batas Pixelify di keluarga adalah 14px, sementara chip duduk di kartu dan di atas video pada 12-13px; huruf pixel sekecil itu saling menempel. Judul, tombol, tab, dan label form tetap Pixelify minimal 14px.
+5. **Grafik uptime berupa batang HTML** dengan tinggi tetap 112px, bukan SVG yang diskalakan; SVG yang mengikuti lebar membuat label hari membengkak di desktop.
+6. **Video dan gambar owner** tidak di-pixelate. Itu konten milik owner, ditampilkan apa adanya di dalam `.px-screen`.
 
 ## 11. Checklist sebelum merge UI baru
 
+- [ ] Dicek di Overworld **dan** Nether.
 - [ ] Hanya token di tabel bagian 2. Tidak ada `zinc-*`, `white/xx`, `rounded-*`, blur, atau gradien halus.
 - [ ] Warna teks baru sudah dihitung kontrasnya dan ditambahkan ke tabel bagian 2.
 - [ ] Status selalu ikon + teks; hijau `online` hanya untuk online.
 - [ ] Animasi baru pakai `steps()` dan mati saat reduced motion.
 - [ ] Target sentuh 44px; dicek di 360px tanpa scroll horizontal.
+- [ ] Teks Pixelify minimal 14px; lebih kecil dari itu pakai Jakarta.
+- [ ] Setiap angka tampil sekali per layar (jangan ulang online/vote/rating di header dan di tab).
 - [ ] Klaim di copy bisa dibuktikan oleh kode atau data.
 - [ ] `npx tsc --noEmit`, `npm test`, dan `npm run build` lolos.

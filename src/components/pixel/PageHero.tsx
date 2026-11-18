@@ -17,7 +17,7 @@ export function PageHero({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 flex items-center gap-5">
         {sprite && <Sprite name={sprite} size={56} className="hidden sm:block shrink-0" />}
         <div className="flex flex-col gap-2 min-w-0">
-          {eyebrow && <p className="font-pixel text-sm text-prism-d">{eyebrow}</p>}
+          {eyebrow && <p className="font-pixel text-sm text-prism-t">{eyebrow}</p>}
           <h1 className="px-title px-title-shadow text-3xl sm:text-4xl md:text-5xl text-ink text-balance">{title}</h1>
           {children}
         </div>

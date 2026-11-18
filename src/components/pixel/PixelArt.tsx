@@ -283,23 +283,28 @@ export const SPRITES = {
     ],
     palette: { k: K, P: "#2E8077", p: "#77C9BC", v: "#7A44B5", V: "#B98BE8" },
   },
-  // Vote = emerald: the currency players hand to the server they like.
+  // Vote = emerald: the currency players hand to the server they like. 16x16 (the other
+  // sprites are 12x12) because it is the one shown on every card and button.
   emerald: {
     grid: [
-      "....kkkk....",
-      "...kgGGgk...",
-      "..kgwGGGgk..",
-      "..kwGGGGgk..",
-      ".kgGGGGGGgk.",
-      ".kgGGGGGGgk.",
-      ".kgGGGGGGdk.",
-      ".kgGGGGGddk.",
-      "..kgGGGGdk..",
-      "..kgGGGddk..",
-      "...kgddk....",
-      "....kkk.....",
+      "......kkkk......",
+      ".....kwwLGk.....",
+      "....kwLLGGGk....",
+      "...kwLGGGGGgk...",
+      "..kwLGGGGGGGgk..",
+      ".kLLGGGLLGGGGgk.",
+      ".kLGGGLwwLGGGgk.",
+      ".kLGGGLwLLGGGgk.",
+      ".kGGGGGLLGGGggk.",
+      ".kGGGGGGGGGGgdk.",
+      "..kgGGGGGGGgdk..",
+      "...kgGGGGGgdk...",
+      "....kgGGGgdk....",
+      ".....kggddk.....",
+      "......kkkk......",
+      "................",
     ],
-    palette: { k: K, g: "#4FD07A", G: "#17A14B", d: "#0B6B2E", w: "#D6FFE2" },
+    palette: { k: "#0E3B20", w: "#EFFFF3", L: "#8CF5A8", G: "#22C45F", g: "#13994A", d: "#0B6B33" },
   },
   book: {
     grid: [
@@ -409,7 +414,7 @@ export function Sprite({
   const s = SPRITES[name];
   return (
     <svg
-      viewBox="0 0 12 12"
+      viewBox={`0 0 ${s.grid[0].length} ${s.grid.length}`}
       width={size}
       height={size}
       shapeRendering="crispEdges"

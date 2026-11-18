@@ -9,6 +9,7 @@ import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { DASHBOARD_MENU_EVENT } from "@/lib/ui-events";
 import { PixelIcon, type PixelIconName } from "@/components/pixel/PixelIcon";
 import { Logo } from "@/components/pixel/Logo";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 interface NavbarProps {
   isLoggedIn: boolean;
@@ -58,7 +59,7 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
                     href={link.href}
                     aria-current={isActive ? "page" : undefined}
                     className={`relative flex items-center gap-2 min-h-[44px] px-3 font-pixel text-[15px] transition-colors ${
-                      isActive ? "text-white" : link.isGold ? "text-gold-l hover:text-white" : "text-white/85 hover:text-white"
+                      isActive ? "text-white" : link.isGold ? "text-[#FFF1C2] hover:text-white" : "text-white/85 hover:text-white"
                     }`}
                   >
                     <PixelIcon name={link.icon} size={14} className={link.isGold ? "text-gold" : ""} />
@@ -75,6 +76,7 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
           <div className="hidden lg:flex items-center">
             <LanguageSwitcher />
           </div>
+          <ThemeToggle className="!min-h-[40px] !min-w-[40px]" />
 
           {!isDashboardOrAdmin && (
             <Link href="/dashboard/server/new" className="px-btn px-btn-gold px-btn-sm hidden lg:inline-flex">
@@ -149,7 +151,7 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
                     aria-current={isActive ? "page" : undefined}
                     className="px-slot flex items-center gap-2.5 min-h-[52px] px-3 font-pixel text-base"
                   >
-                    <PixelIcon name={link.icon} size={16} className={link.isGold ? "text-gold-d" : "text-prism-d"} />
+                    <PixelIcon name={link.icon} size={16} className={link.isGold ? "text-gold-d" : "text-prism-t"} />
                     {link.label}
                   </Link>
                 </li>

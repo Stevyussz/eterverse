@@ -11,7 +11,6 @@ import { StarRating } from "@/components/server/StarRating";
 import { EmbedWidget } from "@/components/server/EmbedWidget";
 import { CopyIPButton } from "@/components/server/CopyIPButton";
 import { DirectPlayButton } from "@/components/server/DirectPlayButton";
-import { LiveIcon } from "@/components/ui/LiveIcon";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface ServerChannelTabsProps {
@@ -43,11 +42,7 @@ export function ServerChannelTabs({
   const [teaserLoaded, setTeaserLoaded] = useState(false);
   const { t } = useLanguage();
 
-  const isOnline = !!server.liveStatus?.isOnline;
-  const currentPlayers = server.liveStatus?.currentPlayers || 0;
-  const maxPlayers = server.liveStatus?.maxPlayers || 0;
   const rating = server.metrics?.rating || 0;
-  const votes = server.metrics?.votes || 0;
   const gallery = server.galleryUrls || [];
   const isRealm = server.serverType === "REALM";
   const isCrossplay = !isRealm && (server.platform === "CROSSPLAY" || (!server.platform && server.port && server.port !== 19132));
@@ -98,29 +93,6 @@ export function ServerChannelTabs({
       <div className="flex flex-col gap-6" role="tabpanel">
         {activeTab === "overview" && (
           <div className="flex flex-col gap-6 px-pop">
-            {/* Stat slots */}
-            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {[
-                {
-                  label: t("server.serverStatus"),
-                  icon: <LiveIcon online={isOnline} size={16} />,
-                  value: isRealm ? "Realm" : isOnline ? "Online" : "Offline",
-                  cls: isOnline && !isRealm ? "text-online-d" : "text-ink",
-                },
-                { label: t("server.onlinePlayers"), icon: <PixelIcon name="users" size={16} className="text-ink-2" />, value: `${currentPlayers.toLocaleString("id-ID")} / ${maxPlayers.toLocaleString("id-ID")}`, cls: "text-ink" },
-                { label: t("server.totalVote"), icon: <Sprite name="emerald" size={16} />, value: votes.toLocaleString("id-ID"), cls: "text-ink" },
-                { label: t("server.starRating"), icon: <PixelIcon name="star" size={16} className="text-gold-d" />, value: `${rating.toFixed(1)} / 5`, cls: "text-ink" },
-              ].map((s) => (
-                <div key={s.label} className="px-slot p-3.5 flex flex-col gap-1.5">
-                  <dt className="text-xs text-ink-2">{s.label}</dt>
-                  <dd className={`flex items-center gap-2 font-bold tabular ${s.cls}`}>
-                    {s.icon}
-                    {s.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-
             {/* How to join */}
             {isCrossplay ? (
               <div className={card}>
@@ -179,7 +151,7 @@ export function ServerChannelTabs({
               <div className={card}>
                 <div className="flex items-center justify-between gap-3">
                   <h3 className={cardTitle}>
-                    <PixelIcon name="play" size={14} className="text-prism-d" /> {t("server.officialTrailer")}
+                    <PixelIcon name="play" size={14} className="text-prism-t" /> {t("server.officialTrailer")}
                   </h3>
                   <button onClick={() => setActiveTab("trailer")} className="px-btn px-btn-cream px-btn-sm">
                     {t("server.trailer")}
@@ -220,7 +192,7 @@ export function ServerChannelTabs({
 
             <div className={card}>
               <h3 className={cardTitle}>
-                <PixelIcon name="scroll" size={16} className="text-prism-d" /> {t("server.summaryTitle")}
+                <PixelIcon name="scroll" size={16} className="text-prism-t" /> {t("server.summaryTitle")}
               </h3>
               <div className="prose prose-eter max-w-none text-sm leading-relaxed line-clamp-4 overflow-hidden">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{server.description}</ReactMarkdown>

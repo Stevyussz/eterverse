@@ -5,6 +5,7 @@ import { ServerCard } from "@/components/server/ServerCard";
 import { PixelIcon } from "@/components/pixel/PixelIcon";
 import { Sprite } from "@/components/pixel/PixelArt";
 import { PageHero } from "@/components/pixel/PageHero";
+import { EmptySlotCard } from "@/components/server/EmptySlotCard";
 import { escapeRegex, safeSearchTerm } from "@/lib/text";
 import { CARD_FIELDS, toCard } from "@/lib/server-queries";
 import { majorVersions } from "@/lib/mc-status";
@@ -119,7 +120,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
             {hasFilters ? " dengan filter ini" : ""}.
           </span>
           {hasFilters && (
-            <a href="/discover" className="text-prism-d underline underline-offset-4 min-h-[44px] sm:min-h-0 inline-flex items-center">
+            <a href="/discover" className="text-prism-t underline underline-offset-4 min-h-[44px] sm:min-h-0 inline-flex items-center">
               Reset filter
             </a>
           )}
@@ -243,6 +244,12 @@ export default async function DiscoverPage({ searchParams }: Props) {
                 <ServerCard {...server} />
               </div>
             ))}
+            {/* Unfiltered and still a short list: show the open slot, not empty space. */}
+            {!hasFilters && serialized.length < 4 && (
+              <div data-reveal>
+                <EmptySlotCard />
+              </div>
+            )}
           </div>
         )}
       </div>

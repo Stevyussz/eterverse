@@ -54,7 +54,7 @@ export default function EterShopPublicPage() {
         </div>
 
         <section data-reveal className="px-panel overflow-hidden" aria-labelledby="compare">
-          <div className="p-6 sm:p-8 border-b-[3px] border-ink">
+          <div className="p-6 sm:p-8 border-b-[3px] border-frame">
             <h2 id="compare" className="px-title text-2xl text-ink">Reguler vs Partner</h2>
             <p className="text-ink-2 text-sm mt-1">Semua fitur inti sama-sama gratis. Partner menambah dua hal di bawah.</p>
           </div>

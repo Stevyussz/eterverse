@@ -11,7 +11,7 @@ export function CardGridSkeleton({ count = 8 }: { count?: number }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="px-flat flex flex-col animate-pulse">
-          <div className="aspect-video bg-ink/80 border-b-[3px] border-ink" />
+          <div className="aspect-video bg-screen border-b-[3px] border-frame" />
           <div className="p-4 flex flex-col gap-3">
             <div className="flex gap-3">
               <Bar className="w-11 h-11 shrink-0" />

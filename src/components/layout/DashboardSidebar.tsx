@@ -68,7 +68,7 @@ export function DashboardSidebar({ user }: SidebarProps) {
       <aside
         id="dashboard-nav"
         aria-label="Navigasi dashboard"
-        className={`wood on-dark fixed top-0 bottom-0 md:top-16 left-0 z-[70] md:z-40 w-[min(18rem,85vw)] md:w-64 pt-4 md:pt-8 pb-6 px-3 border-r-[3px] border-ink flex flex-col justify-between overflow-y-auto transition-transform duration-200 ${
+        className={`wood on-dark fixed top-0 bottom-0 md:top-16 left-0 z-[70] md:z-40 w-[min(18rem,85vw)] md:w-64 pt-4 md:pt-8 pb-6 px-3 border-r-[3px] border-frame flex flex-col justify-between overflow-y-auto transition-transform duration-200 ${
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
@@ -90,7 +90,7 @@ export function DashboardSidebar({ user }: SidebarProps) {
             />
             <div className="flex flex-col min-w-0">
               <span className="font-pixel text-base truncate max-w-[150px]">{displayName}</span>
-              <span className="text-xs text-cream/80">Akun EterVerse</span>
+              <span className="text-xs text-bone/80">Akun EterVerse</span>
             </div>
           </div>
 
@@ -98,7 +98,7 @@ export function DashboardSidebar({ user }: SidebarProps) {
             {NAV.map((item) => (
               <SidebarLink key={item.href} {...item} pathname={pathname} onClick={closeSidebar} />
             ))}
-            <div className="mt-3 pt-3 border-t-2 border-dashed border-cream/20">
+            <div className="mt-3 pt-3 border-t-2 border-dashed border-bone/20">
               <SidebarLink href="/dashboard/boost" icon="sparkle" label="Partner EterShop" isGold pathname={pathname} onClick={closeSidebar} />
             </div>
           </nav>

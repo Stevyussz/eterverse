@@ -23,8 +23,9 @@ export default async function LoginPage(props: Props) {
   const isVerifyRequest = searchParams?.verifyRequest === "true" || searchParams?.verifyRequest === "";
 
   return (
-    <main className="min-h-screen flex items-center justify-center relative px-4 pt-24 pb-16 bg-[#CDE8F4]">
-      <VerseScene className="absolute inset-x-0 bottom-0 w-full h-[140px] sm:h-[200px]" />
+    <main className="min-h-screen flex items-center justify-center relative px-4 pt-24 pb-16 bg-sky">
+      <VerseScene className="absolute inset-x-0 bottom-0 w-full h-[140px] sm:h-[200px] only-light" />
+        <VerseScene variant="nether" className="absolute inset-x-0 bottom-0 w-full h-[140px] sm:h-[200px] only-nether" />
       
       <div className="w-full max-w-md px-panel p-6 sm:p-8 flex flex-col gap-7 relative z-10 px-pop">
         

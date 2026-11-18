@@ -942,6 +942,20 @@ const ICONS = {
     "XXXXXXXXXXXX",
     "XXXXXXXXXXXX",
   ],
+  sun: [
+    ".....XX.....",
+    ".X...XX...X.",
+    "..X......X..",
+    "....XXXX....",
+    "...XXXXXX...",
+    "XX.XXXXXX.XX",
+    "XX.XXXXXX.XX",
+    "...XXXXXX...",
+    "....XXXX....",
+    "..X......X..",
+    ".X...XX...X.",
+    ".....XX.....",
+  ],
 } as const;
 
 export type PixelIconName = keyof typeof ICONS;

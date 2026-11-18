@@ -105,7 +105,7 @@ export function ImageUploader({ name, label, aspectRatio = "square", onUploadSuc
           {isUploading ? (
             <span className="flex flex-col items-center gap-2 text-ink-2">
               <PixelIcon name="refresh" size={20} className="px-spin" />
-              <span className="font-pixel text-xs">Mengunggah</span>
+              <span className="font-pixel text-sm">Mengunggah</span>
             </span>
           ) : preview ? (
             <>

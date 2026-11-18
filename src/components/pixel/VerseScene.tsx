@@ -20,6 +20,46 @@ const LOCAL: Record<string, { grid: string[]; palette: Palette }> = {
     grid: ["wwWwwwww", "wwwwwWww", "Wwwwwwww", "wwwwWwww", "wwWwwwwW", "wwwwwwww", "wWwwwwWw", "wwwwwwww"],
     palette: { w: "#3F76C9", W: "#6E9BE0" },
   },
+  // Nether set
+  nylium: {
+    grid: ["rRRrRRRr", "RrRRrRrR", "rRrRRrRr", "NrNNrNNr", "NNnNNNmN", "NmNNnNNN", "NNNmNNnN", "nNNNNNNN"],
+    palette: { r: "#D9475A", R: "#B1303E", N: "#6B2626", n: "#4A1818", m: "#8A3434" },
+  },
+  netherrack: {
+    grid: ["NNnNNNmN", "NmNNnNNN", "NNNmNNnN", "nNNNNNNN", "NNmNNnNN", "NNNNmNNN", "mNnNNNNm", "NNNNNnNN"],
+    palette: { N: "#6B2626", n: "#4A1818", m: "#8A3434" },
+  },
+  blackstone: {
+    grid: ["bBbbbBbb", "bbbBbbbb", "Bbbbbbgb", "bbBbbbbb", "bbbbbBbb", "bgbbbbbB", "bbbBbbbb", "Bbbbbbbb"],
+    palette: { b: "#2A2226", B: "#3A3036", g: "#8A6A1E" },
+  },
+  soulsand: {
+    grid: ["sSssSsss", "ssssssSs", "SsfsSsss", "ssssssss", "sSsssfsS", "ssssSsss", "sfsSssss", "ssssssSs"],
+    palette: { s: "#4E3A2E", S: "#5E483A", f: "#3A2A22" },
+  },
+  lava: {
+    grid: ["lLllLlll", "llloLlll", "LllllLlo", "lloLllll", "lLlllLll", "llllolLl", "oLlllllL", "llLlllll"],
+    palette: { l: "#E8761E", L: "#F5A93A", o: "#C9441A" },
+  },
+  stem: {
+    grid: ["cCccCccC", "ccCcccCc", "cCccCccc", "cccCccCc", "cCcccCcc", "ccCcCccc", "cccCccCc", "cCccccCc"],
+    palette: { c: "#5A2235", C: "#7A2E4A" },
+  },
+  wart: {
+    grid: ["wWwwWwww", "wwwWwwWw", "Wwwwwwww", "wwWwwWww", "wwwwWwww", "wWwwwwWw", "wwwWwwww", "Wwwwwwww"],
+    palette: { w: "#8E1F2B", W: "#B1303E" },
+  },
+};
+
+// Overworld block -> Nether block, so one terrain layout serves both themes.
+const NETHER: Record<string, string> = {
+  grass: "nylium",
+  dirt: "netherrack",
+  stone: "blackstone",
+  sand: "soulsand",
+  water: "lava",
+  log: "stem",
+  leaves: "wart",
 };
 
 // Wide scene (96 blocks): with "slice" the height decides the scale on every screen, so
@@ -40,10 +80,13 @@ const HEIGHTS = Array.from({ length: COLS }, (_, c) => {
 const TREES = [9, 23, 33, 62, 72];
 const CLOUDS: [number, number, number][] = [[6, 1.2, 4], [24, 0.6, 3], [36, 1.6, 5], [58, 0.7, 4], [70, 1.4, 3], [86, 0.6, 5]];
 
-export function VerseScene({ className }: { className?: string }) {
+export function VerseScene({ className, variant = "overworld" }: { className?: string; variant?: "overworld" | "nether" }) {
+  const isNether = variant === "nether";
+  const id = isNether ? "vn" : "vs";
   const tiles: React.ReactElement[] = [];
-  const place = (kind: string, col: number, row: number) => {
-    tiles.push(<rect key={`${kind}-${col}-${row}`} x={col * B} y={row * B} width={B} height={B} fill={`url(#vs-${kind})`} />);
+  const place = (base: string, col: number, row: number) => {
+    const kind = isNether ? NETHER[base] ?? base : base;
+    tiles.push(<rect key={`${kind}-${col}-${row}`} x={col * B} y={row * B} width={B} height={B} fill={`url(#${id}-${kind})`} />);
   };
 
   HEIGHTS.forEach((h, col) => {
@@ -92,18 +135,27 @@ export function VerseScene({ className }: { className?: string }) {
     >
       <defs>
         {Object.entries(defs).map(([k, t]) => (
-          <pattern key={k} id={`vs-${k}`} width={B} height={B} patternUnits="userSpaceOnUse">
+          <pattern key={k} id={`${id}-${k}`} width={B} height={B} patternUnits="userSpaceOnUse">
             {gridToRects(t.grid, t.palette, 2)}
           </pattern>
         ))}
       </defs>
-      {CLOUDS.map(([x, y, w], i) => (
+      {/* Overworld clouds; in the Nether, glowstone clusters hang from the haze instead. */}
+      {isNether
+        ? CLOUDS.map(([x, y], i) => (
+            <g key={i}>
+              <rect x={x * B} y={y * B - 4} width={B * 1.5} height={B} fill="#F5D46A" />
+              <rect x={x * B + 6} y={y * B + 2} width={10} height={8} fill="#FFF1A8" />
+              <rect x={x * B + B} y={y * B + B - 4} width={B * 0.6} height={B * 0.6} fill="#D9A93A" />
+            </g>
+          ))
+        : CLOUDS.map(([x, y, w], i) => (
         <g key={i}>
           <rect x={x * B} y={y * B} width={w * B} height={B * 0.6} fill="#FFFFFF" />
           <rect x={x * B + B * 0.5} y={y * B - B * 0.4} width={(w - 1) * B} height={B * 0.5} fill="#FFFFFF" />
           <rect x={x * B} y={y * B + B * 0.6} width={w * B} height={4} fill="#E3EEF2" />
         </g>
-      ))}
+          ))}
       {tiles}
     </svg>
   );

@@ -12,9 +12,9 @@ import { PageHero } from "@/components/pixel/PageHero";
 
 // Podium = the ore tiers players already rank by: gold, iron, copper.
 const PODIUM = [
-  { label: "Juara 1", face: "bg-gold", text: "text-ink" },
-  { label: "Juara 2", face: "bg-[#D8D8D8]", text: "text-ink" },
-  { label: "Juara 3", face: "bg-[#E89A6A]", text: "text-ink" },
+  { label: "Juara 1", face: "bg-gold", text: "text-[#2E2216]" },
+  { label: "Juara 2", face: "bg-[#D8D8D8]", text: "text-[#2E2216]" },
+  { label: "Juara 3", face: "bg-[#E89A6A]", text: "text-[#2E2216]" },
 ];
 
 export const revalidate = 60;
@@ -58,10 +58,19 @@ export default async function LeaderboardPage() {
 
   let current: Awaited<ReturnType<typeof ranking>> = [];
   let previous: Awaited<ReturnType<typeof ranking>> = [];
+  let allTime: any[] = [];
   let failed = false;
   try {
     await connectToDatabase();
     [current, previous] = await Promise.all([ranking(thisMonth, 25), ranking(lastMonth, 3)]);
+    // Monthly tallies start empty each month; meanwhile show the real all-time totals.
+    if (current.length === 0) {
+      allTime = await Server.find({ moderationStatus: "APPROVED", "metrics.votes": { $gt: 0 } })
+        .sort({ "metrics.votes": -1 })
+        .limit(10)
+        .select("name slug logoUrl serverType ipAddress port realmCode liveStatus metrics")
+        .lean();
+    }
   } catch (err) {
     console.error("leaderboard failed:", err);
     failed = true;
@@ -71,8 +80,11 @@ export default async function LeaderboardPage() {
     <main className="relative min-h-screen pb-8">
       <PageHero title={`Peringkat ${monthLabel(thisMonth)}`} sprite="goldBlock" eyebrow="Vote bulanan">
         <p className="text-sm text-ink-2 max-w-2xl">
-          Diurutkan dari vote bulan ini. Satu akun bisa vote tiap server sekali sehari. Peringkat direset dalam{" "}
-          <span className="px-chip px-chip-gold !text-sm">{daysUntilReset()} hari</span>
+          Diurutkan dari vote bulan ini. Satu akun bisa vote tiap server sekali sehari.
+        </p>
+        <p className="px-chip px-chip-gold w-fit">
+          <PixelIcon name="clock" size={12} className="text-gold-d" />
+          Reset dalam {daysUntilReset()} hari
         </p>
       </PageHero>
 
@@ -84,12 +96,45 @@ export default async function LeaderboardPage() {
           </div>
         ) : current.length === 0 ? (
           <div className="px-flat p-10 text-center flex flex-col items-center gap-3">
-            <Sprite name="emerald" size={56} />
+            <Sprite name="emerald" size={64} />
             <p className="font-pixel text-lg text-ink">Belum ada vote bulan ini.</p>
             <p className="text-sm text-ink-2">Vote pertama langsung menempatkan servernya di puncak.</p>
             <Link href="/discover" className="px-btn mt-2">Cari server untuk di-vote</Link>
           </div>
-        ) : (
+        ) : null}
+
+        {!failed && current.length === 0 && allTime.length > 0 && (
+          <section className="flex flex-col gap-4" aria-labelledby="alltime">
+            <h2 id="alltime" className="px-title text-2xl text-ink flex items-center gap-2">
+              <Sprite name="emerald" size={16} /> Vote terbanyak sepanjang waktu
+            </h2>
+            <ol className="px-panel">
+              {allTime.map((s: any, i: number) => (
+                <li key={s._id.toString()} className={i > 0 ? "border-t-2 border-ink/15" : ""}>
+                  <Link href={`/server/${s.slug}`} className="flex items-center gap-4 p-4 hover:bg-panel-2 transition-colors">
+                    <span className="w-10 shrink-0 text-center font-pixel text-lg text-ink-2">{i + 1}</span>
+                    <SafeImage src={s.logoUrl} fallbackName={s.name} alt="" className="w-11 h-11 shrink-0 object-cover px-frame text-xs" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-pixel text-base text-ink truncate">{s.name}</p>
+                      <p className="flex items-center gap-1.5 text-xs font-mono text-ink-2 truncate">
+                        {s.serverType !== "REALM" && <LiveIcon online={!!s.liveStatus?.isOnline} size={12} />}
+                        {displayAddress(s)}
+                      </p>
+                    </div>
+                    <span className="flex items-center gap-1.5 font-pixel text-base text-ink shrink-0 tabular">
+                      <Sprite name="emerald" size={16} />
+                      {(s.metrics?.votes || 0).toLocaleString("id-ID")}
+                      <span className="sr-only">vote</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        {current.length === 0 ? null : (
+          <>
           <ol className="px-panel">
             {current.map(({ votes, server }, i) => {
               const podium = PODIUM[i];
@@ -133,6 +178,7 @@ export default async function LeaderboardPage() {
               );
             })}
           </ol>
+          </>
         )}
 
         {previous.length > 0 && (

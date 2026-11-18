@@ -78,7 +78,7 @@ export function StarRating({ slug, initialRating, isLoggedIn, userRating = 0 }: 
       {!isLoggedIn ? (
         <p className="text-xs text-ink-2">Masuk untuk memberi rating server ini</p>
       ) : message ? (
-        <p className="text-xs text-prism-d px-pop" role="status">{message}</p>
+        <p className="text-xs text-prism-t px-pop" role="status">{message}</p>
       ) : submitted ? (
         <p className="text-xs text-ink-2">Rating kamu: {submitted} bintang</p>
       ) : (

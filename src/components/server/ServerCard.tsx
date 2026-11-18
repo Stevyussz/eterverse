@@ -141,7 +141,7 @@ export function ServerCard({
       onMouseLeave={handleMouseLeave}
     >
       {/* The trailer screen. Status sits on it like the ping corner of the Multiplayer list. */}
-      <div className="relative aspect-video px-screen !shadow-none border-b-[3px] border-ink">
+      <div className="relative aspect-video px-screen !shadow-none border-b-[3px] border-frame">
         <BackgroundVideo
           videoUrl={videoUrl}
           fallbackImage={bannerUrl}
@@ -211,7 +211,7 @@ export function ServerCard({
             </span>
           )}
           <span className="flex items-center gap-1.5" title="Vote">
-            <Sprite name="emerald" size={14} />
+            <Sprite name="emerald" size={16} />
             {(votes || 0).toLocaleString("id-ID")}
             <span className="sr-only">vote</span>
           </span>

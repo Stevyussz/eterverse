@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Pixelify_Sans, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Toaster } from "sonner";
 import { auth } from "@/auth";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 
 const pixelify = Pixelify_Sans({
   subsets: ["latin"],
@@ -25,6 +26,11 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://eterverse.vercel.app";
+
+// Phone browser bar matches the prismarine navbar in both themes.
+export const viewport: Viewport = {
+  themeColor: "#1D5E57",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -110,7 +116,11 @@ export default async function RootLayout({
   const isAdmin = session?.user?.email ? adminEmails.includes(session.user.email) : false;
 
   return (
-    <html lang="id" className={`${pixelify.variable} ${plusJakarta.variable} ${jetbrainsMono.variable}`}>
+    <html lang="id" suppressHydrationWarning className={`${pixelify.variable} ${plusJakarta.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        {/* Applies the saved theme before first paint (no light flash for Nether users). */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+      </head>
       {/* No hand-written og:image tags here: they were emitted on every page ahead of the
           page's own image, so WhatsApp and Discord always showed the generic site card.
           The default image comes from `metadata.openGraph` above; server pages override it. */}

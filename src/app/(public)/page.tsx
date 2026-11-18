@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ServerCard } from "@/components/server/ServerCard";
+import { EmptySlotCard } from "@/components/server/EmptySlotCard";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { AiMatchmaker } from "@/components/home/AiMatchmaker";
 import { getHomeData, type ServerCardData } from "@/lib/server-queries";
@@ -13,7 +14,10 @@ export const dynamic = 'force-dynamic';
 // Below this many servers, three ranked sections would repeat the same cards.
 const SPLIT_SECTIONS_AT = 8;
 
-function ServerGrid({ servers, empty }: { servers: ServerCardData[]; empty: string }) {
+function ServerGrid({ servers, empty, fillRow = false }: { servers: ServerCardData[]; empty: string; fillRow?: boolean }) {
+  // While the directory is young, end a short row with open slots instead of blank space.
+  // Only the first is shown on phones (one column), the rest from sm/lg up.
+  const openSlots = fillRow && servers.length > 0 && servers.length < 4 ? 4 - servers.length : 0;
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7 w-full">
       {servers.length > 0 ? (
@@ -23,10 +27,17 @@ function ServerGrid({ servers, empty }: { servers: ServerCardData[]; empty: stri
             <ServerCard {...server} />
           </div>
         ))
-      ) : (
+      ) : null}
+      {Array.from({ length: openSlots }).map((_, i) => (
+        <div key={`slot-${i}`} data-reveal className={i === 0 ? "" : i === 1 ? "hidden sm:block" : "hidden lg:block"}>
+          <EmptySlotCard />
+        </div>
+      ))}
+      {servers.length === 0 && (
         <div className="col-span-full px-flat py-14 flex flex-col items-center gap-3 text-center">
           <Sprite name="chest" size={56} />
           <p className="text-ink-2">{empty}</p>
+          <Link href="/dashboard/server/new" className="px-btn px-btn-gold mt-1">Daftarkan server pertama</Link>
         </div>
       )}
     </div>
@@ -76,8 +87,9 @@ export default async function Home() {
   return (
     <main className="relative min-h-screen flex flex-col overflow-x-clip">
       {/* Hero: sky over a block world with the EterVerse portal. Ink on sky is 12:1. */}
-      <section className="relative bg-[#CDE8F4] pt-16 border-b-[3px] border-ink">
-        <VerseScene className="absolute inset-x-0 bottom-0 w-full h-[150px] sm:h-[210px] lg:h-[260px]" />
+      <section className="relative bg-sky pt-16 border-b-[3px] border-frame">
+        <VerseScene className="absolute inset-x-0 bottom-0 w-full h-[150px] sm:h-[210px] lg:h-[260px] only-light" />
+        <VerseScene variant="nether" className="absolute inset-x-0 bottom-0 w-full h-[150px] sm:h-[210px] lg:h-[260px] only-nether" />
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-[170px] sm:pb-[230px] lg:pb-[280px] flex flex-col items-center text-center gap-6">
           <p className="px-chip px-chip-gold">
             <PixelIcon name="map" size={12} className="text-gold-d" />
@@ -145,7 +157,7 @@ export default async function Home() {
         ) : (
           <section className="flex flex-col gap-6 w-full">
             <SectionHeader title="Server terdaftar" sprite="grassBlock" href="/discover" linkLabel="Semua" />
-            <ServerGrid servers={data.trending} empty="Belum ada server yang terdaftar. Jadilah yang pertama." />
+            <ServerGrid servers={data.trending} empty="Belum ada server yang terdaftar. Jadilah yang pertama." fillRow />
           </section>
         )}
 
@@ -164,7 +176,7 @@ export default async function Home() {
                 <PixelIcon name="plus" size={12} />
                 Daftarkan server kamu
               </Link>
-              <Link href="/etershop" className="text-sm text-gold-l underline underline-offset-4 hover:text-white min-h-[32px] inline-flex items-center">
+              <Link href="/etershop" className="text-sm text-[#FFF1C2] underline underline-offset-4 hover:text-white min-h-[32px] inline-flex items-center">
                 Lihat paket Partner EterShop
               </Link>
             </div>

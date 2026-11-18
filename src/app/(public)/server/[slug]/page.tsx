@@ -168,7 +168,7 @@ export default async function ServerProfilePage(props: Props) {
       )}
       
       {/* Banner: a framed window onto the server's world; prismarine bricks when there is none. */}
-      <div className="relative w-full pt-16 prism-bricks border-b-[3px] border-ink select-none">
+      <div className="relative w-full pt-16 prism-bricks border-b-[3px] border-frame select-none">
         <div className="relative h-[200px] sm:h-[320px] md:h-[400px] overflow-hidden">
           {serverData.bannerUrl && (
             <SafeImage src={serverData.bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
@@ -178,108 +178,105 @@ export default async function ServerProfilePage(props: Props) {
 
       <main className="relative min-h-screen px-4 sm:px-6 lg:px-8 pb-32 -mt-12 sm:-mt-16">
         <div className="max-w-6xl mx-auto flex flex-col gap-8">
-          {/* Profile card */}
+          {/* Profile card: identity on top, one row of actions below it. The name used to
+              share a row with six buttons and wrapped after one word. */}
           <div className="px-panel p-4 sm:p-6 flex flex-col gap-5 relative z-10">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
-              <div className="flex items-start gap-4 sm:gap-5 min-w-0">
-                <div className="relative w-20 h-20 sm:w-28 sm:h-28 shrink-0 px-frame bg-slot -mt-12 sm:-mt-16">
-                  <SafeImage
-                    src={serverData.logoUrl}
-                    fallbackName={serverData.name}
-                    alt={`Logo ${serverData.name}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2 min-w-0">
-                  <div className="flex items-center gap-2.5 flex-wrap">
-                    <h1 className="px-title px-title-shadow text-2xl sm:text-3xl md:text-4xl text-ink break-words">
-                      {serverData.name}
-                    </h1>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    {!isRealm && (
-                      <span className="px-chip">
-                        <LiveIcon online={isOnline} size={12} />
-                        {isOnline ? (
-                          <span className="text-online-d">{currentPlayers.toLocaleString("id-ID")} online</span>
-                        ) : (
-                          <span className="text-ink-2">Offline</span>
-                        )}
-                      </span>
-                    )}
-                    <span className="px-chip px-chip-prism">
-                      {isRealm ? (
-                        <><PixelIcon name="crown" size={12} /> Realm</>
-                      ) : serverData.platform === "CROSSPLAY" ? (
-                        "Java + Bedrock"
-                      ) : serverData.platform === "BEDROCK" ? (
-                        "Bedrock (HP)"
-                      ) : (
-                        "Java Edition"
-                      )}
-                    </span>
-                    {serverData.isEterShopPartner && (
-                      <span className="px-chip px-chip-gold">
-                        <PixelIcon name="sparkle" size={12} className="text-gold-d" /> Partner
-                      </span>
-                    )}
-                    <span className="px-chip">
-                      <Sprite name="emerald" size={12} />
-                      <span className="tabular">{votes.toLocaleString("id-ID")}</span> vote
-                    </span>
-                    {rating > 0 && (
-                      <span className="px-chip">
-                        <PixelIcon name="star" size={12} className="text-gold-d" />
-                        {Number(rating).toFixed(1)}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="ip-chip w-fit max-w-full">
-                    <span className="ip-chip-caret" aria-hidden>&gt;</span>
-                    <span className="truncate">
-                      {isRealm
-                        ? serverData.realmCode || serverData.ipAddress
-                        : `${serverData.ipAddress}${serverData.port && serverData.port !== 25565 ? `:${serverData.port}` : ""}`}
-                    </span>
-                  </div>
-
-                  {serverData.tags?.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-2 mt-1">
-                      {serverData.tags.map((tag: string, i: number) => (
-                        <a key={i} href={`/discover?tag=${encodeURIComponent(tag)}`} className="px-slot font-pixel text-xs px-2 py-1 min-h-[28px] inline-flex items-center">
-                          {tag}
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
+            <div className="flex items-start gap-4 sm:gap-6 min-w-0">
+              <div className="relative w-20 h-20 sm:w-28 sm:h-28 shrink-0 px-frame bg-slot -mt-12 sm:-mt-16">
+                <SafeImage
+                  src={serverData.logoUrl}
+                  fallbackName={serverData.name}
+                  alt={`Logo ${serverData.name}`}
+                  className="w-full h-full object-cover"
+                />
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-3 shrink-0 flex-wrap">
-                <VoteButton
-                  slug={serverData.slug}
-                  initialVotes={votes}
+              <div className="flex flex-col gap-3 min-w-0 flex-1">
+                <h1 className="px-title px-title-shadow text-3xl sm:text-4xl md:text-5xl text-ink break-words">
+                  {serverData.name}
+                </h1>
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {!isRealm && (
+                    <span className="px-chip">
+                      <LiveIcon online={isOnline} size={12} />
+                      {isOnline ? (
+                        <span className="text-online-d tabular">
+                          {currentPlayers.toLocaleString("id-ID")}
+                          {maxPlayers ? ` / ${maxPlayers.toLocaleString("id-ID")}` : ""} online
+                        </span>
+                      ) : (
+                        <span className="text-ink-2">Offline</span>
+                      )}
+                    </span>
+                  )}
+                  <span className="px-chip px-chip-prism">
+                    {isRealm ? (
+                      <><PixelIcon name="crown" size={12} /> Realm</>
+                    ) : serverData.platform === "CROSSPLAY" ? (
+                      "Java + Bedrock"
+                    ) : serverData.platform === "BEDROCK" ? (
+                      "Bedrock (HP)"
+                    ) : (
+                      "Java Edition"
+                    )}
+                  </span>
+                  {serverData.isEterShopPartner && (
+                    <span className="px-chip px-chip-gold">
+                      <PixelIcon name="sparkle" size={12} className="text-gold-d" /> Partner
+                    </span>
+                  )}
+                  {rating > 0 && (
+                    <span className="px-chip">
+                      <PixelIcon name="star" size={12} className="text-gold-d" />
+                      {Number(rating).toFixed(1)}
+                    </span>
+                  )}
+                </div>
+                <div className="ip-chip w-fit max-w-full !text-sm">
+                  <span className="ip-chip-caret" aria-hidden>&gt;</span>
+                  <span className="truncate">
+                    {isRealm
+                      ? serverData.realmCode || serverData.ipAddress
+                      : `${serverData.ipAddress}${serverData.port && serverData.port !== 25565 ? `:${serverData.port}` : ""}`}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {serverData.tags?.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2.5">
+                {serverData.tags.map((tag: string, i: number) => (
+                  <a key={i} href={`/discover?tag=${encodeURIComponent(tag)}`} className="px-slot font-pixel text-sm px-2.5 min-h-[32px] inline-flex items-center">
+                    {tag}
+                  </a>
+                ))}
+              </div>
+            )}
+
+            {/* Actions: join first (copy / play), then vote, then save and share. */}
+            <div className="flex flex-wrap items-center gap-3 border-t-2 border-dashed border-ink/15 pt-5">
+              <CopyIPButton
+                ipAddress={serverData.ipAddress}
+                port={serverData.port}
+                isRealm={isRealm}
+                realmCode={serverData.realmCode}
+              />
+              {(isRealm || serverData.platform !== "JAVA") && (
+                <DirectPlayButton
                   serverName={serverData.name}
-                  rewardsEnabled={rewardsEnabled}
-                />
-                {(isRealm || serverData.platform !== "JAVA") && (
-                  <DirectPlayButton
-                    serverName={serverData.name}
-                    ipAddress={serverData.ipAddress}
-                    port={effectiveBedrockPort}
-                    isRealm={isRealm}
-                    realmCode={serverData.realmCode}
-                  />
-                )}
-                <CopyIPButton
                   ipAddress={serverData.ipAddress}
-                  port={serverData.port}
+                  port={effectiveBedrockPort}
                   isRealm={isRealm}
                   realmCode={serverData.realmCode}
                 />
+              )}
+              <VoteButton
+                slug={serverData.slug}
+                initialVotes={votes}
+                serverName={serverData.name}
+                rewardsEnabled={rewardsEnabled}
+              />
+              <span className="flex gap-3 sm:ml-auto">
                 {serverData.moderationStatus === "APPROVED" && (
                   <FavoriteButton slug={serverData.slug} initial={isFavorited} />
                 )}
@@ -292,11 +289,11 @@ export default async function ServerProfilePage(props: Props) {
                       : `${serverData.ipAddress}${serverData.port && serverData.port !== 25565 ? `:${serverData.port}` : ""}`
                   }
                 />
-              </div>
+              </span>
             </div>
 
             {(serverData.socialLinks?.discord || serverData.socialLinks?.whatsapp || serverData.socialLinks?.telegram || serverData.socialLinks?.website) && (
-              <div className="flex items-center gap-3 overflow-x-auto py-1 px-1 scrollbar-none border-t-2 border-dashed border-ink/15 pt-4">
+              <div className="flex items-center gap-3 overflow-x-auto py-1 px-1 scrollbar-none">
                 {serverData.socialLinks?.discord && (
                   <a href={serverData.socialLinks.discord} target="_blank" rel="noopener noreferrer" className="px-btn px-btn-cream px-btn-sm shrink-0">
                     <DiscordLogo size={16} weight="fill" className="text-[#4752C4]" aria-hidden />

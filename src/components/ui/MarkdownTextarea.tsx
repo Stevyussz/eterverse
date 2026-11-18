@@ -35,7 +35,8 @@ export function MarkdownTextarea({ name, placeholder, defaultValue = "", require
     },
     editorProps: {
       attributes: {
-        className: 'prose prose-eter prose-sm sm:prose-base focus:outline-none min-h-[160px] p-4 max-w-none',
+        // ProseMirror takes DOM attributes: `class`, not React's `className` (it was silently ignored).
+        class: 'prose prose-eter prose-sm sm:prose-base focus:outline-none min-h-[160px] p-4 max-w-none',
       },
     },
   });

@@ -4,7 +4,7 @@ export default function ServerLoading() {
   return (
     <main className="relative pt-16 pb-32">
       <LoadingLabel text="Memuat halaman server" />
-      <div className="h-[240px] sm:h-[340px] md:h-[420px] w-full bg-screen border-b-[3px] border-ink animate-pulse" />
+      <div className="h-[240px] sm:h-[340px] md:h-[420px] w-full bg-screen border-b-[3px] border-frame animate-pulse" />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-14 flex flex-col gap-6 animate-pulse">
         <div className="px-flat p-5 flex items-end gap-4">
           <SkeletonBar className="w-20 h-20 sm:w-24 sm:h-24 shrink-0" />

@@ -92,7 +92,7 @@ export default function InfoCenterPage() {
       </section>
 
       <section className={section} aria-labelledby="review">
-        <h2 id="review" className={h2}><PixelIcon name="shield" size={18} className="text-prism-d" />Syarat lolos review</h2>
+        <h2 id="review" className={h2}><PixelIcon name="shield" size={18} className="text-prism-t" />Syarat lolos review</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="px-note flex-col">
             <span className="font-pixel text-base flex items-center gap-2"><PixelIcon name="check" size={14} className="text-online-d" />Wajib dipenuhi</span>
@@ -116,7 +116,7 @@ export default function InfoCenterPage() {
       </section>
 
       <section className={section} aria-labelledby="reward">
-        <h2 id="reward" className={h2}><Sprite name="emerald" size={22} />Hadiah vote (NuVotifier)</h2>
+        <h2 id="reward" className={h2}><Sprite name="emerald" size={16} />Hadiah vote (NuVotifier)</h2>
         <p className="text-ink-2 leading-relaxed">
           Saat pemain vote, EterVerse mengirim vote Votifier (v1, RSA) ke server kamu, lalu plugin reward-mu (VotingPlugin, SuperbVote, dan lainnya)
           membagikan hadiahnya. Pemain mengisi nama Minecraft saat vote. Sambungkan dan tes koneksinya di menu Hadiah Vote.
@@ -127,16 +127,16 @@ export default function InfoCenterPage() {
       </section>
 
       <section className={section} aria-labelledby="widget">
-        <h2 id="widget" className={h2}><PixelIcon name="monitor" size={18} className="text-prism-d" />Widget & ramaikan servermu</h2>
+        <h2 id="widget" className={h2}><PixelIcon name="monitor" size={18} className="text-prism-t" />Widget & ramaikan servermu</h2>
         <p className="text-ink-2 leading-relaxed">
           Pasang widget status di Discord atau website lewat menu{" "}
-          <Link href="/dashboard/tools/widget" className="text-prism-d underline underline-offset-4">Widget Status</Link>. Bagikan link halaman servermu:
+          <Link href="/dashboard/tools/widget" className="text-prism-t underline underline-offset-4">Widget Status</Link>. Bagikan link halaman servermu:
           kartu share-nya otomatis menampilkan IP dan status online. Ajak komunitasmu vote setiap hari untuk naik di Peringkat bulanan.
         </p>
       </section>
 
       <section className={section} aria-labelledby="faq">
-        <h2 id="faq" className={h2}><PixelIcon name="chat" size={18} className="text-prism-d" />Pertanyaan umum</h2>
+        <h2 id="faq" className={h2}><PixelIcon name="chat" size={18} className="text-prism-t" />Pertanyaan umum</h2>
         <div className="flex flex-col gap-3">
           {FAQ.map((f) => (
             <details key={f.q} className="group px-slot">

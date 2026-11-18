@@ -6,6 +6,9 @@ import { PixelIcon } from "@/components/pixel/PixelIcon";
 import { submitVote } from "@/lib/vote-client";
 import { VoteUsernameDialog } from "@/components/server/VoteUsernameDialog";
 
+// Where the green pixels fly when a vote lands (px offsets from the button top).
+const SPARKS: [number, number][] = [[-26, -18], [24, -22], [-14, -38], [16, -40], [0, -48]];
+
 interface VoteButtonProps {
   slug: string;
   initialVotes: number;
@@ -46,19 +49,22 @@ export function VoteButton({ slug, initialVotes, serverName = "server ini", rewa
         onClick={handleVote}
         disabled={isDisabled}
         aria-label={rewardsEnabled ? "Vote server ini dan dapat hadiah in-game" : "Vote server ini"}
-        className={`px-btn ${state === "voted" ? "px-btn-gold" : "px-btn-cream"} relative !gap-2.5 disabled:!cursor-default`}
+        className={`px-btn ${state === "voted" ? "px-btn-gold" : "px-btn-cream"} hover-bob relative !gap-2.5 disabled:!cursor-default`}
         aria-disabled={state === "already" || undefined}
       >
         {/* Real event only: the emerald flies up after the server accepted the vote. */}
         {state === "voted" && (
-          <Sprite name="emerald" size={20} className="px-emerald-up absolute left-1/2 -ml-2.5 -top-2 pointer-events-none" />
-        )}
-        <Sprite name="emerald" size={18} />
-        <span className="flex flex-col items-start leading-none">
-          <span className="tabular text-base">{votes.toLocaleString("id-ID")}</span>
-          <span className="text-[11px] font-normal opacity-80 mt-0.5">
-            {state === "loading" ? "Mengirim" : state === "voted" || state === "already" ? "Sudah vote" : "Vote"}
+          <span className="absolute left-1/2 -top-2 pointer-events-none" aria-hidden>
+            <Sprite name="emerald" size={32} className="px-emerald-up absolute -left-4" />
+            {SPARKS.map(([dx, dy], i) => (
+              <span key={i} className="px-spark" style={{ "--dx": `${dx}px`, "--dy": `${dy}px` } as React.CSSProperties} />
+            ))}
           </span>
+        )}
+        <Sprite name="emerald" size={16} className="bob-target" />
+        <span className="tabular">{votes.toLocaleString("id-ID")}</span>
+        <span className="border-l-2 border-current/30 pl-2.5">
+          {state === "loading" ? "Mengirim" : state === "voted" || state === "already" ? "Sudah vote" : "Vote"}
         </span>
         {rewardsEnabled && state === "idle" && (
           <PixelIcon name="gift" size={14} className="text-gold-d" label="Ada hadiah in-game" />

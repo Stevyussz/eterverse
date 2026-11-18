@@ -97,7 +97,7 @@ export function MobileStickyActionBar({
 
   // A hotbar along the bottom edge: identity on the left, three blocks on the right.
   return (
-    <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-panel border-t-[3px] border-ink px-3 py-2.5 flex items-center justify-between gap-3 px-pop">
+    <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-panel border-t-[3px] border-frame px-3 py-2.5 flex items-center justify-between gap-3 px-pop">
       <div className="flex items-center gap-2.5 min-w-0 flex-1">
         <SafeImage src={logoUrl} fallbackName={serverName} alt={`Logo ${serverName}`} className="w-10 h-10 shrink-0 object-cover px-frame text-xs" />
         <div className="flex flex-col min-w-0">

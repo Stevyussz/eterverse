@@ -103,7 +103,7 @@ export function AiMatchmaker() {
         <div className="w-full max-w-7xl mx-auto mt-10 px-flat !bg-panel-2 p-5 sm:p-6 flex flex-col gap-6 text-left px-pop" aria-live="polite">
           <div className="flex items-center justify-between gap-4">
             <h2 className="px-title text-2xl text-ink flex items-center gap-2">
-              <PixelIcon name="search" size={20} className="text-prism-d" />
+              <PixelIcon name="search" size={20} className="text-prism-t" />
               Hasil rekomendasi
             </h2>
             <button onClick={() => setState({ status: "idle" })} className="px-btn px-btn-cream px-btn-sm">
@@ -133,7 +133,7 @@ export function AiMatchmaker() {
               <h3 className="px-title text-xl text-ink">Belum ada server yang cocok</h3>
               <p className="text-ink-2 text-sm">
                 Coba kata lain (misal mode game atau platform), atau{" "}
-                <Link href="/discover" className="text-prism-d underline underline-offset-4">jelajahi semua server</Link>.
+                <Link href="/discover" className="text-prism-t underline underline-offset-4">jelajahi semua server</Link>.
               </p>
             </div>
           )}

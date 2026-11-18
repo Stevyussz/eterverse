@@ -124,7 +124,7 @@ export function HeroSlider({
                   </span>
                 </div>
 
-                <div className="order-2 md:order-1 p-6 sm:p-8 md:p-10 flex flex-col justify-center gap-5 border-t-[3px] md:border-t-0 md:border-r-[3px] border-ink">
+                <div className="order-2 md:order-1 p-6 sm:p-8 md:p-10 flex flex-col justify-center gap-5 border-t-[3px] md:border-t-0 md:border-r-[3px] border-frame">
                   <h2 className="px-title px-title-shadow text-3xl sm:text-4xl lg:text-5xl text-ink text-balance">{server.name}</h2>
 
                   {/* Plain excerpt: raw markdown showed divider lines and repeated the name as a heading. */}
@@ -141,7 +141,7 @@ export function HeroSlider({
                       </span>
                     )}
                     <span className="px-chip">
-                      <Sprite name="emerald" size={12} />
+                      <Sprite name="emerald" size={16} />
                       <span className="tabular">{(server.votes || 0).toLocaleString("id-ID")}</span> vote
                     </span>
                     {server.rating > 0 && (
